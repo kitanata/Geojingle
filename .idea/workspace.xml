@@ -68,19 +68,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/templates/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="18" selection-start="3986" selection-end="3986" vertical-scroll-proportion="0.6463654">
+            <state line="72" column="18" selection-start="3986" selection-end="3986" vertical-scroll-proportion="-13.708333">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppController.j" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="AppController.j" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/static/AppController.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="0" selection-start="540" selection-end="540" vertical-scroll-proportion="0.0">
+            <state line="43" column="0" selection-start="1248" selection-end="1248" vertical-scroll-proportion="0.42307693">
               <folding />
             </state>
           </provider>
@@ -133,8 +133,8 @@
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/gis_demo/views.py" />
         <option value="$PROJECT_DIR$/urls.py" />
-        <option value="$PROJECT_DIR$/static/AppController.j" />
         <option value="$PROJECT_DIR$/templates/index.html" />
+        <option value="$PROJECT_DIR$/static/AppController.j" />
       </list>
     </option>
   </component>
@@ -514,16 +514,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/AppController.j">
+    <entry file="file://$PROJECT_DIR$/templates/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="0" selection-start="540" selection-end="540" vertical-scroll-proportion="0.0">
+        <state line="72" column="18" selection-start="3986" selection-end="3986" vertical-scroll-proportion="-13.708333">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/templates/index.html">
+    <entry file="file://$PROJECT_DIR$/static/AppController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="18" selection-start="3986" selection-end="3986" vertical-scroll-proportion="0.6463654">
+        <state line="43" column="0" selection-start="1248" selection-end="1248" vertical-scroll-proportion="0.42307693">
           <folding />
         </state>
       </provider>
