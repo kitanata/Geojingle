@@ -7,10 +7,12 @@
  */
 
 @import <Foundation/CPObject.j>
+@import <MapKit/MKMapView.j>
 
 
 @implementation AppController : CPObject
 {
+    MKMapView centerView;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -20,47 +22,54 @@
                         styleMask:CPBorderlessBridgeWindowMask],
         contentView = [theWindow contentView];
 
-        [theWindow orderFront:self];
+    [theWindow orderFront:self];
 
-        [contentView setBackgroundColor:[CPColor blackColor]];
+    [contentView setBackgroundColor:[CPColor blackColor]];
 
-        //Top View - Buttons and Controls
-        var topView = [[CPView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([contentView bounds]), 100)];
+    //Top View - Buttons and Controls
+    var topView = [[CPView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth([contentView bounds]), 100)];
 
-        [topView setBackgroundColor:[CPColor redColor]];
+    [topView setBackgroundColor:[CPColor redColor]];
 
-        [topView setAutoresizingMask:CPViewWidthSizable];
+    [topView setAutoresizingMask:CPViewWidthSizable];
 
-        [contentView addSubview:topView];
+    [contentView addSubview:topView];
 
-        //Left View - Toolbar and Controls
-        var leftView = [[CPView alloc] initWithFrame:CGRectMake(0, 100, 200, CGRectGetHeight([contentView bounds]))];
+    //Left View - Toolbar and Controls
+    var leftView = [[CPView alloc] initWithFrame:CGRectMake(0, 100, 200, CGRectGetHeight([contentView bounds]))];
 
-        [leftView setBackgroundColor:[CPColor blueColor]];
+    [leftView setBackgroundColor:[CPColor blueColor]];
 
-        [leftView setAutoresizingMask:CPViewHeightSizable];
+    [leftView setAutoresizingMask:CPViewHeightSizable];
 
-        [contentView addSubview:leftView];
+    [contentView addSubview:leftView];
 
-        //Right View - Layer Controls
+    //Right View - Layer Controls
 
-        var rightView = [[CPView alloc] initWithFrame:CGRectMake(CGRectGetWidth([contentView bounds]) - 200, 100, 200, CGRectGetHeight([contentView bounds]))];
+    var rightView = [[CPView alloc] initWithFrame:CGRectMake(CGRectGetWidth([contentView bounds]) - 200, 100, 200, CGRectGetHeight([contentView bounds]))];
 
-        [rightView setBackgroundColor:[CPColor blueColor]];
+    [rightView setBackgroundColor:[CPColor blueColor]];
 
-        [rightView setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
+    [rightView setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
-        [contentView addSubview:rightView];
+    [contentView addSubview:rightView];
 
-        //Center View - The GIS Map Itself
+    //Center View - The GIS Map Itself
 
-        var centerView = [[CPView alloc] initWithFrame:CGRectMake(200, 100, CGRectGetWidth([contentView bounds]) - 400, CGRectGetHeight([contentView bounds]))];
+    centerView = [[MKMapView alloc] initWithFrame:CGRectMake(200, 100, CGRectGetWidth([contentView bounds]) - 400, CGRectGetHeight([contentView bounds])) apiKey:''];
 
-        [centerView setBackgroundColor:[CPColor greenColor]];
+    [centerView setDelegate:self]
 
-        [centerView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
+    [centerView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
 
-        [contentView addSubview:centerView];
+    [contentView addSubview:centerView];
 }
 
+- (void)mapViewIsReady:(MKMapView)mapView
+{
+  var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
+  var marker = [[MKMarker alloc] initAtLocation:loc];
+  [marker addToMapView:centerView];
+  [mapView setCenter:loc];
+}
 @end
