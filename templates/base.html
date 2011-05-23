@@ -1,0 +1,37 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>eTech Ohio Gisedu (pronounced: gis ed you) Project</title>
+<script src="http://maps.google.com/maps?file=api&v=3"
+        type="text/javascript"></script>
+<script type="text/javascript">
+
+function load() {
+  if (GBrowserIsCompatible()) {
+    var urlTemplate = 'http://127.0.0.1/mapserv?';
+        urlTemplate += 'map=/srv/www/gis_demo/maps/ohio.map&';
+        urlTemplate += 'layers=ohio_districts ohio_counties ohio_edu_orgs ohio_libraries&';
+        urlTemplate += 'mode=tile&';
+        urlTemplate += 'tilemode=gmap&';
+        urlTemplate += 'tile={X}+{Y}+{Z}';
+    var myLayer = new GTileLayer(null,0,18,{
+                                 tileUrlTemplate:urlTemplate,
+                                 isPng:true,
+                                 opacity:0.8 });
+    var map = new GMap2(document.getElementById("map"));
+    map.addControl(new GLargeMapControl());
+    map.addControl(new GMapTypeControl());
+    map.setCenter(new GLatLng(40.00, -83.1), 7);
+    map.addOverlay(new GTileLayerOverlay(myLayer));
+    map.enableScrollWheelZoom();
+    var myMapType = new GMapType([myLayer], new GMercatorProjection(18), 'MapServer');
+    map.addMapType(myMapType);
+  }
+}
+
+</script>
+</head>
+<body onload="load()" onunload="GUnload()">
+  <div id="map" style="margin-left:auto; margin-right:auto; margin-top: auto; width: 800px; height: 600px"></div>
+</body>
+</html>
