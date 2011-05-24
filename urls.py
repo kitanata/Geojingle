@@ -12,8 +12,9 @@ urlpatterns = patterns('',
     # (r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
     # Uncomment the next line to enable the admin:
-    (r'^$', 'gis_demo.views.index'),
-    (r'^admin/', include(admin.site.urls)),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
         {'document_root': '/home/raymond/Projects/Python/Django/Gis_Demo/static'}),
+    (r'^$', 'gis_demo.views.index'),
+    (r'^admin/', include(admin.site.urls)),
+    (r'^json/', 'gis_demo.views.json'),
 )

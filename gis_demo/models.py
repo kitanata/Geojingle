@@ -21,7 +21,7 @@ class OhioCounties(models.Model):
     abbrev = models.CharField(max_length=3)
     shape_area = models.DecimalField(max_digits=65536, decimal_places=65535)
     shape_len = models.DecimalField(max_digits=65536, decimal_places=65535)
-    the_geom = models.MultiPolygonField(srid=3857)
+    the_geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
 
     class Meta:

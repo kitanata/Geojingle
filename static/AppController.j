@@ -8,6 +8,7 @@
 
 @import <Foundation/CPObject.j>
 @import <MapKit/MKMapView.j>
+@import <MapKit/MKMapScene.j>
 
 
 @implementation AppController : CPObject
@@ -67,9 +68,15 @@
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-  var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
-  var marker = [[MKMarker alloc] initAtLocation:loc];
-  [marker addToMapView:centerView];
-  [mapView setCenter:loc];
+    var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
+    var marker = [[MKMarker alloc] initAtLocation:loc];
+    [marker addToMapView:centerView];
+    [mapView setCenter:loc];
+
+    mapScene = [[MKMapScene alloc] initWithMapView:centerView];
+
+    mapUrl = [[CPURL alloc] initWithString:"http://127.0.0.1:8000/json"]
+
+    [mapScene readFromURL:mapUrl]
 }
 @end
