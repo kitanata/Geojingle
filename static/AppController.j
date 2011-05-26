@@ -12,10 +12,26 @@
 @import <AppKit/CPToolbar.j>
 @import <AppKit/CPToolbarItem.j>
 
+@import "Gisedu/OverlaysController.j"
+@import "Gisedu/TablesController.j"
+
 @implementation AppController : CPObject
 {
-    MKMapView centerView;
+    MKMapView m_MapView;
     CPWindow theWindow;
+
+    CPView m_ContentView;
+
+    CPScrollView m_OverlayFeaturesScrollView;
+    OverlaysController m_OverlaysController;
+
+    CPCheckBox m_ShowCountiesCheckBox;
+
+    TablesController m_TablesController;
+
+    CPScrollView m_TableScrollView;
+
+    var m_MapHeight;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -23,11 +39,11 @@
     theWindow = [[CPWindow alloc]
                         initWithContentRect:CGRectMakeZero()
                         styleMask:CPBorderlessBridgeWindowMask],
-        contentView = [theWindow contentView];
+        m_ContentView = [theWindow contentView];
 
     [theWindow orderFront:self];
 
-    [contentView setBackgroundColor:[CPColor whiteColor]];
+    [m_ContentView setBackgroundColor:[CPColor whiteColor]];
 
     //Top View - Buttons and Controls
     var toolbar = [[CPToolbar alloc] initWithIdentifier:"My Toolbar"];
@@ -37,41 +53,37 @@
 
     [self initMenu];
 
-    [self initTabView:contentView];
+    [self initTabView];
 
-    //Right View - Layer Controls
+    m_MapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
 
-    //var rightView = [[CPView alloc] initWithFrame:CGRectMake(CGRectGetWidth([contentView bounds]) - 300, 0, 300, CGRectGetHeight([contentView bounds]))];
+    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, m_MapHeight) apiKey:''];
+    [m_MapView setDelegate:self]
+    [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
+    [m_ContentView addSubview:m_MapView];
 
-    //[rightView setBackgroundColor:[CPColor blueColor]];
+    var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
 
-    //[rightView setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
-
-    //[contentView addSubview:rightView];
-
-    //Center View - The GIS Map Itself
-
-    //centerView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, CGRectGetWidth([contentView bounds]) - 300, CGRectGetHeight([contentView bounds])) apiKey:''];
-
-    //[centerView setDelegate:self]
-
-    //[centerView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
-
-    //[contentView addSubview:centerView];
+    m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
+    [m_TableScrollView setAutoresizingMask:CPViewMinYMargin | CPViewWidthSizable];
+        var countyTableView = [[CPTableView alloc] initWithFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
+        var countyNameCol = [[CPTableColumn alloc] initWithIdentifier:@"CountyNameColumn"];
+        [countyNameCol setWidth:125.0];
+        [[countyNameCol headerView] setStringValue:"County Name"];
+        [countyTableView addTableColumn:countyNameCol];
+        [m_TableScrollView setDocumentView:countyTableView];
+        console.log("Loaded Table View");
+    [m_ContentView addSubview:m_TableScrollView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
     var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
     var marker = [[MKMarker alloc] initAtLocation:loc];
-    [marker addToMapView:centerView];
-    [mapView setCenter:loc];
+    [marker addToMapView:m_MapView];
+    [m_MapView setCenter:loc];
 
-    mapScene = [[MKMapScene alloc] initWithMapView:centerView];
-
-    mapUrl = [[CPURL alloc] initWithString:"http://127.0.0.1:8000/json"]
-
-    [mapScene readFromURL:mapUrl]
+    m_OverlaysController = [[OverlaysController alloc] initWithParentView:m_OverlayFeaturesScrollView andMapView:m_MapView];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -94,15 +106,15 @@
 
     var mainBundle = [CPBundle mainBundle];
 
-    var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"add.png"] size:CPSizeMake(30, 25)];
-    var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"addHighlighted.png"] size:CPSizeMake(30, 25)];
+    var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table.png"] size:CPSizeMake(48, 48)];
+    var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table_highlighted.png"] size:CPSizeMake(48, 48)];
 
     [toolbarItem setImage:image];
     [toolbarItem setAlternateImage:highlighted];
 
     [toolbarItem setTarget:self];
-    [toolbarItem setAction:@selector(add:)];
-    [toolbarItem setLabel:"Test"];
+    [toolbarItem setAction:@selector(onShowTables:)];
+    [toolbarItem setLabel:"Show Tables"];
 
     [toolbarItem setMinSize:CGSizeMake(32, 32)];
     [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -152,53 +164,35 @@
 	[CPMenu setMenuBarVisible:YES];
 }
 
--(void) initTabView:(CPView)contentView
+-(void) initTabView
 {
-    //var leftTabView = [[CPTabView alloc] initWithFrame:CGRectMake(0, 0, 300, CGRectGetHeight([contentView bounds]))];
-        //var leftTabViewLayersItem = [[CPTabViewItem alloc] initWithIdentifier:@"LayersTab"];
-        //[leftTabViewLayersItem setLabel:"Overlay Layers"];
-            //var scrollView = [[CPScrollView alloc] initWithFrame:[leftTabView bounds]];
-            //var scrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, CGRectGetHeight([leftTabView bounds]) + 100, CGRectGetWidth([leftTabView bounds]), CGRectGetHeight([leftTabView bounds]))];
-            //[scrollView setBackgroundColor:[CPColor blueColor]];
-            //[scrollView setAutoresizingMask:CPViewHeightSizable];
-                //The Layer TableView(1 Column)
-            //    var layerView = [[CPTableView alloc] initWithFrame:[scrollView bounds]];
-            //    [scrollView setDocumentView:layerView];
-                    //The TableView's Column
-            //        var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
-             //       [[layerNameCol headerView] setStringValue:"Layer Name"];
-            //        [layerNameCol setWidth:125.0];
-            //        [layerView addTableColumn:layerNameCol];
-        //[leftTabViewLayersItem setView:scrollView];
-        //[leftTabView addTabViewItem:leftTabViewLayersItem];
-
-        //var leftTabViewFeaturesItem = [[CPTabViewItem alloc] initWithIdentifier:@"FeaturesTab"];
-        //[leftTabViewFeaturesItem setLabel:"Overlay Features"];
-        //[leftTabViewFeaturesItem setView:scrollView];
-        //[leftTabView addTabViewItem:leftTabViewFeaturesItem];
-    //[leftTabView setBackgroundColor:[CPColor blueColor]];
-    //[leftTabView setTabViewType:CPTopTabsBezelBorder];
-    //[contentView addSubview:leftTabView];
-
-	var tabView = [[CPTabView alloc] initWithFrame:CGRectMake(0, 10, 300, CGRectGetHeight([contentView bounds]))];
+	var tabView = [[CPTabView alloc] initWithFrame:CGRectMake(0, 10, 300, CGRectGetHeight([m_ContentView bounds]))];
 	[tabView setTabViewType:CPTopTabsBezelBorder];
 	[tabView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
+	    //Map Options
+	    var mapOptionsTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"MapOptionsTab"];
+	    [mapOptionsTabItem setLabel:"Map Options"];
+	        var mapOptionsTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([m_ContentView bounds]) - 50)];
+	            m_ShowCountiesCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 0, 100, 100)];
+	            [m_ShowCountiesCheckBox setTitle:"Show Counties"];
+	            [m_ShowCountiesCheckBox setState:CPOnState];
+	            [m_ShowCountiesCheckBox setTarget:self];
+	            [m_ShowCountiesCheckBox setAction:@selector(onShowCountiesChk:)];
+	        [mapOptionsTabView addSubview:m_ShowCountiesCheckBox];
+        [mapOptionsTabItem setView:mapOptionsTabView];
+    [tabView addTabViewItem:mapOptionsTabItem];
+	    //Overlay Features
 	    var layersTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"LayersTab"];
-        [layersTabItem setLabel:"Overlay Layers"];
-            var layersTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([contentView bounds]) - 50)];
-                var scrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([layersTabView bounds]))];
-                    var layerView = [[CPTableView alloc] initWithFrame:CGRectMake(0, 0, 300, CGRectGetHeight([scrollView bounds]))];
-                    [scrollView setDocumentView:layerView];
-                        //The TableView's Column
-                        var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
-                        [[layerNameCol headerView] setStringValue:"Layer Name"];
-                        [layerNameCol setWidth:125.0];
-                        [layerView addTableColumn:layerNameCol];
-                [layersTabView addSubview:scrollView];
-            //[layersTabView setBackgroundColor:[CPColor blueColor]];
-            [layersTabItem setView:layersTabView];
-        [tabView addTabViewItem:layersTabItem];
-	[contentView addSubview:tabView];
+        [layersTabItem setLabel:"Overlay Features"];
+            var layersTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([m_ContentView bounds]) - 50)];
+                m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([layersTabView bounds]))];
+                [layersTabView addSubview:m_OverlayFeaturesScrollView];
+        [layersTabItem setView:layersTabView];
+
+    console.log("Tab View Initialized");
+
+    [tabView addTabViewItem:layersTabItem];
+	[m_ContentView addSubview:tabView];
 
 	//Other Stuff Below - Not Core.
 
@@ -225,19 +219,37 @@
 	[auxiliaryView1 addSubview:button];
 
 	[tabViewItem1 setAuxiliaryView:auxiliaryView1];
-
-	var tabViewItem2 = [[CPTabViewItem alloc] initWithIdentifier:@"tabViewItem2"];
-	[tabViewItem2 setLabel:@"Second Tab"];
-
-	var view2 = [[CPView alloc] initWithFrame: CGRectMake(0, 0, 50, 50)];
-	[tabViewItem2 setView:view2];
-	var auxiliaryView2 = [[CPView alloc] initWithFrame: CGRectMake(0, 0, 50, 50)];
-	[tabViewItem2 setAuxiliaryView:auxiliaryView2];
 	
 	[tabView addTabViewItem:tabViewItem1];
-	[tabView addTabViewItem:tabViewItem2];
 
 	[tabView selectFirstTabViewItem:self];
+}
+
+- (void)onShowTables:(id)sender
+{
+    if([m_TableScrollView superview] != nil)
+    {
+        [m_TableScrollView removeFromSuperview];
+        [m_MapView setFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, CGRectGetHeight([m_ContentView bounds]))];
+    }
+    else
+    {
+        console.log(m_MapHeight);
+        [m_MapView setFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, m_MapHeight)];
+        [m_ContentView addSubview:m_TableScrollView];
+    }
+}
+
+- (void)onShowCountiesChk:(id)sender
+{
+    if([m_ShowCountiesCheckBox state] == CPOnState)
+    {
+        [m_OverlaysController setCountiesVisible:YES];
+    }
+    else if([m_ShowCountiesCheckBox state] == CPOffState)
+    {
+        [m_OverlaysController setCountiesVisible:NO];
+    }
 }
 
 @end

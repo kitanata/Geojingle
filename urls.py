@@ -16,5 +16,7 @@ urlpatterns = patterns('',
         {'document_root': '/home/raymond/Projects/Python/Django/Gis_Demo/static'}),
     (r'^$', 'gis_demo.views.index'),
     (r'^admin/', include(admin.site.urls)),
-    (r'^json/', 'gis_demo.views.json'),
+    (r'^json_test/', 'gis_demo.views.json_test'),
+    (r'^county_list/', 'gis_demo.views.county_list'),
+    (r'^county/(?P<county_id>\d+)/', 'gis_demo.views.county'),
 )

@@ -23,19 +23,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/index.html">
+      <file leaf-file-name="AppController.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/AppController.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="55" column="8" selection-start="2321" selection-end="2321" vertical-scroll-proportion="-3.0833333">
+            <state line="64" column="29" selection-start="1761" selection-end="1761" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AppController.j" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/static/AppController.j">
+      <file leaf-file-name="TablesController.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/TablesController.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="184" column="73" selection-start="7249" selection-end="7249" vertical-scroll-proportion="0.31894934">
+            <state line="14" column="0" selection-start="255" selection-end="255" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CountyOverlay.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/CountyOverlay.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="73" column="20" selection-start="1961" selection-end="1961" vertical-scroll-proportion="-8.071428">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OverlaysController.j" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlaysController.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="25" column="1" selection-start="478" selection-end="478" vertical-scroll-proportion="0.3951613">
               <folding />
             </state>
           </provider>
@@ -44,7 +62,7 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gis_demo/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="25" selection-start="468" selection-end="468" vertical-scroll-proportion="-8.571428">
+            <state line="34" column="0" selection-start="1033" selection-end="1033" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -53,25 +71,7 @@
       <file leaf-file-name="MKMapScene.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapScene.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="117" column="0" selection-start="3167" selection-end="3167" vertical-scroll-proportion="-9.107142">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MKMapView.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapView.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="273" column="23" selection-start="7246" selection-end="7246" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Foundation.sj" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Frameworks/Foundation/ObjJ.environment/Foundation.sj">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="13119" column="47" selection-start="458080" selection-end="458096" vertical-scroll-proportion="-6.0">
+            <state line="16" column="17" selection-start="375" selection-end="384" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -80,25 +80,25 @@
       <file leaf-file-name="MKPolygon.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKPolygon.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="16" selection-start="981" selection-end="981" vertical-scroll-proportion="-9.357142">
+            <state line="74" column="35" selection-start="1818" selection-end="1818" vertical-scroll-proportion="-12.357142">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MKLocation.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKLocation.j">
+      <file leaf-file-name="GeoJson.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/GeoJson.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="45" column="1" selection-start="1134" selection-end="1134" vertical-scroll-proportion="0.0">
+            <state line="50" column="39" selection-start="1071" selection-end="1071" vertical-scroll-proportion="-9.142858">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/json/base.html">
+      <file leaf-file-name="MKMapView.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="2" column="19" selection-start="51" selection-end="51" vertical-scroll-proportion="0.0">
+            <state line="251" column="11" selection-start="6941" selection-end="6942" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -107,7 +107,7 @@
       <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gis_demo/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="31" column="29" selection-start="1255" selection-end="1255" vertical-scroll-proportion="0.0">
+            <state line="18" column="42" selection-start="773" selection-end="773" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -127,17 +127,21 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/gis_demo/admin.py" />
-        <option value="$PROJECT_DIR$/settings.py" />
         <option value="$PROJECT_DIR$/templates/base.html" />
         <option value="$PROJECT_DIR$/templates/index.html" />
-        <option value="$PROJECT_DIR$/urls.py" />
         <option value="$PROJECT_DIR$/templates/json/base.html" />
         <option value="$PROJECT_DIR$/static/Frameworks/MapKit/MKLocation.j" />
-        <option value="$PROJECT_DIR$/static/Frameworks/MapKit/MKPolygon.j" />
-        <option value="$PROJECT_DIR$/gis_demo/views.py" />
         <option value="$PROJECT_DIR$/gis_demo/models.py" />
+        <option value="$PROJECT_DIR$/static/OverlaysController.j" />
         <option value="$PROJECT_DIR$/static/Frameworks/MapKit/MKMapScene.j" />
+        <option value="$PROJECT_DIR$/urls.py" />
+        <option value="$PROJECT_DIR$/static/Gisedu/geoJson.j" />
+        <option value="$PROJECT_DIR$/gis_demo/views.py" />
+        <option value="$PROJECT_DIR$/static/Frameworks/MapKit/MKPolygon.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/OverlaysController.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/CountyOverlay.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/GeoJson.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/TablesController.j" />
         <option value="$PROJECT_DIR$/static/AppController.j" />
       </list>
     </option>
@@ -168,8 +172,8 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Favorites" />
       <pane id="Scope" />
+      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -248,7 +252,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="Resources" />
+              <option name="myItemId" value="Gisedu" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -302,76 +306,6 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Frameworks" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Foundation" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Frameworks" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Foundation" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ObjJ.environment" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="static" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Frameworks" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="AppKit" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="gis_demo" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -383,10 +317,15 @@
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="editor.preferences.appearance" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="recentsLimit" value="5" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/static" />
+    </key>
   </component>
   <component name="RunManager" selected="Django server.Gis_Demo">
     <configuration default="true" type="PythonUnitTestConfigurationType" factoryName="Python's unittest">
@@ -576,114 +515,100 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file:///usr/local/lib/python2.6/dist-packages/django/contrib/gis/db/models/fields.py">
+    <entry file="file://$PROJECT_DIR$/static/Frameworks/Objective-J/Objective-J.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="230" column="67" selection-start="9188" selection-end="9188" vertical-scroll-proportion="5.3882785">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapItem.j">
+    <entry file="file://$PROJECT_DIR$/static/Info.plist">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="12" selection-start="749" selection-end="749" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/local/lib/python2.6/dist-packages/django/contrib/gis/geos/geometry.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="410" column="11" selection-start="14124" selection-end="14131" vertical-scroll-proportion="0.5805861">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="39" selection-start="698" selection-end="698" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="8" selection-start="2321" selection-end="2321" vertical-scroll-proportion="-3.0833333">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="80" column="61" selection-start="2969" selection-end="2969" vertical-scroll-proportion="2.1978023">
-          <folding />
-        </state>
+        <state line="8" column="23" selection-start="320" selection-end="320" vertical-scroll-proportion="0.14851485" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKLocation.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="1" selection-start="1134" selection-end="1134" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="23" column="1" selection-start="642" selection-end="642" vertical-scroll-proportion="-12.321428" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKPolygon.j">
+    <entry file="file:///usr/lib/python2.6/json/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="16" selection-start="981" selection-end="981" vertical-scroll-proportion="-9.357142">
-          <folding />
-        </state>
+        <state line="284" column="49" selection-start="10916" selection-end="10917" vertical-scroll-proportion="0.28678304" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Frameworks/Foundation/ObjJ.environment/Foundation.sj">
+    <entry file="file://$PROJECT_DIR$/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13119" column="47" selection-start="458080" selection-end="458096" vertical-scroll-proportion="-6.0">
-          <folding />
-        </state>
+        <state line="20" column="32" selection-start="795" selection-end="795" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gis_demo/views.py">
+    <entry file="file://$PROJECT_DIR$/templates/json/base.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="25" selection-start="468" selection-end="468" vertical-scroll-proportion="-8.571428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="273" column="23" selection-start="7246" selection-end="7246" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/templates/json/base.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="19" selection-start="51" selection-end="51" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="2" column="19" selection-start="51" selection-end="51" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/gis_demo/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="29" selection-start="1255" selection-end="1255" vertical-scroll-proportion="0.0">
+        <state line="18" column="42" selection-start="773" selection-end="773" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gis_demo/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="0" selection-start="1033" selection-end="1033" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapScene.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="117" column="0" selection-start="3167" selection-end="3167" vertical-scroll-proportion="-9.107142">
+        <state line="16" column="17" selection-start="375" selection-end="384" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKMapView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="251" column="11" selection-start="6941" selection-end="6942" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/GeoJson.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="50" column="39" selection-start="1071" selection-end="1071" vertical-scroll-proportion="-9.142858">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Frameworks/MapKit/MKPolygon.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="74" column="35" selection-start="1818" selection-end="1818" vertical-scroll-proportion="-12.357142">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/CountyOverlay.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="73" column="20" selection-start="1961" selection-end="1961" vertical-scroll-proportion="-8.071428">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/TablesController.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="0" selection-start="255" selection-end="255" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/AppController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="184" column="73" selection-start="7249" selection-end="7249" vertical-scroll-proportion="0.31894934">
+        <state line="64" column="29" selection-start="1761" selection-end="1761" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlaysController.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="25" column="1" selection-start="478" selection-end="478" vertical-scroll-proportion="0.3951613">
           <folding />
         </state>
       </provider>
