@@ -8,7 +8,6 @@
 
 @import <Foundation/CPObject.j>
 @import <MapKit/MKMapView.j>
-@import <MapKit/MKMapScene.j>
 @import <AppKit/CPToolbar.j>
 @import <AppKit/CPToolbarItem.j>
 
