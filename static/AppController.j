@@ -11,8 +11,10 @@
 @import <AppKit/CPToolbar.j>
 @import <AppKit/CPToolbarItem.j>
 
-@import "Gisedu/OverlaysController.j"
+@import "Gisedu/OverlaysOutlineView.j"
 @import "Gisedu/TablesController.j"
+
+@import "Gisedu/OverlayOptionsView.j"
 
 @implementation AppController : CPObject
 {
@@ -22,7 +24,7 @@
     CPView m_ContentView;
 
     CPScrollView m_OverlayFeaturesScrollView;
-    OverlaysController m_OverlaysController;
+    OverlaysOutlineView m_OverlaysController;
 
     CPCheckBox m_ShowCountiesCheckBox;
 
@@ -30,7 +32,15 @@
 
     CPScrollView m_TableScrollView;
 
-    var m_MapHeight;
+    var m_MinMapHeight; //map's minimum height
+    var m_MaxMapHeight; //map's maximum height
+    var m_MapHeight;    //map's current height
+
+    var m_MinMapWidth;  //map's minimum width
+    var m_MaxMapWidth;  //map's maximum width
+    var m_MapWidth;     //map's current width
+
+    OverlayOptionsView m_OverlayOptionsView;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -54,9 +64,15 @@
 
     [self initTabView];
 
-    m_MapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
+    m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
+    m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
+    m_MapHeight = m_MaxMapHeight;
 
-    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, m_MapHeight) apiKey:''];
+    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 550;
+    m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
+    m_MapWidth = m_MaxMapWidth;
+
+    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) apiKey:''];
     [m_MapView setDelegate:self]
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
@@ -72,7 +88,9 @@
         [countyTableView addTableColumn:countyNameCol];
         [m_TableScrollView setDocumentView:countyTableView];
         console.log("Loaded Table View");
-    [m_ContentView addSubview:m_TableScrollView];
+
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
+    [m_ContentView addSubview:m_OverlayOptionsView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -82,7 +100,7 @@
     [marker addToMapView:m_MapView];
     [m_MapView setCenter:loc];
 
-    m_OverlaysController = [[OverlaysController alloc] initWithParentView:m_OverlayFeaturesScrollView andMapView:m_MapView];
+    m_OverlaysController = [[OverlaysOutlineView alloc] initWithParentView:m_OverlayFeaturesScrollView andMapView:m_MapView];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -172,8 +190,8 @@
 	    var mapOptionsTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"MapOptionsTab"];
 	    [mapOptionsTabItem setLabel:"Map Options"];
 	        var mapOptionsTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([m_ContentView bounds]) - 50)];
-	            m_ShowCountiesCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 0, 100, 100)];
-	            [m_ShowCountiesCheckBox setTitle:"Show Counties"];
+	            m_ShowCountiesCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 20, 200, 40)];
+	            [m_ShowCountiesCheckBox setTitle:"Show All Counties"];
 	            [m_ShowCountiesCheckBox setState:CPOnState];
 	            [m_ShowCountiesCheckBox setTarget:self];
 	            [m_ShowCountiesCheckBox setAction:@selector(onShowCountiesChk:)];
@@ -193,34 +211,6 @@
     [tabView addTabViewItem:layersTabItem];
 	[m_ContentView addSubview:tabView];
 
-	//Other Stuff Below - Not Core.
-
-	var tabViewItem1 = [[CPTabViewItem alloc] initWithIdentifier:@"tabViewItem1"];
-	[tabViewItem1 setLabel:@"First Tab"];
-
-	var view1 = [[CPView alloc] initWithFrame: CGRectMake(0, 0, 100, 100)];
-
-	var button = [[CPButton alloc] initWithFrame: CGRectMake(0, 0, 40, 18)];
-	[button setTitle:"view1"];
-	[button setTarget:self];
-	[button setAction:@selector(showAlert:)];
-
-	[view1 addSubview:button];
-
-	[tabViewItem1 setView:view1];
-
-	var auxiliaryView1 = [[CPView alloc] initWithFrame: CGRectMake(0, 0, 50, 50)];
-
-	var button = [[CPButton alloc] initWithFrame: CGRectMake(0, 0, 40, 18)];
-	[button setTitle:"auxiliaryView1"];
-	[button setTarget:self];
-	[button setAction:@selector(showAlert:)];
-	[auxiliaryView1 addSubview:button];
-
-	[tabViewItem1 setAuxiliaryView:auxiliaryView1];
-	
-	[tabView addTabViewItem:tabViewItem1];
-
 	[tabView selectFirstTabViewItem:self];
 }
 
@@ -229,12 +219,13 @@
     if([m_TableScrollView superview] != nil)
     {
         [m_TableScrollView removeFromSuperview];
-        [m_MapView setFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, CGRectGetHeight([m_ContentView bounds]))];
+        m_MapHeight = m_MaxMapHeight;
+        [self updateMapViewFrame];
     }
     else
     {
-        console.log(m_MapHeight);
-        [m_MapView setFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]) - 300, m_MapHeight)];
+        m_MapHeight = m_MinMapHeight;
+        [self updateMapViewFrame];
         [m_ContentView addSubview:m_TableScrollView];
     }
 }
@@ -249,6 +240,25 @@
     {
         [m_OverlaysController setCountiesVisible:NO];
     }
+}
+
+- (void)showOverlayOptionsView
+{
+    m_MapWidth = m_MinMapWidth;
+    [self updateMapViewFrame];
+    [m_ContentView addSubview:m_OverlayOptionsView];
+}
+
+- (void)hideOverlayOptionsView
+{
+    [m_OverlayOptionsView removeFromSuperview];
+    m_MapWidth = m_MaxMapWidth;
+    [self updateMapViewFrame];
+}
+
+- (void)updateMapViewFrame
+{
+    [m_MapView setFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
 }
 
 @end
