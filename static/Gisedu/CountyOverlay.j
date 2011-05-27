@@ -9,7 +9,7 @@
     CPString m_szName;      //The name associated with this county
     MKMapView m_MapView;    //The MapView this overlay sits in
 
-    MultiPolygonOverlay m_Polygon;
+    MultiPolygonOverlay m_Polygon @accessors(property=polygon);
     
     CPInteger m_nDataId;    //The Database ID for this county(Used to pull additional info)
 
@@ -80,8 +80,6 @@
 
 - (void)removeFromMapView
 {
-    console.log("Trying to remove from map");
-    
     [m_Polygon removeFromMapView:m_MapView];
 }
 

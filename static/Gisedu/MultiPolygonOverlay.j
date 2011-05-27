@@ -71,4 +71,9 @@
     }
 }
 
+- (String)typeName
+{
+    return "MultiPolygonOverlay";
+}
+
 @end

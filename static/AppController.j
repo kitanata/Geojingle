@@ -11,10 +11,10 @@
 @import <AppKit/CPToolbar.j>
 @import <AppKit/CPToolbarItem.j>
 
-@import "Gisedu/OverlaysOutlineView.j"
 @import "Gisedu/TablesController.j"
 
 @import "Gisedu/OverlayOptionsView.j"
+@import "Gisedu/CountyOverlay.j"
 
 @implementation AppController : CPObject
 {
@@ -24,7 +24,11 @@
     CPView m_ContentView;
 
     CPScrollView m_OverlayFeaturesScrollView;
-    OverlaysOutlineView m_OverlaysController;
+    CPOutlineView m_OutlineView;
+    CPDictionary m_Items;
+    CPDictionary m_CountyItems;
+    CPURLConnection m_LoadCountyInformation;
+    CPDictionary m_CountyOverlays;              //name of county item selected in outline is key
 
     CPCheckBox m_ShowCountiesCheckBox;
 
@@ -90,7 +94,6 @@
         console.log("Loaded Table View");
 
     m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
-    [m_ContentView addSubview:m_OverlayOptionsView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -100,7 +103,29 @@
     [marker addToMapView:m_MapView];
     [m_MapView setCenter:loc];
 
-    m_OverlaysController = [[OverlaysOutlineView alloc] initWithParentView:m_OverlayFeaturesScrollView andMapView:m_MapView];
+    m_OutlineView = [[CPOutlineView alloc] initWithFrame:CGRectMake(0, 0, 300, CGRectGetHeight([m_OverlayFeaturesScrollView bounds]))];
+    [m_OverlayFeaturesScrollView setDocumentView:m_OutlineView];
+
+    var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
+    [layerNameCol setWidth:125.0];
+
+    [m_OutlineView setHeaderView:nil];
+    [m_OutlineView setCornerView:nil];
+    [m_OutlineView addTableColumn:layerNameCol];
+    [m_OutlineView setOutlineTableColumn:layerNameCol];
+    [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
+    [m_OutlineView setTarget:self];
+
+    m_CountyItems = [@"Adams", @"Franklin", @"Wayne"];
+
+    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, [@"District 1", @"District 2", @"District 3"],
+        ["A Library"], ["A School"], ["An Organization"]] forKeys:[@"Counties", @"Districts", @"Libraries", @"Schools", @"Organizations"]];
+    [m_OutlineView setDataSource:self];
+
+    m_CountyOverlays = [CPDictionary alloc];
+    
+    [m_LoadCountyInformation cancel];
+    m_LoadCountyInformation = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -214,6 +239,96 @@
 	[tabView selectFirstTabViewItem:self];
 }
 
+- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
+{
+    if (aConnection == m_LoadCountyInformation) {
+        alert('Load failed! ' + anError);
+        m_LoadCountyInformation = nil;
+    } else {
+        alert('Save failed! ' + anError);
+    }
+}
+
+- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)aData
+{
+    if (aConnection == m_LoadCountyInformation)
+    {
+        var aData = aData.replace('while(1);', '');
+        var counties = JSON.parse(aData);
+
+        for(var i=0; i < counties.length; i++)
+        {
+            for(var key in counties[i])
+            {
+                m_CountyItems[i] = key;
+
+                countyOverlay = [[CountyOverlay alloc] initWithIdentifier:counties[i][key] andMapView:m_MapView];
+
+                [m_CountyOverlays setObject:countyOverlay forKey:key];
+            }
+        }
+
+        [m_Items setObject:m_CountyItems forKey:@"Counties"];
+        [m_OutlineView setDataSource:self];
+    }
+}
+
+- (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
+{
+    CPLog("outlineView:%@ child:%@ ofItem:%@", outlineView, index, item);
+
+    if (item === nil)
+    {
+        var keys = [m_Items allKeys];
+        return [keys objectAtIndex:index];
+    }
+    else
+    {
+        var values = [m_Items objectForKey:item];
+        return [values objectAtIndex:index];
+    }
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
+{
+    CPLog("outlineView:%@ isItemExpandable:%@", outlineView, item);
+
+    var values = [m_Items objectForKey:item];
+    return ([values count] > 0);
+}
+
+- (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
+{
+    CPLog("outlineView:%@ numberOfChildrenOfItem:%@", outlineView, item);
+
+    if (item === nil)
+    {
+        return [m_Items count];
+    }
+    else
+    {
+        var values = [m_Items objectForKey:item];
+        return [values count];
+    }
+}
+
+- (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
+{
+    CPLog("outlineView:%@ objectValueForTableColumn:%@ byItem:%@", outlineView, tableColumn, item);
+
+    return item;
+}
+
+- (void) onOutlineItemSelected:(id)sender
+{
+    var item = [sender itemAtRow:[sender selectedRow]];
+    console.log("Item Selected: " + item);
+    console.log("Key for Item: " + [m_CountyOverlays objectForKey:item]);
+    console.log("Action Called Successfully!");
+    [m_OverlayOptionsView setPolygonOverlayTarget:[[m_CountyOverlays objectForKey:item] polygon]];
+    [self showOverlayOptionsView];
+}
+
 - (void)onShowTables:(id)sender
 {
     if([m_TableScrollView superview] != nil)
@@ -231,14 +346,24 @@
 }
 
 - (void)onShowCountiesChk:(id)sender
-{
+{ 
     if([m_ShowCountiesCheckBox state] == CPOnState)
     {
-        [m_OverlaysController setCountiesVisible:YES];
+        overlays = [m_CountyOverlays allValues];
+
+        for(var i=0; i < [overlays count]; i++)
+        {
+            [[overlays objectAtIndex:i] addToMapView];
+        }
     }
     else if([m_ShowCountiesCheckBox state] == CPOffState)
     {
-        [m_OverlaysController setCountiesVisible:NO];
+        overlays = [m_CountyOverlays allValues];
+
+        for(var i=0; i < [overlays count]; i++)
+        {
+            [[overlays objectAtIndex:i] removeFromMapView];
+        }
     }
 }
 

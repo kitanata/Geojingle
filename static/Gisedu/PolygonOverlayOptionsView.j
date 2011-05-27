@@ -3,7 +3,7 @@
 
 @implementation PolygonOverlayOptionsView : CPView
 {
-    PolygonOverlay m_OverlayTarget;
+    PolygonOverlay m_OverlayTarget; //TODO: MAKE m_OverlayTarget a CPArray of OverlayPolygons (Options *can* manage multiple polys at once)
 }
 
 - (id) initWithFrame:(CGRect)aFrame
@@ -65,7 +65,7 @@
         [self addSubview:lineOpactiySlider];
 
         fillOpacityLabel = [[CPTextField alloc] initWithFrame:CGRectMakeZero()]
-        [fillOpacityLabel setStringValue:@"Polygon Line Opactiy"];
+        [fillOpacityLabel setStringValue:@"Polygon Fill Opactiy"];
         [fillOpacityLabel setFont:[CPFont systemFontOfSize:12.0]];
         [fillOpacityLabel sizeToFit];
         [fillOpacityLabel setFrameOrigin:CGPointMake(CGRectGetMinX(aFrame) + 20, CGRectGetMinY(aFrame) + 220)];
@@ -81,9 +81,16 @@
     return self;
 }
 
-- (void)setOverlayTarget:(PolygonOverlay)overlayTarget
+- (void)setOverlayTarget:(id)overlayTarget
 {
+    if([overlayTarget typeName] == "MultiPolygonOverlay")
+    {
+        //Add each polygon to a list of polygons - TODO: MAKE m_OverlayTarget a CPArray of OverlayPolygons
+    }
 
+    m_OverlayTarget = overlayTarget;
+
+    //TODO: populate fields
 }
 
 @end

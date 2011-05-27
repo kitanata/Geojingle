@@ -9,9 +9,10 @@
     PointOverlayOptionsView m_PointOptionsView @accessors(property=pointOptionsView);
 
     CPTabView m_TabView;
+    CPTabItem m_TabItem;
 }
 
-- (void) initWithParentView:(CPView)parentView
+- (id) initWithParentView:(CPView)parentView
 {
     [self initWithFrame:CGRectMake(CGRectGetWidth([parentView bounds]) - 250, 0, 250, CGRectGetHeight([parentView bounds]))];
 
@@ -19,14 +20,29 @@
 	[m_TabView setTabViewType:CPTopTabsBezelBorder];
 	[m_TabView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
 	    //Map Options
-	    var mapOptionsTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OverlayOptTab"];
-	    [mapOptionsTabItem setLabel:"Overlay Options"];
+	    m_TabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OverlayOptTab"];
+	    [m_TabItem setLabel:"Overlay Options"];
         //depending on the type of overlay selected This will change. TODO
                 m_PolyOptionsView = [[PolygonOverlayOptionsView alloc] initWithFrame:[m_TabView bounds]];
-        [mapOptionsTabItem setView:m_PolyOptionsView];
-    [m_TabView addTabViewItem:mapOptionsTabItem];
+                //m_PointOptionsView = [[PointOverlayOptionsView alloc] initWithFrame:[m_TabView bounds]]; TODO
+        [m_TabItem setView:m_PolyOptionsView];
+    [m_TabView addTabViewItem:m_TabItem];
 
     [self addSubview:m_TabView];
+
+    return self;
+}
+
+- (void) setPolygonOverlayTarget: (PolygonOverlay)overlayTarget
+{
+    [m_PolyOptionsView setOverlayTarget:overlayTarget];
+    [m_TabItem setView:m_PolyOptionsView];
+}
+
+- (void) setPointOverlayTarget: (PointOverlay)overlayTarget
+{
+    [m_PointOptionsView setOverlayTarget:overlayTarget];
+    [m_TabItem setView:m_PointOptionsView];
 }
 
 @end
