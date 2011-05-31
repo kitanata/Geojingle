@@ -16,6 +16,9 @@
 @import "Gisedu/OverlayOptionsView.j"
 @import "Gisedu/CountyOverlay.j"
 
+var m_ShowTablesToolbarId = 'showTables';
+var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
+
 @implementation AppController : CPObject
 {
     MKMapView m_MapView;
@@ -93,7 +96,7 @@
         [m_TableScrollView setDocumentView:countyTableView];
         console.log("Loaded Table View");
 
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -131,13 +134,13 @@
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return ['Test'];
+   return [m_ShowTablesToolbarId, m_HideOverlayOptionsToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return ['Test'];
+   return [m_ShowTablesToolbarId, m_HideOverlayOptionsToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -148,18 +151,36 @@
 
     var mainBundle = [CPBundle mainBundle];
 
-    var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table.png"] size:CPSizeMake(48, 48)];
-    var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table_highlighted.png"] size:CPSizeMake(48, 48)];
+    if(m_ShowTablesToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table_highlighted.png"] size:CPSizeMake(48, 48)];
 
-    [toolbarItem setImage:image];
-    [toolbarItem setAlternateImage:highlighted];
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
 
-    [toolbarItem setTarget:self];
-    [toolbarItem setAction:@selector(onShowTables:)];
-    [toolbarItem setLabel:"Show Tables"];
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onShowTables:)];
+        [toolbarItem setLabel:"Show Tables"];
 
-    [toolbarItem setMinSize:CGSizeMake(32, 32)];
-    [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_HideOverlayOptionsToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"hide_overlay_options.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"hide_overlay_options_highlighted.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onHideOverlayOptions:)];
+        [toolbarItem setLabel:"Hide Overlay Options"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
 
     return toolbarItem;
 }
@@ -345,6 +366,11 @@
     }
 }
 
+- (void)onHideOverlayOptions:(id)sender
+{
+    [self hideOverlayOptionsView];
+}
+
 - (void)onShowCountiesChk:(id)sender
 { 
     if([m_ShowCountiesCheckBox state] == CPOnState)
@@ -353,7 +379,7 @@
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] addToMapView];
+            [[overlays objectAtIndex:i] showPolygons];
         }
     }
     else if([m_ShowCountiesCheckBox state] == CPOffState)
@@ -362,7 +388,7 @@
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] removeFromMapView];
+            [[overlays objectAtIndex:i] hidePolygons];
         }
     }
 }

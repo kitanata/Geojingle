@@ -7,12 +7,14 @@
 {
     Polygon m_GooglePolygon    @accessors(property=googlePolygon);
 
-    CPArray     _locations     @accessors(property=locations);
-    CPString    _lineColorCode @accessors(property=lineColorCode);
-    int         _lineStroke    @accessors(property=lineStroke);
-    int         _fillColorCode @accessors(property=fillColorCode);
-    float       _fillOpacity   @accessors(property=fillOpacity);
-    float       _lineOpacity   @accessors(property=lineOpacity);
+    CPArray     m_Locations     @accessors(property=locations);
+    CPString    m_LineColorCode @accessors(property=lineColorCode);
+    CPString    m_FillColorCode @accessors(property=fillColorCode);
+    int         m_LineStroke    @accessors(property=lineStroke);
+    float       m_FillOpacity   @accessors(property=fillOpacity);
+    float       m_LineOpacity   @accessors(property=lineOpacity);
+
+    BOOL m_Visible @accessors(property=visible);
 }
 
 - (id)init 
@@ -24,19 +26,27 @@
 {
     if (self = [super init])
     {
-        _locations = someLocations;
-        _lineColorCode = @"#ff0000";
-        _fillColorCode = @"#000000";
-        _fillOpacity = 0.3;
-        _lineOpacity = 1;
-        _lineStroke = 3;
+        m_Locations = someLocations;
+        m_LineColorCode = @"#ff0000";
+        m_FillColorCode = @"#000000";
+        m_FillOpacity = 0.3;
+        m_LineOpacity = 1;
+        m_LineStroke = 3;
+
+        m_Visible = NO;
     }
 
-    if (_locations)
-    {
+    [self createGooglePolygon];
 
+    return self;
+}
+
+- (void)createGooglePolygon
+{
+    if (m_Locations)
+    {
         var gm = [MKMapView gmNamespace];
-        var locEnum = [_locations objectEnumerator];
+        var locEnum = [m_Locations objectEnumerator];
 
         var loc = nil
         var lineCoordinates = [];
@@ -45,10 +55,13 @@
             lineCoordinates.push([loc googleLatLng]);
         }
 
-        m_GooglePolygon = new gm.Polygon(lineCoordinates, _lineColorCode, _lineStroke,  _lineOpacity, _fillColorCode, _fillOpacity);
+        m_GooglePolygon = new gm.Polygon(lineCoordinates, m_LineColorCode, m_LineStroke,  m_LineOpacity, m_FillColorCode, m_FillOpacity);
     }
+}
 
-    return self;
+- (void)setVisible:(BOOL)visible
+{
+    m_Visible = visible;
 }
 
 - (void)addToMapView:(MKMapView)mapView
@@ -61,6 +74,41 @@
 {
     var googleMap = [mapView gMap];
     googleMap.removeOverlay([self googlePolygon]);
+}
+
+- (void)setLineColorCode:(CPString)colorCode
+{
+    m_LineColorCode = colorCode;
+
+    [self createGooglePolygon];
+}
+
+- (void)setFillColorCode:(CPString)colorCode
+{
+    m_FillColorCode = colorCode;
+
+    [self createGooglePolygon];
+}
+
+- (void)setLineStroke:(int)stroke
+{
+    m_LineStroke = stroke;
+
+    [self createGooglePolygon];
+}
+
+- (void)setFillOpacity:(float)opacity
+{
+    m_FillOpacity = opacity;
+
+    [self createGooglePolygon];
+}
+
+- (void)setLineOpacity:(float)opacity
+{
+    m_LineOpacity = opacity;
+
+    [self createGooglePolygon];
 }
 
 @end

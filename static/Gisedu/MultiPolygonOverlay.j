@@ -4,7 +4,7 @@
 
 @implementation MultiPolygonOverlay : CPObject
 {
-    CPArray m_PolygonOverlays;
+    CPArray m_PolygonOverlays @accessors(property=polygons);
 }
 
 - (id)init

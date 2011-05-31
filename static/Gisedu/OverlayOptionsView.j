@@ -12,7 +12,7 @@
     CPTabItem m_TabItem;
 }
 
-- (id) initWithParentView:(CPView)parentView
+- (id) initWithParentView:(CPView)parentView andMapView:(MKMapView)mapView
 {
     [self initWithFrame:CGRectMake(CGRectGetWidth([parentView bounds]) - 250, 0, 250, CGRectGetHeight([parentView bounds]))];
 
@@ -23,8 +23,8 @@
 	    m_TabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OverlayOptTab"];
 	    [m_TabItem setLabel:"Overlay Options"];
         //depending on the type of overlay selected This will change. TODO
-                m_PolyOptionsView = [[PolygonOverlayOptionsView alloc] initWithFrame:[m_TabView bounds]];
-                //m_PointOptionsView = [[PointOverlayOptionsView alloc] initWithFrame:[m_TabView bounds]]; TODO
+                m_PolyOptionsView = [[PolygonOverlayOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];
+                //m_PointOptionsView = [[PointOverlayOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView]; TODO
         [m_TabItem setView:m_PolyOptionsView];
     [m_TabView addTabViewItem:m_TabItem];
 
@@ -35,6 +35,7 @@
 
 - (void) setPolygonOverlayTarget: (PolygonOverlay)overlayTarget
 {
+    console.log("Before or After?");
     [m_PolyOptionsView setOverlayTarget:overlayTarget];
     [m_TabItem setView:m_PolyOptionsView];
 }

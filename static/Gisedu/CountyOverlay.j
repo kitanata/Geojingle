@@ -73,14 +73,31 @@
     }
 }
 
-- (void)addToMapView
+- (void)showPolygons
 {
-    [m_Polygon addToMapView:m_MapView];
+    polygons = [m_Polygon polygons];
+
+    for(var i=0; i < [polygons count]; i++)
+    {
+        polygon = [polygons objectAtIndex:i];
+
+        [polygon addToMapView:m_MapView];
+    }
 }
 
-- (void)removeFromMapView
+- (void)hidePolygons
 {
-    [m_Polygon removeFromMapView:m_MapView];
+    polygons = [m_Polygon polygons];
+
+    for(var i=0; i < [polygons count]; i++)
+    {
+        polygon = [polygons objectAtIndex:i];
+
+        if(![polygon visible])
+        {
+            [polygon removeFromMapView:m_MapView];
+        }
+    }
 }
 
 @end
