@@ -7,7 +7,7 @@ import json
 
 from string import Template
 
-from models import OhioCounties
+from models import OhioCounties, OhioSchoolDistricts
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
@@ -35,11 +35,29 @@ def county_list(request):
 
     return render_to_response('json/base.json', {'json': county_list}, context_instance=RequestContext(request))
 
+def school_district_list(request):
+
+    districts = OhioSchoolDistricts.objects.all()
+
+    districts = map(lambda district: {str(district.name) : int(district.gid)}, districts)
+
+    district_list = json.dumps(districts);
+
+    return render_to_response('json/base.json', {'json' : district_list}, context_instance=RequestContext(request))
+
 def county(request, county_id):
 
     county = OhioCounties.objects.get(pk=county_id)
 
     response = json.dumps({'name' : str(county.name), 'gid' : int(county.gid), 'the_geom' : json.loads(county.the_geom.json)})
+
+    return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
+
+def school_district(request, district_id):
+
+    district = OhioSchoolDistricts.objects.get(pk=district_id)
+
+    response = json.dumps({'name' : str(district.name), 'gid' : int(district.gid), 'the_geom' : json.loads(district.the_geom.json)})
 
     return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
 

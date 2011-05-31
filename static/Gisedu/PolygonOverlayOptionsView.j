@@ -141,8 +141,6 @@
         {
             [m_ShowButton setState:CPOffState];
         }
-
-        console.log("Blah");
     }
 }
 

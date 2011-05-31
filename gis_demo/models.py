@@ -33,7 +33,7 @@ class OhioCounties(models.Model):
 
 
 
-class OhioDistricts(models.Model):
+class OhioSchoolDistricts(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.IntegerField()
     shape_leng = models.DecimalField(max_digits=65536, decimal_places=65535)
@@ -49,11 +49,10 @@ class OhioDistricts(models.Model):
     pct_chg = models.DecimalField(max_digits=65536, decimal_places=65535)
     shape_area = models.DecimalField(max_digits=65536, decimal_places=65535)
     shape_len = models.DecimalField(max_digits=65536, decimal_places=65535)
-    the_geom = models.MultiPolygonField(srid=3857)
+    the_geom = models.MultiPolygonField(srid=4326)
     objects = models.GeoManager()
-
     class Meta:
-        db_table = u'ohio_districts'
+        db_table = u'ohio_school_districts'
         verbose_name_plural = "Ohio School Districts"
 
     def __str__(self):

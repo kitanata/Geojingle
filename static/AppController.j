@@ -14,7 +14,7 @@
 @import "Gisedu/TablesController.j"
 
 @import "Gisedu/OverlayOptionsView.j"
-@import "Gisedu/CountyOverlay.j"
+@import "Gisedu/PolygonOverlayItem.j"
 
 var m_ShowTablesToolbarId = 'showTables';
 var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
@@ -28,12 +28,19 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     CPScrollView m_OverlayFeaturesScrollView;
     CPOutlineView m_OutlineView;
+
     CPDictionary m_Items;
     CPDictionary m_CountyItems;
-    CPURLConnection m_LoadCountyInformation;
+    CPDictionary m_SchoolDistrictItems;
+
+    CPURLConnection m_LoadCountyList;
+    CPURLConnection m_LoadSchoolDistrictList;
+
     CPDictionary m_CountyOverlays;              //name of county item selected in outline is key
+    CPDictionary m_SchoolDistrictOverlays;      //name of school district selected in outline is key
 
     CPCheckBox m_ShowCountiesCheckBox;
+    CPCheckBox m_ShowSchoolDistrictsCheckBox;
 
     TablesController m_TablesController;
 
@@ -110,7 +117,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [m_OverlayFeaturesScrollView setDocumentView:m_OutlineView];
 
     var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
-    [layerNameCol setWidth:125.0];
+    [layerNameCol setWidth:300];
 
     [m_OutlineView setHeaderView:nil];
     [m_OutlineView setCornerView:nil];
@@ -119,16 +126,21 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
     [m_OutlineView setTarget:self];
 
-    m_CountyItems = [@"Adams", @"Franklin", @"Wayne"];
+    m_CountyItems = [@"Item 1", @"Item 2", @"Item 3"];
+    m_SchoolDistrictItems = [@"Item 1", @"Item 2", @"Item 3"];
 
-    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, [@"District 1", @"District 2", @"District 3"],
-        ["A Library"], ["A School"], ["An Organization"]] forKeys:[@"Counties", @"Districts", @"Libraries", @"Schools", @"Organizations"]];
+    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, m_SchoolDistrictItems,
+        ["A Library"], ["A School"], ["An Organization"]] forKeys:[@"Counties", @"School Districts", @"Libraries", @"Schools", @"Organizations"]];
     [m_OutlineView setDataSource:self];
 
     m_CountyOverlays = [CPDictionary alloc];
+    m_SchoolDistrictOverlays = [CPDictionary alloc];
     
-    [m_LoadCountyInformation cancel];
-    m_LoadCountyInformation = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
+    [m_LoadCountyList cancel];
+    m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
+
+    [m_LoadSchoolDistrictList cancel];
+    m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/school_district_list/"] delegate:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -241,7 +253,16 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 	            [m_ShowCountiesCheckBox setState:CPOnState];
 	            [m_ShowCountiesCheckBox setTarget:self];
 	            [m_ShowCountiesCheckBox setAction:@selector(onShowCountiesChk:)];
+
+	            m_ShowSchoolDistrictsCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 40, 200, 60)];
+	            [m_ShowSchoolDistrictsCheckBox setTitle:"Show All School Districts"];
+	            [m_ShowSchoolDistrictsCheckBox setState:CPOffState];
+	            [m_ShowSchoolDistrictsCheckBox setTarget:self];
+	            [m_ShowSchoolDistrictsCheckBox setAction:@selector(onShowSchoolDistrictsChk:)];
+
 	        [mapOptionsTabView addSubview:m_ShowCountiesCheckBox];
+	        [mapOptionsTabView addSubview:m_ShowSchoolDistrictsCheckBox];
+
         [mapOptionsTabItem setView:mapOptionsTabView];
     [tabView addTabViewItem:mapOptionsTabItem];
 	    //Overlay Features
@@ -262,34 +283,62 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
 {
-    if (aConnection == m_LoadCountyInformation) {
-        alert('Load failed! ' + anError);
-        m_LoadCountyInformation = nil;
-    } else {
+    if (aConnection == m_LoadCountyList)
+    {
+        alert('Could not load county information! ' + anError);
+        m_LoadCountyList = nil;
+    }
+    else if(aConnection == m_LoadSchoolDistrictList)
+    {
+        alert('Could not load school district information! ' + anError);
+        m_LoadSchoolDistrictList = nil;
+    }
+    else
+    {
         alert('Save failed! ' + anError);
     }
 }
 
 - (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)aData
 {
-    if (aConnection == m_LoadCountyInformation)
+    var aData = aData.replace('while(1);', '');
+    var listData = JSON.parse(aData);
+        
+    if (aConnection == m_LoadCountyList)
     {
-        var aData = aData.replace('while(1);', '');
-        var counties = JSON.parse(aData);
-
-        for(var i=0; i < counties.length; i++)
+        for(var i=0; i < listData.length; i++)
         {
-            for(var key in counties[i])
+            for(var key in listData[i])
             {
                 m_CountyItems[i] = key;
 
-                countyOverlay = [[CountyOverlay alloc] initWithIdentifier:counties[i][key] andMapView:m_MapView];
+                countyOverlay = [[PolygonOverlayItem alloc] initWithMapView:m_MapView andUrl:"http://127.0.0.1:8000/county/"];
+                [countyOverlay setShowOnLoad:YES];
+                [countyOverlay loadFromIdentifier:listData[i][key]];
 
                 [m_CountyOverlays setObject:countyOverlay forKey:key];
             }
         }
 
         [m_Items setObject:m_CountyItems forKey:@"Counties"];
+        [m_OutlineView setDataSource:self];
+    }
+    else if(aConnection == m_LoadSchoolDistrictList)
+    {
+        for(var i=0; i < listData.length; i++)
+        {
+            for(var key in listData[i])
+            {
+                m_SchoolDistrictItems[i] = key;
+
+                schoolDistOverlay = [[PolygonOverlayItem alloc] initWithMapView:m_MapView andUrl:"http://127.0.0.1:8000/school_district/"];
+                [schoolDistOverlay loadFromIdentifier:listData[i][key]];
+
+                [m_SchoolDistrictOverlays setObject:schoolDistOverlay forKey:key];
+            }
+        }
+
+        [m_Items setObject:m_SchoolDistrictItems forKey:@"School Districts"];
         [m_OutlineView setDataSource:self];
     }
 }
@@ -343,10 +392,21 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void) onOutlineItemSelected:(id)sender
 {
     var item = [sender itemAtRow:[sender selectedRow]];
-    console.log("Item Selected: " + item);
-    console.log("Key for Item: " + [m_CountyOverlays objectForKey:item]);
-    console.log("Action Called Successfully!");
-    [m_OverlayOptionsView setPolygonOverlayTarget:[[m_CountyOverlays objectForKey:item] polygon]];
+
+    if([sender parentForItem:item] == nil)
+        return;
+
+    console.log("Parent is " + [sender parentForItem:item]);
+            
+    if([sender parentForItem:item] == "Counties")
+    {
+        [m_OverlayOptionsView setPolygonOverlayTarget:[[m_CountyOverlays objectForKey:item] polygon]];
+    }
+    else if([sender parentForItem:item] == "School Districts")
+    {
+        [m_OverlayOptionsView setPolygonOverlayTarget:[[m_SchoolDistrictOverlays objectForKey:item] polygon]];
+    }
+
     [self showOverlayOptionsView];
 }
 
@@ -385,6 +445,28 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     else if([m_ShowCountiesCheckBox state] == CPOffState)
     {
         overlays = [m_CountyOverlays allValues];
+
+        for(var i=0; i < [overlays count]; i++)
+        {
+            [[overlays objectAtIndex:i] hidePolygons];
+        }
+    }
+}
+
+- (void)onShowSchoolDistrictsChk:(id)sender
+{
+    if([m_ShowSchoolDistrictsCheckBox state] == CPOnState)
+    {
+        overlays = [m_SchoolDistrictOverlays allValues];
+
+        for(var i=0; i < [overlays count]; i++)
+        {
+            [[overlays objectAtIndex:i] showPolygons];
+        }
+    }
+    else if([m_ShowSchoolDistrictsCheckBox state] == CPOffState)
+    {
+        overlays = [m_SchoolDistrictOverlays allValues];
 
         for(var i=0; i < [overlays count]; i++)
         {

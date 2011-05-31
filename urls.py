@@ -18,5 +18,7 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^json_test/', 'gis_demo.views.json_test'),
     (r'^county_list/', 'gis_demo.views.county_list'),
+    (r'^school_district_list/', 'gis_demo.views.school_district_list'),
     (r'^county/(?P<county_id>\d+)/', 'gis_demo.views.county'),
+    (r'^school_district/(?P<district_id>\d+)/', 'gis_demo.views.school_district')
 )

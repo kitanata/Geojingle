@@ -35,7 +35,6 @@
 
 - (void) setPolygonOverlayTarget: (PolygonOverlay)overlayTarget
 {
-    console.log("Before or After?");
     [m_PolyOptionsView setOverlayTarget:overlayTarget];
     [m_TabItem setView:m_PolyOptionsView];
 }
