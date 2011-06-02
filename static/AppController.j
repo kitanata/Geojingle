@@ -312,9 +312,10 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             {
                 m_CountyItems[i] = key;
 
-                countyOverlay = [[PolygonOverlayItem alloc] initWithMapView:m_MapView andUrl:"http://127.0.0.1:8000/county/"];
-                [countyOverlay setShowOnLoad:YES];
-                [countyOverlay loadFromIdentifier:listData[i][key]];
+                countyOverlay = [[PolygonOverlayItem alloc] initWithIdentifier:listData[i][key] andUrl:"http://127.0.0.1:8000/county/"];
+                [countyOverlay setAction:@selector(OnCountyGeometryLoaded:)];
+                [countyOverlay setTarget:self];
+                [countyOverlay loadAndShow:NO];
 
                 [m_CountyOverlays setObject:countyOverlay forKey:key];
             }
@@ -331,8 +332,9 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             {
                 m_SchoolDistrictItems[i] = key;
 
-                schoolDistOverlay = [[PolygonOverlayItem alloc] initWithMapView:m_MapView andUrl:"http://127.0.0.1:8000/school_district/"];
-                [schoolDistOverlay loadFromIdentifier:listData[i][key]];
+                schoolDistOverlay = [[PolygonOverlayItem alloc] initWithIdentifier:listData[i][key] andUrl:"http://127.0.0.1:8000/school_district/"];
+                [schoolDistOverlay setAction:@selector(OnSchoolDistrictGeometryLoaded:)];
+                [schoolDistOverlay setTarget:self];
 
                 [m_SchoolDistrictOverlays setObject:schoolDistOverlay forKey:key];
             }
@@ -341,6 +343,18 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [m_Items setObject:m_SchoolDistrictItems forKey:@"School Districts"];
         [m_OutlineView setDataSource:self];
     }
+}
+
+- (void)OnCountyGeometryLoaded:(id)sender
+{
+    [[sender polygon] addToMapView:m_MapView];
+}
+
+- (void)OnSchoolDistrictGeometryLoaded:(id)sender
+{
+    [m_OverlayOptionsView setPolygonOverlayTarget:[sender polygon]];
+
+    [sender showPolygons:m_MapView];
 }
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
@@ -395,8 +409,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     if([sender parentForItem:item] == nil)
         return;
-
-    console.log("Parent is " + [sender parentForItem:item]);
             
     if([sender parentForItem:item] == "Counties")
     {
@@ -404,7 +416,15 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
     else if([sender parentForItem:item] == "School Districts")
     {
-        [m_OverlayOptionsView setPolygonOverlayTarget:[[m_SchoolDistrictOverlays objectForKey:item] polygon]];
+        if([[m_SchoolDistrictOverlays objectForKey:item] polygon] == nil)
+        {
+            [[m_SchoolDistrictOverlays objectForKey:item] loadAndShow:YES];
+        }
+        else
+        {
+            [m_OverlayOptionsView setPolygonOverlayTarget:[[m_SchoolDistrictOverlays objectForKey:item] polygon]];
+        }
+
     }
 
     [self showOverlayOptionsView];
@@ -439,7 +459,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] showPolygons];
+            [[overlays objectAtIndex:i] showPolygons:m_MapView];
         }
     }
     else if([m_ShowCountiesCheckBox state] == CPOffState)
@@ -448,7 +468,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] hidePolygons];
+            [[overlays objectAtIndex:i] hidePolygons:m_MapView];
         }
     }
 }
@@ -461,7 +481,14 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] showPolygons];
+            if([[overlays objectAtIndex:i] polygon] != nil)
+            {
+                [[overlays objectAtIndex:i] showPolygons:m_MapView];
+            }
+            else
+            {
+                [[overlays objectAtIndex:i] loadAndShow:NO];
+            }
         }
     }
     else if([m_ShowSchoolDistrictsCheckBox state] == CPOffState)
@@ -470,7 +497,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] hidePolygons];
+            [[overlays objectAtIndex:i] hidePolygons:m_MapView];
         }
     }
 }

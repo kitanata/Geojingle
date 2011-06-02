@@ -4,38 +4,34 @@
 
 @import "GeoJson.j"
 
-@implementation PolygonOverlayItem : CPObject
+@implementation PolygonOverlayItem : CPControl
 {
     CPString m_szName;      //The name associated with this county
-    MKMapView m_MapView;    //The MapView this overlay sits in
+    CPInteger m_nIdentifier;
+    BOOL m_bVisibleOnLoad;  //To mark visible(Not related to ShowAll)
 
     MultiPolygonOverlay m_Polygon @accessors(property=polygon);
 
     CPURLConnection m_CountyConnection; //To pull data from django
-    CPStrint m_ConnectionURL;
-    BOOL m_bShowOnLoad;
+    CPString m_ConnectionURL;
 }
 
-- (id)initWithMapView:(MKMapView)mapview andUrl:(CPString)connectionUrl
+- (id)initWithIdentifier:(CPInteger)identifier andUrl:(CPString)connectionUrl
 {
-    m_MapView = mapview;
     m_szName = "Undefined";
+    m_nIdentifier = identifier;
     m_Polygon = nil;
     m_ConnectionURL = connectionUrl;
-    m_bShowOnLoad = NO;
 
     return self;
 }
 
-- (void)setShowOnLoad:(BOOL)show
+- (void)loadAndShow:(BOOL)showOnLoad
 {
-    m_bShowOnLoad = show;
-}
+    m_bVisibleOnLoad = showOnLoad;
 
-- (void)loadFromIdentifier:(CPInteger)identifier
-{
     [m_CountyConnection cancel];
-    m_CountyConnection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL + identifier] delegate:self];
+    m_CountyConnection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL + m_nIdentifier] delegate:self];
 }
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
@@ -69,16 +65,26 @@
             {
                 m_Polygon = [[GeoJson alloc] initWithGeoJson:aData[key]];
 
-                if(m_bShowOnLoad)
+                if(m_bVisibleOnLoad)
                 {
-                    [m_Polygon addToMapView:m_MapView];
+                    var polys = [m_Polygon polygons];
+
+                    for(var i=0; i < [polys count]; i++)
+                    {
+                        [[polys objectAtIndex:i] setVisible:m_bVisibleOnLoad];
+                    }
                 }
             }
+        }
+
+        if(_action != nil && _target != nil)
+        {
+            [self sendAction:_action to:_target];
         }
     }
 }
 
-- (void)showPolygons
+- (void)showPolygons:(MKMapView)mapView
 {
     polygons = [m_Polygon polygons];
 
@@ -86,11 +92,11 @@
     {
         polygon = [polygons objectAtIndex:i];
 
-        [polygon addToMapView:m_MapView];
+        [polygon addToMapView:mapView];
     }
 }
 
-- (void)hidePolygons
+- (void)hidePolygons:(MKMapView)mapView
 {
     polygons = [m_Polygon polygons];
 
@@ -100,7 +106,7 @@
 
         if(![polygon visible])
         {
-            [polygon removeFromMapView:m_MapView];
+            [polygon removeFromMapView:mapView];
         }
     }
 }
