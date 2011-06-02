@@ -13,12 +13,12 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^static/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': '/home/raymond/Projects/Python/Django/Gis_Demo/static'}),
-    (r'^$', 'gis_demo.views.index'),
+        {'document_root': '/home/raymond/Projects/Python/Django/Gisedu/static'}),
+    (r'^$', 'gisedu.views.index'),
     (r'^admin/', include(admin.site.urls)),
-    (r'^json_test/', 'gis_demo.views.json_test'),
-    (r'^county_list/', 'gis_demo.views.county_list'),
-    (r'^school_district_list/', 'gis_demo.views.school_district_list'),
-    (r'^county/(?P<county_id>\d+)/', 'gis_demo.views.county'),
-    (r'^school_district/(?P<district_id>\d+)/', 'gis_demo.views.school_district')
+    (r'^json_test/', 'gisedu.views.json_test'),
+    (r'^county_list/', 'gisedu.views.county_list'),
+    (r'^school_district_list/', 'gisedu.views.school_district_list'),
+    (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
+    (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district')
 )
