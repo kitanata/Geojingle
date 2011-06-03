@@ -19,6 +19,8 @@ urlpatterns = patterns('',
     (r'^json_test/', 'gisedu.views.json_test'),
     (r'^county_list/', 'gisedu.views.county_list'),
     (r'^school_district_list/', 'gisedu.views.school_district_list'),
+    (r'^edu_org_list/', 'gisedu.views.edu_org_list'),
     (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
-    (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district')
+    (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),
+    (r'^edu_org/(?P<org_id>\d+)/', 'gisedu.views.edu_org'),
 )

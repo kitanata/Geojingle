@@ -1,10 +1,13 @@
 @import <Foundation/CPObject.j>
-@import <MapKit/MKMapView.j>
-@import <MapKit/MKMapItem.j>
-@import <MapKit/MKLocation.j>
+@import "../MapKit/MKMapView.j"
+@import "../MapKit/MKMapItem.j"
+@import "../MapKit/MKLocation.j"
 
 @implementation PolygonOverlay : MKMapItem
 {
+    CPString m_szName           @accessors(property=name);
+    CPInteger m_nPk            @accessors(property=pk);
+
     Polygon m_GooglePolygon    @accessors(property=googlePolygon);
 
     CPArray     m_Locations     @accessors(property=locations);
@@ -36,7 +39,7 @@
         m_Visible = NO;
     }
 
-    [self createGooglePolygon];
+    //[self createGooglePolygon];
 
     return self;
 }
@@ -66,6 +69,11 @@
 
 - (void)addToMapView:(MKMapView)mapView
 {
+    if(m_GooglePolygon == nil)
+    {
+        [self createGooglePolygon];
+    }
+
     var googleMap = [mapView gMap];
     googleMap.addOverlay([self googlePolygon]);
 }

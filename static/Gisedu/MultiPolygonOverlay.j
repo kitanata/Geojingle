@@ -4,6 +4,9 @@
 
 @implementation MultiPolygonOverlay : CPObject
 {
+    CPInteger m_nIdentifier @accessors(property=pk);
+    CPString m_szName @accessors(property=name);
+
     CPArray m_PolygonOverlays @accessors(property=polygons);
 }
 
@@ -42,32 +45,6 @@
     for(var i=0; i < [m_PolygonOverlays count]; i++)
     {
         [[m_PolygonOverlays objectAtIndex:i] removeFromMapView:mapView];
-    }
-}
-
-- (void)fromGeoJson:(CPObject)geoJson
-{
-    polygons = geoJson['coordinates'];
-
-    for(var i =0; i < polygons.length; i++)
-    {
-        var polygon = polygons[i];
-
-        for(var j=0; j < polygon.length; j++)
-        {
-            var coords = polygon[j];
-
-            var locarray = new Array();
-
-            for(var k=0; k < coords.length; k++)
-            {
-                locarray[k] = [[MKLocation alloc] initWithLatitude:coords[k][1] andLongitude:coords[k][0] ];
-            }
-
-            var locations = [[CPArray alloc] initWithArray:locarray];
-
-            [self addPolygonOverlay:[[PolygonOverlay alloc] initWithLocations:locations]];
-        }
     }
 }
 
