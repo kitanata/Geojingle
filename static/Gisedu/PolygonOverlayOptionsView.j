@@ -17,8 +17,6 @@
 
 - (id) initWithFrame:(CGRect)aFrame andMapView:(MKMapView)mapView
 {
-    console.log("initializing PolygonOverlayOptionsView");
-    
     self = [super initWithFrame:aFrame];
 
     if(self)

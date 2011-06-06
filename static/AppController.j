@@ -93,7 +93,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
     m_MapWidth = m_MaxMapWidth;
 
-    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) apiKey:''];
+    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
     [m_MapView setDelegate:self]
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
