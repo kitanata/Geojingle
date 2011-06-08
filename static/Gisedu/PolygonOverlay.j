@@ -18,6 +18,7 @@
     float       m_LineOpacity   @accessors(property=lineOpacity);
 
     BOOL m_Visible @accessors(property=visible);
+    BOOL m_bActive @accessors(property=active); //Is this polygon currently being edited?
 }
 
 - (id)init 
@@ -58,7 +59,22 @@
             lineCoordinates.push([loc googleLatLng]);
         }
 
-        m_GooglePolygon = new gm.Polygon(lineCoordinates, m_LineColorCode, m_LineStroke,  m_LineOpacity, m_FillColorCode, m_FillOpacity);
+        var zIndex = 0;
+
+        if(m_bActive)
+        {
+            zIndex = 1;
+        }
+
+        m_GooglePolygon = new gm.Polygon({
+            paths: lineCoordinates,
+            strokeColor: m_LineColorCode,
+            strokeOpacity: m_LineOpacity,
+            strokeWeight: m_LineStroke,
+            fillColor: m_FillColorCode,
+            fillOpacity: m_FillOpacity,
+            zIndex: 1
+        });
     }
 }
 
@@ -74,14 +90,12 @@
         [self createGooglePolygon];
     }
 
-    var googleMap = [mapView gMap];
-    googleMap.addOverlay([self googlePolygon]);
+    m_GooglePolygon.setMap([mapView gMap]);
 }
 
 - (void)removeFromMapView:(MKMapView)mapView
 {
-    var googleMap = [mapView gMap];
-    googleMap.removeOverlay([self googlePolygon]);
+    m_GooglePolygon.setMap(null);
 }
 
 - (void)setLineColorCode:(CPString)colorCode

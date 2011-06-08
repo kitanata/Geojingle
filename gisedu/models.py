@@ -19,9 +19,9 @@ class OhioCounties(models.Model):
     name = models.CharField(max_length=16)
     cap_name = models.CharField(max_length=16)
     abbrev = models.CharField(max_length=3)
-    shape_area = models.DecimalField(max_digits=65536, decimal_places=65535)
-    shape_len = models.DecimalField(max_digits=65536, decimal_places=65535)
-    the_geom = models.MultiPolygonField(srid=4326)
+    shape_area = models.DecimalField(max_digits=1000, decimal_places=999)
+    shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
+    the_geom = models.MultiPolygonField()
     objects = models.GeoManager()
 
     class Meta:
@@ -36,7 +36,7 @@ class OhioCounties(models.Model):
 class OhioSchoolDistricts(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.IntegerField()
-    shape_leng = models.DecimalField(max_digits=65536, decimal_places=65535)
+    shape_leng = models.DecimalField(max_digits=1000, decimal_places=999)
     ode_irn = models.CharField(max_length=6)
     name = models.CharField(max_length=51)
     lea_id = models.CharField(max_length=5)
@@ -44,12 +44,12 @@ class OhioSchoolDistricts(models.Model):
     end_grade = models.CharField(max_length=2)
     taxid = models.CharField(max_length=4)
     id = models.CharField(max_length=6)
-    area = models.DecimalField(max_digits=65536, decimal_places=65535)
-    len = models.DecimalField(max_digits=65536, decimal_places=65535)
-    pct_chg = models.DecimalField(max_digits=65536, decimal_places=65535)
-    shape_area = models.DecimalField(max_digits=65536, decimal_places=65535)
-    shape_len = models.DecimalField(max_digits=65536, decimal_places=65535)
-    the_geom = models.MultiPolygonField(srid=4326)
+    area = models.DecimalField(max_digits=1000, decimal_places=999)
+    len = models.DecimalField(max_digits=1000, decimal_places=999)
+    pct_chg = models.DecimalField(max_digits=1000, decimal_places=999)
+    shape_area = models.DecimalField(max_digits=1000, decimal_places=999)
+    shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
+    the_geom = models.MultiPolygonField()
     objects = models.GeoManager()
     class Meta:
         db_table = u'ohio_school_districts'
@@ -60,30 +60,50 @@ class OhioSchoolDistricts(models.Model):
 
 
 
-class OhioEduOrgs(models.Model):
+class GiseduOrgType(models.Model):
+    gid = models.IntegerField(primary_key=True)
+    org_type_name = models.CharField(max_length=254)
+
+    class Meta:
+        db_table = u'gisedu_org_type'
+        verbose_name_plural = "Educational Organization Types"
+
+
+
+class GiseduOrgAddress(models.Model):
+    gid = models.IntegerField(primary_key=True)
+    street_num = models.IntegerField()
+    street_name = models.CharField(max_length=254)
+    mail_stop = models.CharField(max_length=254)
+    address_line_one = models.CharField(max_length=254)
+    address_line_two = models.CharField(max_length=254)
+    city = models.CharField(max_length=254)
+    state = models.CharField(max_length=254)
+    zip10 = models.CharField(max_length=254)
+
+    class Meta:
+        db_table = u'gisedu_org_address'
+        verbose_name_plural = "Educational Organization Addresses"
+
+
+
+class GiseduOrg(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.IntegerField()
     org_key = models.IntegerField()
     irn = models.CharField(max_length=254)
     org_nm = models.CharField(max_length=254)
     ref_org_ty = models.IntegerField()
-    org_typsd = models.CharField(max_length=254)
-    st_num = models.IntegerField()
-    st_nm = models.CharField(max_length=254)
-    mail_stop = models.CharField(max_length=254)
-    address1_o = models.CharField(max_length=254)
-    address2_o = models.CharField(max_length=254)
-    city_out = models.CharField(max_length=254)
-    state_out = models.CharField(max_length=254)
-    zip10_out = models.CharField(max_length=254)
     bldgirn = models.CharField(max_length=6)
     irn1 = models.CharField(max_length=6)
-    the_geom = models.PointField(srid=4326)
+    the_geom = models.PointField()
+    address = models.ForeignKey(GiseduOrgAddress)
+    org_type = models.ForeignKey(GiseduOrgType)
     objects = models.GeoManager()
 
     class Meta:
-        db_table = u'ohio_edu_orgs'
-        verbose_name_plural = "Ohio Educational Organizations"
+        db_table = u'gisedu_org'
+        verbose_name_plural = "Educational Organizations"
 
     def __str__(self):
         return str(self.org_nm)
@@ -93,16 +113,16 @@ class OhioEduOrgs(models.Model):
 class OhioLibraries(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid_1 = models.IntegerField()
-    objectid = models.DecimalField(max_digits=65536, decimal_places=65535)
+    objectid = models.DecimalField(max_digits=1000, decimal_places=999)
     name = models.CharField(max_length=100)
     address = models.CharField(max_length=150)
     city = models.CharField(max_length=50)
     state = models.CharField(max_length=50)
     zip = models.CharField(max_length=50)
-    latitude = models.DecimalField(max_digits=65536, decimal_places=65535)
-    longitude = models.DecimalField(max_digits=65536, decimal_places=65535)
+    latitude = models.DecimalField(max_digits=1000, decimal_places=999)
+    longitude = models.DecimalField(max_digits=1000, decimal_places=999)
     caicat = models.CharField(max_length=1)
-    ref_org_ty = models.DecimalField(max_digits=65536, decimal_places=65535)
+    ref_org_ty = models.DecimalField(max_digits=1000, decimal_places=999)
     bbservice = models.CharField(max_length=1)
     transtech = models.CharField(max_length=2)
     maxadvdown = models.CharField(max_length=2)

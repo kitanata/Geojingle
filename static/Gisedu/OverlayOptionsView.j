@@ -48,7 +48,7 @@
 
 - (void) setPointOverlayTarget: (PointOverlay)overlayTarget
 {
-    [m_PointOptionsView setOverlay:overlayTarget];
+    [m_PointOptionsView setOverlayTarget:overlayTarget];
 
     [m_TabView selectTabViewItem:m_PointTabItem];
 }
