@@ -109,15 +109,39 @@
     return self;
 }
 
+//Moves zOrder to front
+- (void)activatePolygons
+{
+    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    {
+        polygon = [m_OverlayPolygons objectAtIndex:i];
+
+        [polygon setActive:YES];
+    }
+}
+
+//Moves zOrder to back
+- (void)deactivatePolygons
+{
+    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    {
+        polygon = [m_OverlayPolygons objectAtIndex:i];
+
+        [polygon setActive:NO];
+    }
+}
+
 - (void)setOverlayTarget:(id)overlayTarget
 {
+    [self deactivatePolygons];
+    
     if([overlayTarget typeName] == "MultiPolygonOverlay")
     {
         m_OverlayPolygons = [overlayTarget polygons];
     }
     else if([overlayTarget typeName] == "PolygonOverlay")
     {
-        
+        console.log("This wasn't implemented yet.");
     }
 
     if([m_OverlayPolygons count] > 0)
@@ -139,6 +163,8 @@
         {
             [m_ShowButton setState:CPOffState];
         }
+
+        [self activatePolygons];
     }
 }
 

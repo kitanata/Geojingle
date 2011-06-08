@@ -16,6 +16,7 @@
 @import "Gisedu/OverlayOptionsView.j"
 @import "Gisedu/PolygonOverlayLoader.j"
 @import "Gisedu/PointOverlayLoader.j"
+@import "Gisedu/OrganizationListLoader.j"
 
 var m_ShowTablesToolbarId = 'showTables';
 var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
@@ -33,14 +34,16 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     CPDictionary m_Items;
     CPArray m_CountyItems;
     CPArray m_SchoolDistrictItems;
-    CPArray m_EduOrgItems;
+
+    CPArray m_OrgTypes;                         //A List of all the possible organization types
+    CPDictionary m_OrgToGid;                    //maps name of organization to it's primary key in the db
+    CPDictionary m_OrgGidToOverlay;             //maps the gid of the organization to a PointOverlay.
 
     CPURLConnection m_LoadCountyList;
     CPURLConnection m_LoadSchoolDistrictList;
-    CPURLConnection m_LoadEduOrgList;
+    CPURLConnection m_LoadOrgTypeList;
 
     CPDictionary m_SchoolDistricts;             //Maps a School District Name with the PK
-    CPDictionary m_EduOrgs;
 
     CPDictionary m_CountyOverlays;              //name of county item selected in outline is key
     CPDictionary m_SchoolDistrictOverlays;      //name of school district selected in outline is key
@@ -93,7 +96,9 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
     m_MapWidth = m_MaxMapWidth;
 
-    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
+    var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
+    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) center:loc];
+    
     [m_MapView setDelegate:self]
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
@@ -115,9 +120,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-    var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
-    [m_MapView setCenter:loc];
-
     m_OutlineView = [[CPOutlineView alloc] initWithFrame:CGRectMake(0, 0, 300, CGRectGetHeight([m_OverlayFeaturesScrollView bounds]))];
     [m_OverlayFeaturesScrollView setDocumentView:m_OutlineView];
 
@@ -133,18 +135,19 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     m_CountyItems = [@"Item 1", @"Item 2", @"Item 3"];
     m_SchoolDistrictItems = [@"Item 1", @"Item 2", @"Item 3"];
-    m_EduOrgItems = [@"Item 1", @"Item 2", @"Item 3"];
 
-    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, m_SchoolDistrictItems, m_EduOrgItems,
-        ["A Library"], ["A School"]] forKeys:[@"Counties", @"School Districts", @"Organizations", @"Libraries", @"Schools"]];
+    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, m_SchoolDistrictItems,
+        ["A Library"], ["A School"]] forKeys:[@"Counties", @"School Districts", @"Libraries", @"Schools"]];
     [m_OutlineView setDataSource:self];
 
     m_SchoolDistricts = [CPDictionary alloc];
-    m_EduOrgs = [CPDictionary alloc];
 
     m_CountyOverlays = [CPDictionary alloc];
     m_SchoolDistrictOverlays = [CPDictionary alloc];
     m_EduOrgOverlays = [CPDictionary alloc];
+
+    m_OrgToGid = [CPDictionary dictionary];
+    m_OrgGidToOverlay = [CPDictionary dictionary];
     
     [m_LoadCountyList cancel];
     m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
@@ -152,8 +155,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [m_LoadSchoolDistrictList cancel];
     m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/school_district_list/"] delegate:self];
 
-    [m_LoadEduOrgList cancel];
-    m_LoadEduOrgList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/edu_org_list/"] delegate:self];
+    [m_LoadOrgTypeList cancel];
+    m_LoadOrgTypeList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/org_type_list/"] delegate:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -306,10 +309,10 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         alert('Could not load school district information! ' + anError);
         m_LoadSchoolDistrictList = nil;
     }
-    else if(aConnection == m_LoadEduOrgList)
+    else if(aConnection == m_LoadOrgTypeList)
     {
-        alert('Could not load education organization information! ' + anError);
-        m_LoadEduOrgList = nil;
+        alert('Could not load organization type information! ' + anError);
+        m_LoadOrgTypeList = nil;
     }
     else
     {
@@ -355,20 +358,23 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [m_Items setObject:m_SchoolDistrictItems forKey:@"School Districts"];
         [m_OutlineView setDataSource:self];
     }
-    else if(aConnection == m_LoadEduOrgList)
+    else if(aConnection == m_LoadOrgTypeList)
     {
+        console.log("Loading Organization Type List");
+        
         for(var i=0; i < listData.length; i++)
         {
-            for(var key in listData[i])
-            {
-                m_EduOrgItems[i] = key;
+            [m_Items setObject:[[CPArray alloc] init] forKey:listData[i]];
 
-                [m_EduOrgs setObject:listData[i][key] forKey:key];
-            }
+            loader = [[OrganizationListLoader alloc] initWithTypeName:listData[i]];
+            [loader setAction:@selector(OnOrgListLoaded:)];
+            [loader setTarget:self];
+            [loader load];
         }
 
-        [m_Items setObject:m_EduOrgItems forKey:@"Organizations"];
-        [m_OutlineView setDataSource:self];
+        m_OrgTypes = [CPArray arrayWithObjects:listData count:listData.length];
+
+        [m_OutlineView reloadItem:nil reloadChildren:YES];
     }
 }
 
@@ -392,14 +398,30 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [schoolDistOverlay addToMapView:m_MapView];
 }
 
-- (void)OnEduOrgGeometryLoaded:(id)sender
+- (void)OnOrgListLoaded:(id)sender
 {
-    eduOrgOverlay = [sender overlay];
-    
-    [m_OverlayOptionsView setPointOverlayTarget:eduOrgOverlay];
-    [m_EduOrgOverlays setObject:eduOrgOverlay forKey:[eduOrgOverlay name]];
+    orgs = [sender orgs];
 
-    [eduOrgOverlay addToMapView:m_MapView];
+    orgItems = [m_Items objectForKey:[sender name]];
+    orgKeys = [orgs allKeys];
+
+    orgItems = [orgItems arrayByAddingObjectsFromArray:orgKeys];
+
+    [m_Items setObject:orgItems forKey:[sender name]];
+
+    [m_OutlineView reloadItem:nil reloadChildren:YES];
+
+    [m_OrgToGid addEntriesFromDictionary:orgs];
+}
+
+- (void)OnOrgGeometryLoaded:(id)sender
+{
+    orgOverlay = [sender overlay];
+    
+    [m_OverlayOptionsView setPointOverlayTarget:orgOverlay];
+    [m_OrgGidToOverlay setObject:orgOverlay forKey:[orgOverlay pk]];
+    
+    [orgOverlay addToMapView:m_MapView];
 }
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
@@ -479,20 +501,20 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
         [self showOverlayOptionsView];
     }
-    else if([sender parentForItem:item] == "Organizations")
+    else if([m_OrgTypes containsObject:[sender parentForItem:item]])
     {
-        if([m_EduOrgOverlays objectForKey:item] == nil)
-        {
-            var orgId = [m_EduOrgs objectForKey:item];
+        var orgId = [m_OrgToGid objectForKey:item];
 
-            overlay = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
-            [overlay setAction:@selector(OnEduOrgGeometryLoaded:)];
-            [overlay setTarget:self];
-            [overlay loadAndShow:YES];
+        if([m_OrgGidToOverlay objectForKey:orgId] == nil)
+        {
+              overlay = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
+              [overlay setAction:@selector(OnOrgGeometryLoaded:)];
+              [overlay setTarget:self];
+              [overlay loadAndShow:YES];
         }
         else
         {
-            [m_OverlayOptionsView setPointOverlayTarget:[m_EduOrgOverlays objectForKey:item]];
+            [m_OverlayOptionsView setPointOverlayTarget:[m_OrgGidToOverlay objectForKey:orgId]];
         }
 
         [self showOverlayOptionsView];

@@ -4,6 +4,8 @@
 {
     MKMapView m_MapView;
     PointOverlay m_OverlayTarget @accessors(property=overlay);
+
+    CPCheckBox m_ShowButton;
 }
 
 - (id) initWithFrame:(CGRect)aFrame andMapView:(MKMapView)mapView
@@ -14,20 +16,46 @@
     {
         m_MapView = mapView;
 
-        lineColorLabel = [[CPTextField alloc] initWithFrame:CGRectMakeZero()]
-        [lineColorLabel setStringValue:@"Polygon Line Color"];
-        [lineColorLabel setFont:[CPFont systemFontOfSize:12.0]];
-        [lineColorLabel sizeToFit];
-        [lineColorLabel setFrameOrigin:CGPointMake(CGRectGetMinX(aFrame) + 50, CGRectGetMinY(aFrame) + 50)];
+        m_ShowButton = [[CPCheckBox alloc] initWithFrame:CGRectMakeZero()];
+        [m_ShowButton setTitle:@"Show Marker"];
+        [m_ShowButton sizeToFit];
+        [m_ShowButton setFrameOrigin:CGPointMake(CGRectGetMinX(aFrame) + 20, CGRectGetMinY(aFrame) + 40)];
+        [m_ShowButton setTarget:self];
+        [m_ShowButton setAction:@selector(onShowButton:)];
 
-        m_LineColorWell = [[CPColorWell alloc] initWithFrame:CGRectMake(CGRectGetMinX(aFrame) + 30, CGRectGetMinY(aFrame) + 50, 20, 20)];
-        [m_LineColorWell setBordered:YES];
-
-        [self addSubview:lineColorLabel];
-        [self addSubview:m_LineColorWell];
+        [self addSubview:m_ShowButton];
     }
 
     return self;
+}
+
+- (void)setOverlayTarget:(PointOverlay)overlayTarget
+{
+    m_OverlayTarget = overlayTarget;
+    
+    if([overlayTarget visible])
+    {
+        [m_ShowButton setState:CPOnState];
+    }
+    else
+    {
+        [m_ShowButton setState:CPOffState];
+    }
+}
+
+- (void)onShowButton:(id)sender
+{
+    if([m_ShowButton state] == CPOnState)
+    {
+        [m_OverlayTarget setVisible:YES];
+        [m_OverlayTarget addToMapView:m_MapView];
+    }
+    //the else is nessecary CPMixedState is possible
+    else if([m_ShowButton state] == CPOffState)
+    {
+        [m_OverlayTarget setVisible:NO];
+        [m_OverlayTarget removeFromMapView:m_MapView];
+    }
 }
 
 @end

@@ -7,23 +7,10 @@ import json
 
 from string import Template
 
-from models import OhioCounties, OhioSchoolDistricts, OhioEduOrgs
+from models import OhioCounties, OhioSchoolDistricts, GiseduOrg, GiseduOrgType
 
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
-
-def json_test(request):
-
-    counties = OhioCounties.objects.all()
-
-    #county = OhioCounties.objects.get(gid=1)
-
-    county_geom = [county.the_geom for county in counties]
-
-    collection = GeometryCollection(county_geom)
-
-    return render_to_response('json/base.json', {'json': collection.json}, context_instance=RequestContext(request))
-    #return render_to_response('json/base.json', {'json': county.the_geom.json}, context_instance=RequestContext(request))
 
 def county_list(request):
 
@@ -49,11 +36,27 @@ def school_district_list(request):
 
 
 
-def edu_org_list(request):
+def org_type_list(request):
 
-    orgs = OhioEduOrgs.objects.all()
+    types = GiseduOrgType.objects.all()
+
+    types = map(lambda type: str(type.org_type_name), types)
+
+    types.sort()
+
+    type_list = json.dumps(types)
+
+    return render_to_response('json/base.json', {'json' : type_list}, context_instance=RequestContext(request))
+
+
+
+def org_list_by_typename(request, type_name):
+
+    orgs = GiseduOrg.objects.filter(org_type__org_type_name=type_name)
 
     orgs = map(lambda org: {str(org.org_nm) : int(org.gid)}, orgs)
+
+    orgs.sort()
 
     org_list = json.dumps(orgs)
 
@@ -83,8 +86,11 @@ def school_district(request, district_id):
 
 def edu_org(request, org_id):
 
-    org = OhioEduOrgs.objects.get(pk=org_id)
+    org = GiseduOrg.objects.get(pk=org_id)
 
     response = json.dumps({'name' : str(org.org_nm), 'gid' : int(org.gid), 'the_geom' : json.loads(org.the_geom.json)})
 
     return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
+
+
+

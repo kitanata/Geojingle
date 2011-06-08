@@ -5,7 +5,7 @@
 
 @implementation PointOverlay : CPObject
 {
-    MKMarker m_GoogleMarker @accessors(property=marker);
+    Marker m_GoogleMarker @accessors(property=marker);
 
     MKLocation m_Point @accessors(property=point);
 
@@ -40,13 +40,20 @@
     return self;
 }
 
-//Note: This function cannot be tested because of the nature
-//of the google maps loading. TODO: Prove me wrong.
-- (id)createGoogleMarker
+- (void)createGoogleMarker
 {
-    m_GoogleMarker = [[MKMarker alloc] initAtLocation:m_Point];
+    var gm = [MKMapView gmNamespace];
+    var latLng = [m_Point googleLatLng];
 
-    return m_GoogleMarker;
+    var markerOptions =
+    {
+        position: latLng,
+        clickable: true,
+        draggable: false,
+        title: m_szName
+     };
+
+    m_GoogleMarker = new gm.Marker(markerOptions);
 }
 
 - (void)addToMapView:(MKMapView)mapView
@@ -56,12 +63,12 @@
         [self createGoogleMarker];
     }
 
-    [m_GoogleMarker addToMapView:mapView];
+    m_GoogleMarker.setMap([mapView gMap]);
 }
 
 - (void)removeFromMapView:(MKMapView)mapView
 {
-    [m_GoogleMarker removeFromMapView:mapView];
+    m_GoogleMarker.setMap(null);
 }
 
 @end
