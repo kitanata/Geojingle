@@ -1,0 +1,30 @@
+[
+  {
+    "pk": 1, 
+    "model": "gisedu.giseduorgtype", 
+    "fields": {
+      "org_type_name": "School"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "gisedu.giseduorgtype", 
+    "fields": {
+      "org_type_name": "Media Center"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "gisedu.giseduorgtype", 
+    "fields": {
+      "org_type_name": "Library"
+    }
+  },
+  {
+    "pk": 4, 
+    "model": "gisedu.giseduorgtype", 
+    "fields": {
+      "org_type_name": "Other"
+    }
+  }
+]

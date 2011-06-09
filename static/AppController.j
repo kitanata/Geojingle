@@ -13,10 +13,12 @@
 
 @import "Gisedu/TablesController.j"
 
-@import "Gisedu/OverlayOptionsView.j"
-@import "Gisedu/PolygonOverlayLoader.j"
-@import "Gisedu/PointOverlayLoader.j"
-@import "Gisedu/OrganizationListLoader.j"
+@import "Gisedu/views/OverlayOutlineView.j"
+@import "Gisedu/views/OverlayOptionsView.j"
+
+@import "Gisedu/loaders/PolygonOverlayLoader.j"
+@import "Gisedu/loaders/PointOverlayLoader.j"
+@import "Gisedu/loaders/OrganizationListLoader.j"
 
 var m_ShowTablesToolbarId = 'showTables';
 var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
@@ -28,10 +30,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     CPView m_ContentView;
 
-    CPScrollView m_OverlayFeaturesScrollView;
-    CPOutlineView m_OutlineView;
+    OverlayOutlineView m_OutlineView;
 
-    CPDictionary m_Items;
     CPArray m_CountyItems;
     CPArray m_SchoolDistrictItems;
 
@@ -42,15 +42,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     CPURLConnection m_LoadCountyList;
     CPURLConnection m_LoadSchoolDistrictList;
     CPURLConnection m_LoadOrgTypeList;
-
-    CPDictionary m_SchoolDistricts;             //Maps a School District Name with the PK
-
-    CPDictionary m_CountyOverlays;              //name of county item selected in outline is key
-    CPDictionary m_SchoolDistrictOverlays;      //name of school district selected in outline is key
-    CPDictionary m_EduOrgOverlays;              //ditto
-
-    CPCheckBox m_ShowCountiesCheckBox;
-    CPCheckBox m_ShowSchoolDistrictsCheckBox;
 
     TablesController m_TablesController;
 
@@ -86,13 +77,18 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     [self initMenu];
 
-    [self initTabView];
+    m_OutlineView = [[OverlayOutlineView alloc] initWithContentView:m_ContentView];
+    [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
+    [m_OutlineView setTarget:self];
+
+    m_CountyItems = [CPArray array];
+    m_SchoolDistrictItems = [CPArray array];
 
     m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
     m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
     m_MapHeight = m_MaxMapHeight;
 
-    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 550;
+    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
     m_MapWidth = m_MaxMapWidth;
 
@@ -120,31 +116,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-    m_OutlineView = [[CPOutlineView alloc] initWithFrame:CGRectMake(0, 0, 300, CGRectGetHeight([m_OverlayFeaturesScrollView bounds]))];
-    [m_OverlayFeaturesScrollView setDocumentView:m_OutlineView];
-
-    var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
-    [layerNameCol setWidth:300];
-
-    [m_OutlineView setHeaderView:nil];
-    [m_OutlineView setCornerView:nil];
-    [m_OutlineView addTableColumn:layerNameCol];
-    [m_OutlineView setOutlineTableColumn:layerNameCol];
-    [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
-    [m_OutlineView setTarget:self];
-
-    m_CountyItems = [@"Item 1", @"Item 2", @"Item 3"];
-    m_SchoolDistrictItems = [@"Item 1", @"Item 2", @"Item 3"];
-
-    m_Items = [CPDictionary dictionaryWithObjects:[m_CountyItems, m_SchoolDistrictItems,
-        ["A Library"], ["A School"]] forKeys:[@"Counties", @"School Districts", @"Libraries", @"Schools"]];
-    [m_OutlineView setDataSource:self];
-
-    m_SchoolDistricts = [CPDictionary alloc];
-
-    m_CountyOverlays = [CPDictionary alloc];
-    m_SchoolDistrictOverlays = [CPDictionary alloc];
-    m_EduOrgOverlays = [CPDictionary alloc];
+    [m_OutlineView loadOutline];
 
     m_OrgToGid = [CPDictionary dictionary];
     m_OrgGidToOverlay = [CPDictionary dictionary];
@@ -255,48 +227,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 	[CPMenu setMenuBarVisible:YES];
 }
 
--(void) initTabView
-{
-	var tabView = [[CPTabView alloc] initWithFrame:CGRectMake(0, 10, 300, CGRectGetHeight([m_ContentView bounds]))];
-	[tabView setTabViewType:CPTopTabsBezelBorder];
-	[tabView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
-	    //Map Options
-	    var mapOptionsTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"MapOptionsTab"];
-	    [mapOptionsTabItem setLabel:"Map Options"];
-	        var mapOptionsTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([m_ContentView bounds]) - 50)];
-	            m_ShowCountiesCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 20, 200, 40)];
-	            [m_ShowCountiesCheckBox setTitle:"Show All Counties"];
-	            [m_ShowCountiesCheckBox setState:CPOnState];
-	            [m_ShowCountiesCheckBox setTarget:self];
-	            [m_ShowCountiesCheckBox setAction:@selector(onShowCountiesChk:)];
-
-	            m_ShowSchoolDistrictsCheckBox = [[CPCheckBox alloc] initWithFrame: CGRectMake(25, 40, 200, 60)];
-	            [m_ShowSchoolDistrictsCheckBox setTitle:"Show All School Districts"];
-	            [m_ShowSchoolDistrictsCheckBox setState:CPOffState];
-	            [m_ShowSchoolDistrictsCheckBox setTarget:self];
-	            [m_ShowSchoolDistrictsCheckBox setAction:@selector(onShowSchoolDistrictsChk:)];
-
-	        [mapOptionsTabView addSubview:m_ShowCountiesCheckBox];
-	        [mapOptionsTabView addSubview:m_ShowSchoolDistrictsCheckBox];
-
-        [mapOptionsTabItem setView:mapOptionsTabView];
-    [tabView addTabViewItem:mapOptionsTabItem];
-	    //Overlay Features
-	    var layersTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"LayersTab"];
-        [layersTabItem setLabel:"Overlay Features"];
-            var layersTabView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([m_ContentView bounds]) - 50)];
-                m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([layersTabView bounds]))];
-                [layersTabView addSubview:m_OverlayFeaturesScrollView];
-        [layersTabItem setView:layersTabView];
-
-    console.log("Tab View Initialized");
-
-    [tabView addTabViewItem:layersTabItem];
-	[m_ContentView addSubview:tabView];
-
-	[tabView selectFirstTabViewItem:self];
-}
-
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
 {
     if (aConnection == m_LoadCountyList)
@@ -327,6 +257,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         
     if (aConnection == m_LoadCountyList)
     {
+        counties = [[OverlayManager getInstance] counties];
+                        
         for(var i=0; i < listData.length; i++)
         {
             for(var key in listData[i])
@@ -337,26 +269,30 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
                 [countyOverlayLoader setAction:@selector(OnCountyGeometryLoaded:)];
                 [countyOverlayLoader setTarget:self];
                 [countyOverlayLoader loadAndShow:NO];
+
+                [counties setObject:listData[i][key] forKey:key];
             }
         }
 
-        [m_Items setObject:m_CountyItems forKey:@"Counties"];
-        [m_OutlineView setDataSource:self];
+        [m_OutlineView setCountyItems:m_CountyItems];
+        console.log("Finished Loading Counties");
     }
     else if(aConnection == m_LoadSchoolDistrictList)
     {
+        schoolDistricts = [[OverlayManager getInstance] schoolDistricts];
+
         for(var i=0; i < listData.length; i++)
         {
             for(var key in listData[i])
             {
                 m_SchoolDistrictItems[i] = key;
 
-                [m_SchoolDistricts setObject:listData[i][key] forKey:key];
+                [schoolDistricts setObject:listData[i][key] forKey:key];
             }
         }
 
-        [m_Items setObject:m_SchoolDistrictItems forKey:@"School Districts"];
-        [m_OutlineView setDataSource:self];
+        [m_OutlineView setSchoolDistrictItems:m_SchoolDistrictItems];
+        console.log("Finished Loading School Districts");
     }
     else if(aConnection == m_LoadOrgTypeList)
     {
@@ -364,8 +300,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         
         for(var i=0; i < listData.length; i++)
         {
-            [m_Items setObject:[[CPArray alloc] init] forKey:listData[i]];
-
+            [m_OutlineView addItem:listData[i]];
+            
             loader = [[OrganizationListLoader alloc] initWithTypeName:listData[i]];
             [loader setAction:@selector(OnOrgListLoaded:)];
             [loader setTarget:self];
@@ -373,43 +309,27 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         }
 
         m_OrgTypes = [CPArray arrayWithObjects:listData count:listData.length];
-
-        [m_OutlineView reloadItem:nil reloadChildren:YES];
     }
 }
 
 - (void)OnCountyGeometryLoaded:(id)sender
 {
-    countyOverlay = [sender overlay];
+    overlay = [sender overlay];
 
-    console.log("Loaded County");
+    overlayManager = [OverlayManager getInstance];
+    countyOverlays = [overlayManager countyOverlays];
     
-    [m_CountyOverlays setObject:countyOverlay forKey:[countyOverlay name]];
-    [countyOverlay addToMapView:m_MapView];
-}
-
-- (void)OnSchoolDistrictGeometryLoaded:(id)sender
-{
-    schoolDistOverlay = [sender overlay];
-
-    [m_OverlayOptionsView setPolygonOverlayTarget:schoolDistOverlay];
-    [m_SchoolDistrictOverlays setObject:schoolDistOverlay forKey:[schoolDistOverlay name]];
-
-    [schoolDistOverlay addToMapView:m_MapView];
+    [countyOverlays setObject:overlay forKey:[overlay pk]];
+    [overlay addToMapView:m_MapView];
 }
 
 - (void)OnOrgListLoaded:(id)sender
 {
     orgs = [sender orgs];
 
-    orgItems = [m_Items objectForKey:[sender name]];
     orgKeys = [orgs allKeys];
 
-    orgItems = [orgItems arrayByAddingObjectsFromArray:orgKeys];
-
-    [m_Items setObject:orgItems forKey:[sender name]];
-
-    [m_OutlineView reloadItem:nil reloadChildren:YES];
+    [m_OutlineView setArray:orgKeys forItem:[sender name]];
 
     [m_OrgToGid addEntriesFromDictionary:orgs];
 }
@@ -424,54 +344,21 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [orgOverlay addToMapView:m_MapView];
 }
 
-- (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
+- (void)onSchoolDistrictGeometryLoaded:(id)sender
 {
-    CPLog("outlineView:%@ child:%@ ofItem:%@", outlineView, index, item);
+    overlayManager = [OverlayManager getInstance];
+    pkToOverlay = [overlayManager schoolDistrictOverlays];
+    schoolDistOverlay = [sender overlay];
 
-    if (item === nil)
-    {
-        var keys = [m_Items allKeys];
-        return [keys objectAtIndex:index];
-    }
-    else
-    {
-        var values = [m_Items objectForKey:item];
-        return [values objectAtIndex:index];
-    }
-}
-
-- (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
-{
-    CPLog("outlineView:%@ isItemExpandable:%@", outlineView, item);
-
-    var values = [m_Items objectForKey:item];
-    return ([values count] > 0);
-}
-
-- (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
-{
-    CPLog("outlineView:%@ numberOfChildrenOfItem:%@", outlineView, item);
-
-    if (item === nil)
-    {
-        return [m_Items count];
-    }
-    else
-    {
-        var values = [m_Items objectForKey:item];
-        return [values count];
-    }
-}
-
-- (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
-{
-    CPLog("outlineView:%@ objectValueForTableColumn:%@ byItem:%@", outlineView, tableColumn, item);
-
-    return item;
+    [m_OverlayOptionsView setPolygonOverlayTarget:schoolDistOverlay];
+    [pkToOverlay setObject:schoolDistOverlay forKey:[schoolDistOverlay pk]];
+    [schoolDistOverlay addToMapView:m_MapView];
 }
 
 - (void) onOutlineItemSelected:(id)sender
 {
+    sender = [sender outline];
+    
     var item = [sender itemAtRow:[sender selectedRow]];
 
     if([sender parentForItem:item] == nil)
@@ -479,28 +366,40 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             
     if([sender parentForItem:item] == "Counties")
     {
-        [m_OverlayOptionsView setPolygonOverlayTarget:[m_CountyOverlays objectForKey:item]];
+        overlayManager = [OverlayManager getInstance];
+        counties = [overlayManager counties];
+        countyOverlays = [overlayManager countyOverlays];
+
+        itemPk = [counties objectForKey:item];
+
+        console.log([countyOverlays objectForKey:itemPk]);
+
+        [m_OverlayOptionsView setPolygonOverlayTarget:[countyOverlays objectForKey:itemPk]];
 
         [self showOverlayOptionsView];
     }
     else if([sender parentForItem:item] == "School Districts")
     {
-        if([m_SchoolDistrictOverlays objectForKey:item] == nil)
-        {
-            var distIdentifier = [m_SchoolDistricts objectForKey:item];
+        overlayManager = [OverlayManager getInstance];
+        schoolDistrictOverlays = [overlayManager schoolDistrictOverlays];
+        schoolDistricts = [overlayManager schoolDistricts];
 
-            schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:distIdentifier andUrl:"http://127.0.0.1:8000/school_district/"];
-            [schoolDistOverlayLoader setAction:@selector(OnSchoolDistrictGeometryLoaded:)];
+        itemPk = [schoolDistricts objectForKey:item];
+
+        if([schoolDistrictOverlays objectForKey:itemPk] == nil)
+        {
+            schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemPk andUrl:"http://127.0.0.1:8000/school_district/"];
+            [schoolDistOverlayLoader setAction:@selector(onSchoolDistrictGeometryLoaded:)];
             [schoolDistOverlayLoader setTarget:self];
             [schoolDistOverlayLoader loadAndShow:YES];
         }
         else
         {
-            [m_OverlayOptionsView setPolygonOverlayTarget:[m_SchoolDistrictOverlays objectForKey:item]];
+            [m_OverlayOptionsView setPolygonOverlayTarget:[schoolDistrictOverlays objectForKey:itemPk]];
         }
 
         [self showOverlayOptionsView];
-    }
+    }//Organizations
     else if([m_OrgTypes containsObject:[sender parentForItem:item]])
     {
         var orgId = [m_OrgToGid objectForKey:item];
@@ -540,66 +439,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)onHideOverlayOptions:(id)sender
 {
     [self hideOverlayOptionsView];
-}
-
-- (void)onShowCountiesChk:(id)sender
-{ 
-    if([m_ShowCountiesCheckBox state] == CPOnState)
-    {
-        overlays = [m_CountyOverlays allValues];
-
-        for(var i=0; i < [overlays count]; i++)
-        {
-            [[overlays objectAtIndex:i] addToMapView:m_MapView];
-        }
-    }
-    else if([m_ShowCountiesCheckBox state] == CPOffState)
-    {
-        overlays = [m_CountyOverlays allValues];
-
-        for(var i=0; i < [overlays count]; i++)
-        {
-            [[overlays objectAtIndex:i] removeFromMapview:m_MapView];
-        }
-    }
-}
-
-- (void)onShowSchoolDistrictsChk:(id)sender
-{
-    if([m_ShowSchoolDistrictsCheckBox state] == CPOnState)
-    {
-        overlays = [m_SchoolDistrictOverlays allValues];
-
-        distKeys = [m_SchoolDistricts allKeys];
-
-        for(var i=0; i < [distKeys count]; i++)
-        {
-            var key = [distKeys objectAtIndex:i];
-            
-            if([m_SchoolDistrictOverlays objectForKey:key] == nil)
-            {
-                var nPk = [m_SchoolDistricts objectForKey:key];
-
-                schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:nPk andUrl:"http://127.0.0.1:8000/school_district/"];
-                [schoolDistOverlayLoader setAction:@selector(OnSchoolDistrictGeometryLoaded:)];
-                [schoolDistOverlayLoader setTarget:self];
-                [schoolDistOverlayLoader loadAndShow:NO];
-            }
-            else
-            {
-                [[m_SchoolDistrictOverlays objectForKey:key] addToMapView:m_MapView];
-            }
-        }
-    }
-    else if([m_ShowSchoolDistrictsCheckBox state] == CPOffState)
-    {
-        overlays = [m_SchoolDistrictOverlays allValues];
-
-        for(var i=0; i < [overlays count]; i++)
-        {
-            [[overlays objectAtIndex:i] removeFromMapView:m_MapView];
-        }
-    }
 }
 
 - (void)showOverlayOptionsView

@@ -1,4 +1,4 @@
-@import "../PointOverlayLoader.j"
+@import "../loaders/PointOverlayLoader.j"
 
 @implementation PointOverlayLoaderTest : OJTestCase
 {
