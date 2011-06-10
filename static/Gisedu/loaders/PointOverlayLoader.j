@@ -1,7 +1,5 @@
 @import <Foundation/CPObject.j>
 
-@import "../MultiPolygonOverlay.j"
-
 @import "../GeoJsonParser.j"
 
 @implementation PointOverlayLoader : CPControl

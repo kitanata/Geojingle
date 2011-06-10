@@ -2,7 +2,6 @@
 
 @import "PointOverlay.j"
 @import "PolygonOverlay.j"
-@import "MultiPolygonOverlay.j"
 @import "../MapKit/MKLocation.j"
 
 @implementation GeoJsonParser : CPObject
@@ -15,7 +14,7 @@
 
     if(objectData['type'] == 'MultiPolygon')
     {
-        overlay = [[MultiPolygonOverlay alloc] init];
+        overlay = [[PolygonOverlay alloc] init];
 
         polygons = objectData['coordinates'];
 
@@ -36,7 +35,7 @@
 
                 var locations = [[CPArray alloc] initWithArray:locarray];
 
-                [overlay addPolygonOverlay:[[PolygonOverlay alloc] initWithLocations:locations]];
+                [overlay addPolygonPath:locations];
             }
         }
 

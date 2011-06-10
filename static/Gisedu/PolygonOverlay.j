@@ -10,7 +10,7 @@
 
     Polygon m_GooglePolygon    @accessors(property=googlePolygon);
 
-    CPArray     m_Locations     @accessors(property=locations);
+    CPArray     m_Paths         @accessors(property=paths);
     CPString    m_LineColorCode @accessors(property=lineColorCode);
     CPString    m_FillColorCode @accessors(property=fillColorCode);
     int         m_LineStroke    @accessors(property=lineStroke);
@@ -23,14 +23,9 @@
 
 - (id)init 
 {
-    return [self initWithLocations:nil];
-}
-
-- (id)initWithLocations:(CPArray)someLocations
-{
     if (self = [super init])
     {
-        m_Locations = someLocations;
+        m_Paths = [CPArray array];
         m_LineColorCode = @"#ff0000";
         m_FillColorCode = @"#000000";
         m_FillOpacity = 0.3;
@@ -40,23 +35,37 @@
         m_Visible = NO;
     }
 
-    //[self createGooglePolygon];
-
     return self;
+}
+
+- (void)addPolygonPath:(CPArray)pathLocations
+{
+    m_Paths = [m_Paths arrayByAddingObject:pathLocations];
 }
 
 - (void)createGooglePolygon
 {
-    if (m_Locations)
+    if (m_Paths)
     {
         var gm = [MKMapView gmNamespace];
-        var locEnum = [m_Locations objectEnumerator];
 
         var loc = nil
-        var lineCoordinates = [];
-        while (loc = [locEnum nextObject])
+        var linePaths = [];
+
+        for(var i=0; i < [m_Paths count]; i++)
         {
-            lineCoordinates.push([loc googleLatLng]);
+            var locations = [m_Paths objectAtIndex:i];
+
+            var lineCoordinates = [];
+
+            for(var k=0; k < [locations count]; k++)
+            {
+                loc = [locations objectAtIndex:k];
+
+                lineCoordinates.push([loc googleLatLng]);
+            }
+
+            linePaths.push(lineCoordinates);
         }
 
         var zIndex = 0;
@@ -67,7 +76,7 @@
         }
 
         m_GooglePolygon = new gm.Polygon({
-            paths: lineCoordinates,
+            paths: linePaths,
             strokeColor: m_LineColorCode,
             strokeOpacity: m_LineOpacity,
             strokeWeight: m_LineStroke,
@@ -89,6 +98,8 @@
     {
         [self createGooglePolygon];
     }
+
+    console.log("Adding Polygon to Map");
 
     m_GooglePolygon.setMap([mapView gMap]);
 }

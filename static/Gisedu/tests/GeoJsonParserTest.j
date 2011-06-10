@@ -33,7 +33,7 @@
     var result = [theParser parse:geoJson];
 
     [self assertNotNull:result];
-    [self assertTrue:([[result polygons] count] > 0)];
+    [self assertTrue:([[result paths] count] > 0)];
 }
 
 @end

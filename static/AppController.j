@@ -31,6 +31,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     CPView m_ContentView;
 
     OverlayOutlineView m_OutlineView;
+    OverlayOptionsView m_OverlayOptionsView;
 
     CPArray m_CountyItems;
     CPArray m_SchoolDistrictItems;
@@ -54,8 +55,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     var m_MinMapWidth;  //map's minimum width
     var m_MaxMapWidth;  //map's maximum width
     var m_MapWidth;     //map's current width
-
-    OverlayOptionsView m_OverlayOptionsView;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -90,7 +89,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
-    m_MapWidth = m_MaxMapWidth;
+    m_MapWidth = m_MinMapWidth;
 
     var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
     m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) center:loc];
@@ -112,6 +111,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         console.log("Loaded Table View");
 
     m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
+    [m_ContentView addSubview:m_OverlayOptionsView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -160,8 +160,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [toolbarItem setAlternateImage:highlighted];
 
         [toolbarItem setTarget:self];
-        [toolbarItem setAction:@selector(onShowTables:)];
-        [toolbarItem setLabel:"Show Tables"];
+        [toolbarItem setAction:@selector(onDataTables:)];
+        [toolbarItem setLabel:"Data Tables"];
 
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -175,8 +175,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [toolbarItem setAlternateImage:highlighted];
 
         [toolbarItem setTarget:self];
-        [toolbarItem setAction:@selector(onHideOverlayOptions:)];
-        [toolbarItem setLabel:"Hide Overlay Options"];
+        [toolbarItem setAction:@selector(onOverlayOptions:)];
+        [toolbarItem setLabel:"Overlay Options"];
 
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -420,7 +420,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
 }
 
-- (void)onShowTables:(id)sender
+- (void)onDataTables:(id)sender
 {
     if([m_TableScrollView superview] != nil)
     {
@@ -436,9 +436,16 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
 }
 
-- (void)onHideOverlayOptions:(id)sender
+- (void)onOverlayOptions:(id)sender
 {
-    [self hideOverlayOptionsView];
+    if([m_OverlayOptionsView superview] != nil)
+    {
+        [self hideOverlayOptionsView];
+    }
+    else
+    {
+        [self showOverlayOptionsView];
+    }
 }
 
 - (void)showOverlayOptionsView

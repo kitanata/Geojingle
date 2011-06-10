@@ -5,7 +5,7 @@
 @implementation PolygonOverlayOptionsView : CPView
 {
     MKMapView m_MapView;
-    CPArray m_OverlayPolygons;
+    PolygonOverlay m_OverlayPolygon;
 
     CPColorWell m_LineColorWell;
     CPColorWell m_FillColorWell;
@@ -109,162 +109,98 @@
     return self;
 }
 
-//Moves zOrder to front
-- (void)activatePolygons
+- (void)setOverlayTarget:(PolygonOverlay)overlayTarget
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
-    {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
+    [m_OverlayPolygon setActive:NO];
 
-        [polygon setActive:YES];
+    m_OverlayPolygon = overlayTarget;
+
+    [m_LineColorWell setColor:[CPColor colorWithHexString:[[m_OverlayPolygon lineColorCode] substringFromIndex:1]]];
+    [m_FillColorWell setColor:[CPColor colorWithHexString:[[m_OverlayPolygon fillColorCode] substringFromIndex:1]]];
+
+    [m_LineStrokeSlider setValue:[m_OverlayPolygon lineStroke]];
+    [m_LineOpacitySlider setValue:([m_OverlayPolygon lineOpacity] * 100)];
+    [m_FillOpacitySlider setValue:([m_OverlayPolygon fillOpacity] * 100)];
+
+    if([m_OverlayPolygon visible])
+    {
+        [m_ShowButton setState:CPOnState];
     }
-}
-
-//Moves zOrder to back
-- (void)deactivatePolygons
-{
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    else
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon setActive:NO];
-    }
-}
-
-- (void)setOverlayTarget:(id)overlayTarget
-{
-    [self deactivatePolygons];
-    
-    if([overlayTarget typeName] == "MultiPolygonOverlay")
-    {
-        m_OverlayPolygons = [overlayTarget polygons];
-    }
-    else if([overlayTarget typeName] == "PolygonOverlay")
-    {
-        console.log("This wasn't implemented yet.");
+        [m_ShowButton setState:CPOffState];
     }
 
-    if([m_OverlayPolygons count] > 0)
-    {
-        sample = [m_OverlayPolygons objectAtIndex:0];
-
-        [m_LineColorWell setColor:[CPColor colorWithHexString:[[sample lineColorCode] substringFromIndex:1]]];
-        [m_FillColorWell setColor:[CPColor colorWithHexString:[[sample fillColorCode] substringFromIndex:1]]];
-
-        [m_LineStrokeSlider setValue:[sample lineStroke]];
-        [m_LineOpacitySlider setValue:([sample lineOpacity] * 100)];
-        [m_FillOpacitySlider setValue:([sample fillOpacity] * 100)];
-
-        if([sample visible])
-        {
-            [m_ShowButton setState:CPOnState];
-        }
-        else
-        {
-            [m_ShowButton setState:CPOffState];
-        }
-
-        [self activatePolygons];
-    }
+    [m_OverlayPolygon setActive:YES];
 }
 
 - (void)onLineColorWell:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon setLineColorCode:"#" + [[m_LineColorWell color] hexString]];
+
+    if([m_OverlayPolygon visible])
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon removeFromMapView:m_MapView];
-        [polygon setLineColorCode:"#" + [[m_LineColorWell color] hexString]];
-
-        if([polygon visible])
-        {
-            [polygon addToMapView:m_MapView];
-        }
+        [m_OverlayPolygon addToMapView:m_MapView];
     }
 }
 
 - (void)onFillColorWell:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon setFillColorCode:"#" + [[m_FillColorWell color] hexString]];
+
+    if([m_OverlayPolygon visible])
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon removeFromMapView:m_MapView];
-        [polygon setFillColorCode:"#" + [[m_FillColorWell color] hexString]];
-
-        if([polygon visible])
-        {
-            [polygon addToMapView:m_MapView];
-        }
+        [m_OverlayPolygon addToMapView:m_MapView];
     }
 }
 
 - (void)onStrokeSlider:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon setLineStroke:[m_LineStrokeSlider doubleValue]];
+
+    if([m_OverlayPolygon visible])
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon removeFromMapView:m_MapView];
-        [polygon setLineStroke:[m_LineStrokeSlider doubleValue]];
-
-        if([polygon visible])
-        {
-            [polygon addToMapView:m_MapView];
-        }
+        [m_OverlayPolygon addToMapView:m_MapView];
     }
 }
 
 - (void)onLineOpacitySlider:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon setLineOpacity:([m_LineOpacitySlider doubleValue] / 100)];
+
+    if([m_OverlayPolygon visible])
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon removeFromMapView:m_MapView];
-        [polygon setLineOpacity:([m_LineOpacitySlider doubleValue] / 100)];
-
-        if([polygon visible])
-        {
-            [polygon addToMapView:m_MapView];
-        }
+        [m_OverlayPolygon addToMapView:m_MapView];
     }
 }
 
 - (void)onFillOpacitySlider:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon setFillOpacity:([m_FillOpacitySlider doubleValue] / 100)];
+
+    if([m_OverlayPolygon visible])
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        [polygon removeFromMapView:m_MapView];
-        [polygon setFillOpacity:([m_FillOpacitySlider doubleValue] / 100)];
-
-        if([polygon visible])
-        {
-            [polygon addToMapView:m_MapView];
-        }
+        [m_OverlayPolygon addToMapView:m_MapView];
     }
 }
 
 - (void)onShowButton:(id)sender
 {
-    for(var i=0; i < [m_OverlayPolygons count]; i++)
+    if([m_ShowButton state] == CPOnState)
     {
-        polygon = [m_OverlayPolygons objectAtIndex:i];
-
-        if([m_ShowButton state] == CPOnState)
-        {
-            [polygon setVisible:YES];
-            [polygon addToMapView:m_MapView];
-        }
-        //the else is nessecary CPMixedState is possible
-        else if([m_ShowButton state] == CPOffState)
-        {
-            [polygon setVisible:NO];
-            [polygon removeFromMapView:m_MapView];
-        }
+        [m_OverlayPolygon setVisible:YES];
+        [m_OverlayPolygon addToMapView:m_MapView];
+    }
+    //the else is nessecary CPMixedState is possible
+    else if([m_ShowButton state] == CPOffState)
+    {
+        [m_OverlayPolygon setVisible:NO];
+        [m_OverlayPolygon removeFromMapView:m_MapView];
     }
 }
 

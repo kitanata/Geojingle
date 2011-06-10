@@ -1,7 +1,5 @@
 @import <Foundation/CPObject.j>
 
-@import "../MultiPolygonOverlay.j"
-
 @import "../GeoJsonParser.j"
 
 @implementation PolygonOverlayLoader : CPControl
@@ -12,7 +10,7 @@
     CPInteger m_nIdentifier;
     BOOL m_bVisibleOnLoad;  //To mark visible(Not related to ShowAll)
 
-    MultiPolygonOverlay m_Polygon @accessors(property=overlay);
+    PolygonOverlay m_Polygon @accessors(property=overlay);
 }
 
 - (id)initWithIdentifier:(CPInteger)identifier andUrl:(CPString)connectionUrl
@@ -76,11 +74,7 @@
             [m_Polygon setName:szName];
             [m_Polygon setPk:nPk];
 
-            for(var i=0; i < [[m_Polygon polygons] count]; i++)
-            {
-                [[[m_Polygon polygons] objectAtIndex:i] setVisible:m_bVisibleOnLoad];
-            }
-
+            [m_Polygon setVisible:m_bVisibleOnLoad];
         }
 
         if(_action != nil && _target != nil)

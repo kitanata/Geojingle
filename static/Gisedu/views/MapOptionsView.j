@@ -64,7 +64,12 @@
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] removeFromMapView:m_MapView];
+            overlay = [overlays objectAtIndex:i];
+
+            if(![overlay visible])
+            {
+                [overlay removeFromMapView:m_MapView];
+            }
         }
     }
 }
@@ -102,7 +107,12 @@
 
         for(var i=0; i < [overlays count]; i++)
         {
-            [[overlays objectAtIndex:i] removeFromMapView:m_MapView];
+            overlay = [overlays objectAtIndex:i];
+
+            if(![overlay visible])
+            {
+                [overlay removeFromMapView:m_MapView];
+            }
         }
     }
 }
