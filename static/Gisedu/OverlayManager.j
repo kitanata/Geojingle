@@ -21,6 +21,9 @@ var overlayManagerInstance = nil;
 
     CPDictionary m_SchoolDistricts @accessors(property=schoolDistricts);                  //Maps a School District Name with the PK
     CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
+
+    CPDictionary m_OrgToGid @accessors(property=orgs);                    //maps name of organization to it's primary key in the db
+    CPDictionary m_OrgGidToOverlay @accessors(property=orgOverlays);      //maps the PK of the organization to a PointOverlay.
 }
 
 - (id)init
@@ -34,6 +37,9 @@ var overlayManagerInstance = nil;
         
         m_SchoolDistricts = [CPDictionary dictionary];
         m_SchoolDistrictOverlays = [CPDictionary dictionary];
+
+        m_OrgToGid = [CPDictionary dictionary];
+        m_OrgGidToOverlay = [CPDictionary dictionary];
     }
 
     return self;

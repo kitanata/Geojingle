@@ -60,7 +60,7 @@
 
     m_GoogleMarker = new gm.Marker(markerOptions);
 
-    gm.event.addListener(m_GoogleMarker, 'click', function() {[self openInfoWindow];});
+    gm.event.addListener(m_GoogleMarker, 'click', function() {[self toggleInfoWindow];});
 }
 
 - (void)setInfoLoader:(InfoWindowOverlayLoader)infoLoader
@@ -79,18 +79,33 @@
 
 - (void)openInfoWindow
 {
-    var gm = [MKMapView gmNamespace];
-
-    if(m_InfoLoader)
+    if(m_InfoWindow)
     {
-        if(m_InfoWindow)
-        {
-            [m_InfoWindow open:m_GoogleMarker];
-        }
-        else
-        {
-            [m_InfoLoader load];
-        }
+        [m_InfoWindow open:m_GoogleMarker];
+    }
+    else if(m_InfoLoader)
+    {
+        [m_InfoLoader load];
+    }
+}
+
+- (void)closeInfoWindow
+{
+    if(m_InfoWindow)
+    {
+        [m_InfoWindow close];
+    }
+}
+
+- (void)toggleInfoWindow
+{
+    if([m_InfoWindow opened])
+    {
+        [self closeInfoWindow];
+    }
+    else
+    {
+        [self openInfoWindow];
     }
 }
 

@@ -33,12 +33,13 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     OverlayOutlineView m_OutlineView;
     OverlayOptionsView m_OverlayOptionsView;
 
+    id m_CurSelectedItem;
+
     CPArray m_CountyItems;
     CPArray m_SchoolDistrictItems;
-
     CPArray m_OrgTypes;                         //A List of all the possible organization types
-    CPDictionary m_OrgToGid;                    //maps name of organization to it's primary key in the db
-    CPDictionary m_OrgGidToOverlay;             //maps the gid of the organization to a PointOverlay.
+
+    OverlayManager m_OverlayManager;
 
     CPURLConnection m_LoadCountyList;
     CPURLConnection m_LoadSchoolDistrictList;
@@ -67,6 +68,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [theWindow orderFront:self];
 
     [m_ContentView setBackgroundColor:[CPColor whiteColor]];
+
+    m_OverlayManager = [OverlayManager getInstance];
 
     //Top View - Buttons and Controls
     var toolbar = [[CPToolbar alloc] initWithIdentifier:"My Toolbar"];
@@ -117,9 +120,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)mapViewIsReady:(MKMapView)mapView
 {
     [m_OutlineView loadOutline];
-
-    m_OrgToGid = [CPDictionary dictionary];
-    m_OrgGidToOverlay = [CPDictionary dictionary];
     
     [m_LoadCountyList cancel];
     m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
@@ -279,7 +279,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
     else if(aConnection == m_LoadSchoolDistrictList)
     {
-        schoolDistricts = [[OverlayManager getInstance] schoolDistricts];
+        schoolDistricts = [m_OverlayManager schoolDistricts];
 
         for(var i=0; i < listData.length; i++)
         {
@@ -315,9 +315,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)OnCountyGeometryLoaded:(id)sender
 {
     overlay = [sender overlay];
-
-    overlayManager = [OverlayManager getInstance];
-    countyOverlays = [overlayManager countyOverlays];
+    countyOverlays = [m_OverlayManager countyOverlays];
     
     [countyOverlays setObject:overlay forKey:[overlay pk]];
     [overlay addToMapView:m_MapView];
@@ -331,7 +329,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     [m_OutlineView setArray:orgKeys forItem:[sender name]];
 
-    [m_OrgToGid addEntriesFromDictionary:orgs];
+    curOrgs = [m_OverlayManager orgs];
+    [curOrgs addEntriesFromDictionary:orgs];
 }
 
 - (void)OnOrgGeometryLoaded:(id)sender
@@ -342,15 +341,15 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [orgOverlay setInfoLoader:infoLoader];
     
     [m_OverlayOptionsView setPointOverlayTarget:orgOverlay];
-    [m_OrgGidToOverlay setObject:orgOverlay forKey:[orgOverlay pk]];
+
+    [[m_OverlayManager orgOverlays] setObject:orgOverlay forKey:[orgOverlay pk]];
     
     [orgOverlay addToMapView:m_MapView];
 }
 
 - (void)onSchoolDistrictGeometryLoaded:(id)sender
 {
-    overlayManager = [OverlayManager getInstance];
-    pkToOverlay = [overlayManager schoolDistrictOverlays];
+    pkToOverlay = [m_OverlayManager schoolDistrictOverlays];
     schoolDistOverlay = [sender overlay];
 
     [m_OverlayOptionsView setPolygonOverlayTarget:schoolDistOverlay];
@@ -369,9 +368,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             
     if([sender parentForItem:item] == "Counties")
     {
-        overlayManager = [OverlayManager getInstance];
-        counties = [overlayManager counties];
-        countyOverlays = [overlayManager countyOverlays];
+        counties = [m_OverlayManager counties];
+        countyOverlays = [m_OverlayManager countyOverlays];
 
         itemPk = [counties objectForKey:item];
 
@@ -383,9 +381,8 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
     else if([sender parentForItem:item] == "School Districts")
     {
-        overlayManager = [OverlayManager getInstance];
-        schoolDistrictOverlays = [overlayManager schoolDistrictOverlays];
-        schoolDistricts = [overlayManager schoolDistricts];
+        schoolDistrictOverlays = [m_OverlayManager schoolDistrictOverlays];
+        schoolDistricts = [m_OverlayManager schoolDistricts];
 
         itemPk = [schoolDistricts objectForKey:item];
 
@@ -405,9 +402,11 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }//Organizations
     else if([m_OrgTypes containsObject:[sender parentForItem:item]])
     {
-        var orgId = [m_OrgToGid objectForKey:item];
+        orgs = [m_OverlayManager orgs];
+        orgOverlays = [m_OverlayManager orgOverlays];
+        var orgId = [orgs objectForKey:item];
 
-        if([m_OrgGidToOverlay objectForKey:orgId] == nil)
+        if([orgOverlays objectForKey:orgId] == nil)
         {
               overlay = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
               [overlay setAction:@selector(OnOrgGeometryLoaded:)];
@@ -416,14 +415,19 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         }
         else
         {
-            overlay = [m_OrgGidToOverlay objectForKey:orgId];
-            [overlay openInfoWindow];
+            overlay = [orgOverlays objectForKey:orgId];
 
+            if(m_CurSelectedItem == item)
+            {
+                [overlay toggleInfoWindow];
+            }
             [m_OverlayOptionsView setPointOverlayTarget:overlay];
         }
 
         [self showOverlayOptionsView];
     }
+
+    m_CurSelectedItem = item;
 }
 
 - (void)onDataTables:(id)sender
