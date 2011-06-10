@@ -337,6 +337,9 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)OnOrgGeometryLoaded:(id)sender
 {
     orgOverlay = [sender overlay];
+
+    infoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:[orgOverlay pk] andUrl:"http://127.0.0.1:8000/edu_org_info/"];
+    [orgOverlay setInfoLoader:infoLoader];
     
     [m_OverlayOptionsView setPointOverlayTarget:orgOverlay];
     [m_OrgGidToOverlay setObject:orgOverlay forKey:[orgOverlay pk]];
@@ -413,7 +416,10 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         }
         else
         {
-            [m_OverlayOptionsView setPointOverlayTarget:[m_OrgGidToOverlay objectForKey:orgId]];
+            overlay = [m_OrgGidToOverlay objectForKey:orgId];
+            [overlay openInfoWindow];
+
+            [m_OverlayOptionsView setPointOverlayTarget:overlay];
         }
 
         [self showOverlayOptionsView];

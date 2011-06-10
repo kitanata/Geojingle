@@ -8,20 +8,6 @@ Replace these with more appropriate tests for your application.
 from django.test import TestCase
 from django.test.client import Client
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
-
-__test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
-
->>> 1 + 1 == 2
-True
-"""}
-
 class TestOrgTypeList(TestCase):
     fixtures = ['gisedu_org_type', 'gisedu_org']
 
@@ -41,5 +27,19 @@ class TestOrgTypeList(TestCase):
         response = c.get('/org_list_by_typename/Library/')
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, '\n[{"Anthony Wayne": 10751}, {"College Corner": 11837}]\n')
+        self.assertEqual(response.content, '\n[{"Anthony Wayne": 10751}, {"College Corner": 1}]\n')
+
+class TestOrgInfo(TestCase):
+    fixtures = ['gisedu_org', 'gisedu_org_address']
+
+    def test_org_info(self):
+        c = Client()
+
+        response = c.get('/edu_org_info/1/')
+
+        expected = '<div id="content">\n    <bold><h3>College Corner</h3></bold>\n    1885 Lake Ave<br />\n    <br />\n    Elyria, OH 44035-2551\n</div>'
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected)
+        
 

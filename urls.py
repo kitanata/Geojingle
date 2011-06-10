@@ -24,4 +24,5 @@ urlpatterns = patterns('',
     (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
     (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),
     (r'^edu_org/(?P<org_id>\d+)/', 'gisedu.views.edu_org'),
+    (r'^edu_org_info/(?P<org_id>\d+)/', 'gisedu.views.edu_org_info')
 )

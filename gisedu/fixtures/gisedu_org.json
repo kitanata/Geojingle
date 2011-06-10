@@ -1,6 +1,6 @@
 [
   {
-    "pk": 11837, 
+    "pk": 1,
     "model": "gisedu.giseduorg", 
     "fields": {
       "bldgirn": "064964", 
@@ -10,7 +10,7 @@
       "ref_org_ty": 1, 
       "org_type": 3,
       "irn": "64964", 
-      "address": 9674, 
+      "address": 1,
       "org_key": 11998, 
       "org_nm": "College Corner"
     }
@@ -26,7 +26,7 @@
       "ref_org_ty": 1, 
       "org_type": 3,
       "irn": "48207", 
-      "address": 8782, 
+      "address": 2,
       "org_key": 11590, 
       "org_nm": "Anthony Wayne"
     }
@@ -42,7 +42,7 @@
       "ref_org_ty": 3,
       "org_type": 7, 
       "irn": "137505", 
-      "address": 2738, 
+      "address": 3,
       "org_key": 10215, 
       "org_nm": "United Cerebral Palsey Assoc"
     }
@@ -58,7 +58,7 @@
       "ref_org_ty": 5, 
       "org_type": 22, 
       "irn": "59733", 
-      "address": 6131, 
+      "address": 4,
       "org_key": 5971, 
       "org_nm": "Our Lady Of Peace"
     }

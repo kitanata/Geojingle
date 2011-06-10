@@ -93,4 +93,9 @@ def edu_org(request, org_id):
     return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
 
 
+def edu_org_info(request, org_id):
+
+    org = GiseduOrg.objects.get(pk=org_id)
+
+    return render_to_response('edu_org_info.html', {'org_name' : org.org_nm, 'address': org.address}, context_instance=RequestContext(request))
 
