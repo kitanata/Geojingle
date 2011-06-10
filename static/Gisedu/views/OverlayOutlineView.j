@@ -3,37 +3,21 @@
 
 @implementation OverlayOutlineView : CPControl
 {
-    CPTabView m_TabView;
-    CPTabViewItem m_OverlayFeaturesTab;
-
-    CPView m_OverlayFeaturesView;
+    CPScrollView m_OverlayFeaturesScrollView;
     CPOutlineView m_OutlineView @accessors(property=outline);
 
     CPDictionary m_Items @accessors(property=items);
 }
 
-- (id) initWithContentView:(CPView)contentView
+- (id) initWithFrame:(CGRect)aFrame
 {
-    self = [super initWithFrame:[contentView bounds]];
+    self = [super initWithFrame:aFrame];
 
     if(self)
     {
-        m_TabView = [[CPTabView alloc] initWithFrame:CGRectMake(0, 10, 300, CGRectGetHeight([contentView bounds]))];
-        [m_TabView setTabViewType:CPTopTabsBezelBorder];
-        [m_TabView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
-
-            //Overlay Features
-            m_OverlayFeaturesTab = [[CPTabViewItem alloc] initWithIdentifier:@"LayersTab"];
-            [m_OverlayFeaturesTab setLabel:"Overlay Features"];
-                m_OverlayFeaturesView = [[CPView alloc] initWithFrame: CGRectMake(0, 100, 300, CGRectGetHeight([contentView bounds]) - 50)];
-                    m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([m_OverlayFeaturesView bounds]))];
-                    [m_OverlayFeaturesView addSubview:m_OverlayFeaturesScrollView];
-            [m_OverlayFeaturesTab setView:m_OverlayFeaturesView];
-
-        [m_TabView addTabViewItem:m_OverlayFeaturesTab];
-        [contentView addSubview:m_TabView];
-
-        [m_TabView selectFirstTabViewItem:self];
+        m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([self bounds]) - 30)];
+        [m_OverlayFeaturesScrollView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
+        [self addSubview:m_OverlayFeaturesScrollView];
     }
 
     return self;

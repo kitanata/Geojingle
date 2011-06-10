@@ -18,6 +18,7 @@
 - (id) initWithFrame:(CGRect)aFrame andMapView:(MKMapView)mapView
 {
     self = [super initWithFrame:aFrame];
+    [self setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
     if(self)
     {

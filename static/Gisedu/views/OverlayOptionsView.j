@@ -20,12 +20,13 @@
 - (id) initWithParentView:(CPView)parentView andMapView:(MKMapView)mapView
 {
     self = [self initWithFrame:CGRectMake(CGRectGetWidth([parentView bounds]) - 280, 0, 280, CGRectGetHeight([parentView bounds]))];
+    [self setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
     if(self)
     {
         m_TabView = [[CPTabView alloc] initWithFrame:CGRectMake(CGRectGetMinX([self bounds]), CGRectGetMinY([self bounds]) + 10, 280, CGRectGetHeight([self bounds]) - 10)];
         [m_TabView setTabViewType:CPTopTabsBezelBorder];
-        [m_TabView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
+        [m_TabView setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
         m_MapOptionsView = [[MapOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];
         m_PolyOptionsView = [[PolygonOverlayOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];

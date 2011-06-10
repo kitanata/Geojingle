@@ -13,6 +13,7 @@
 
 @import "Gisedu/TablesController.j"
 
+@import "Gisedu/views/LeftSideTabView.j"
 @import "Gisedu/views/OverlayOutlineView.j"
 @import "Gisedu/views/OverlayOptionsView.j"
 
@@ -28,9 +29,9 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     MKMapView m_MapView;
     CPWindow theWindow;
 
+    LeftSideTabView m_LeftSideTabView;
     CPView m_ContentView;
 
-    OverlayOutlineView m_OutlineView;
     OverlayOptionsView m_OverlayOptionsView;
 
     id m_CurSelectedItem;
@@ -79,9 +80,11 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     [self initMenu];
 
-    m_OutlineView = [[OverlayOutlineView alloc] initWithContentView:m_ContentView];
-    [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
-    [m_OutlineView setTarget:self];
+    m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
+    [m_ContentView addSubview:m_LeftSideTabView];
+
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
+    [m_ContentView addSubview:m_OverlayOptionsView];
 
     m_CountyItems = [CPArray array];
     m_SchoolDistrictItems = [CPArray array];
@@ -112,14 +115,13 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [countyTableView addTableColumn:countyNameCol];
         [m_TableScrollView setDocumentView:countyTableView];
         console.log("Loaded Table View");
-
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
-    [m_ContentView addSubview:m_OverlayOptionsView];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-    [m_OutlineView loadOutline];
+    [m_LeftSideTabView mapViewIsReady:mapView];
+    [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
+    [[m_LeftSideTabView outlineView] setTarget:self];
     
     [m_LoadCountyList cancel];
     m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
@@ -274,7 +276,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             }
         }
 
-        [m_OutlineView setCountyItems:m_CountyItems];
+        [[m_LeftSideTabView outlineView] setCountyItems:m_CountyItems];
         console.log("Finished Loading Counties");
     }
     else if(aConnection == m_LoadSchoolDistrictList)
@@ -291,7 +293,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
             }
         }
 
-        [m_OutlineView setSchoolDistrictItems:m_SchoolDistrictItems];
+        [[m_LeftSideTabView outlineView] setSchoolDistrictItems:m_SchoolDistrictItems];
         console.log("Finished Loading School Districts");
     }
     else if(aConnection == m_LoadOrgTypeList)
@@ -300,7 +302,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         
         for(var i=0; i < listData.length; i++)
         {
-            [m_OutlineView addItem:listData[i]];
+            [[m_LeftSideTabView outlineView] addItem:listData[i]];
             
             loader = [[OrganizationListLoader alloc] initWithTypeName:listData[i]];
             [loader setAction:@selector(OnOrgListLoaded:)];
@@ -327,7 +329,7 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
     orgKeys = [orgs allKeys];
 
-    [m_OutlineView setArray:orgKeys forItem:[sender name]];
+    [[m_LeftSideTabView outlineView] setArray:orgKeys forItem:[sender name]];
 
     curOrgs = [m_OverlayManager orgs];
     [curOrgs addEntriesFromDictionary:orgs];
@@ -435,11 +437,16 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     if([m_TableScrollView superview] != nil)
     {
         [m_TableScrollView removeFromSuperview];
+        [self updateMapTheory];
         m_MapHeight = m_MaxMapHeight;
         [self updateMapViewFrame];
     }
     else
     {
+        var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
+        [m_TableScrollView setFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
+
+        [self updateMapTheory];
         m_MapHeight = m_MinMapHeight;
         [self updateMapViewFrame];
         [m_ContentView addSubview:m_TableScrollView];
@@ -460,7 +467,9 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 
 - (void)showOverlayOptionsView
 {
+    [self updateMapTheory];
     m_MapWidth = m_MinMapWidth;
+
     [self updateMapViewFrame];
     [m_ContentView addSubview:m_OverlayOptionsView];
 }
@@ -468,8 +477,20 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)hideOverlayOptionsView
 {
     [m_OverlayOptionsView removeFromSuperview];
+
+    [self updateMapTheory];
     m_MapWidth = m_MaxMapWidth;
+
     [self updateMapViewFrame];
+}
+
+- (void)updateMapTheory
+{
+    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
+    m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
+
+    m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
+    m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
 }
 
 - (void)updateMapViewFrame

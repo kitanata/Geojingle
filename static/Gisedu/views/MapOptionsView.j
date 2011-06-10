@@ -17,6 +17,7 @@
     console.log("Initializing Map Options View");
 
     self = [super initWithFrame:aFrame];
+    [self setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
     if(self)
     {
