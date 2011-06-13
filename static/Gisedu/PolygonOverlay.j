@@ -3,7 +3,7 @@
 @import "../MapKit/MKMapItem.j"
 @import "../MapKit/MKLocation.j"
 
-@implementation PolygonOverlay : MKMapItem
+@implementation PolygonOverlay : CPControl
 {
     CPString m_szName           @accessors(property=name);
     CPInteger m_nPk            @accessors(property=pk);
@@ -19,6 +19,9 @@
 
     BOOL m_Visible @accessors(property=visible);
     BOOL m_bActive @accessors(property=active); //Is this polygon currently being edited?
+
+    SEL m_OnClickAction         @accessors(property=onClickAction);
+    id m_EventTarget            @accessors(property=eventTarget);
 }
 
 - (id)init 
@@ -84,6 +87,8 @@
             fillOpacity: m_FillOpacity,
             zIndex: 1
         });
+
+        gm.event.addListener(m_GooglePolygon, 'click', function() { [self onClick]; });
     }
 }
 
@@ -142,6 +147,16 @@
     m_LineOpacity = opacity;
 
     [self createGooglePolygon];
+}
+
+// EVENTS
+
+- (void)onClick
+{
+    if(m_EventTarget && m_OnClickAction)
+    {
+        [self sendAction:m_OnClickAction to:m_EventTarget];
+    }
 }
 
 @end

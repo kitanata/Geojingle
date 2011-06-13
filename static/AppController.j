@@ -17,22 +17,26 @@
 @import "Gisedu/views/OverlayOutlineView.j"
 @import "Gisedu/views/OverlayOptionsView.j"
 
+@import "Gisedu/views/AddFilterPanel.j"
+
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 @import "Gisedu/loaders/OrganizationListLoader.j"
 
 var m_ShowTablesToolbarId = 'showTables';
-var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
+var m_OverlayOptionsToolbarId = 'overlayOptions';
+var m_AddFilterToolbarId = 'addFilter';
 
 @implementation AppController : CPObject
 {
     MKMapView m_MapView;
     CPWindow theWindow;
-
-    LeftSideTabView m_LeftSideTabView;
     CPView m_ContentView;
 
+    LeftSideTabView m_LeftSideTabView;
     OverlayOptionsView m_OverlayOptionsView;
+
+    AddFilterPanel m_AddFilterPanel;
 
     id m_CurSelectedItem;
 
@@ -136,13 +140,13 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_HideOverlayOptionsToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_HideOverlayOptionsToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -168,10 +172,10 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
     }
-    else if(m_HideOverlayOptionsToolbarId == anItemIdentifier)
+    else if(m_OverlayOptionsToolbarId == anItemIdentifier)
     {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"hide_overlay_options.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"hide_overlay_options_highlighted.png"] size:CPSizeMake(48, 48)];
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options_highlighted.png"] size:CPSizeMake(48, 48)];
 
         [toolbarItem setImage:image];
         [toolbarItem setAlternateImage:highlighted];
@@ -179,6 +183,21 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
         [toolbarItem setTarget:self];
         [toolbarItem setAction:@selector(onOverlayOptions:)];
         [toolbarItem setLabel:"Overlay Options"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_AddFilterToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"add_filter.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"add_filter_highlighted.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onAddFilter:)];
+        [toolbarItem setLabel:"Add Filter"];
 
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -317,10 +336,17 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
 - (void)OnCountyGeometryLoaded:(id)sender
 {
     overlay = [sender overlay];
+    [overlay setOnClickAction:@selector(OnCountyGeometrySelected:)];
+    [overlay setEventTarget:self];
     countyOverlays = [m_OverlayManager countyOverlays];
     
     [countyOverlays setObject:overlay forKey:[overlay pk]];
     [overlay addToMapView:m_MapView];
+}
+
+- (void)OnCountyGeometrySelected:(id)sender
+{
+    [m_OverlayOptionsView setPolygonOverlayTarget:sender];
 }
 
 - (void)OnOrgListLoaded:(id)sender
@@ -432,6 +458,41 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     m_CurSelectedItem = item;
 }
 
+- (void)showOverlayOptionsView
+{
+    [self updateMapTheory];
+    m_MapWidth = m_MinMapWidth;
+
+    [self updateMapViewFrame];
+    [m_ContentView addSubview:m_OverlayOptionsView];
+}
+
+- (void)hideOverlayOptionsView
+{
+    [m_OverlayOptionsView removeFromSuperview];
+
+    [self updateMapTheory];
+    m_MapWidth = m_MaxMapWidth;
+
+    [self updateMapViewFrame];
+}
+
+- (void)updateMapTheory
+{
+    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
+    m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
+
+    m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
+    m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
+}
+
+- (void)updateMapViewFrame
+{
+    [m_MapView setFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
+}
+
+//TOOLBAR EVENTS
+
 - (void)onDataTables:(id)sender
 {
     if([m_TableScrollView superview] != nil)
@@ -465,37 +526,18 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     }
 }
 
-- (void)showOverlayOptionsView
+- (void)onAddFilter:(id)sender
 {
-    [self updateMapTheory];
-    m_MapWidth = m_MinMapWidth;
+    if(!m_AddFilterPanel)
+    {
+        m_AddFilterPanel = [AddFilterPanel makePanel];
 
-    [self updateMapViewFrame];
-    [m_ContentView addSubview:m_OverlayOptionsView];
-}
-
-- (void)hideOverlayOptionsView
-{
-    [m_OverlayOptionsView removeFromSuperview];
-
-    [self updateMapTheory];
-    m_MapWidth = m_MaxMapWidth;
-
-    [self updateMapViewFrame];
-}
-
-- (void)updateMapTheory
-{
-    m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
-    m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
-
-    m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
-    m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
-}
-
-- (void)updateMapViewFrame
-{
-    [m_MapView setFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
+        [m_AddFilterPanel orderFront:self];
+    }
+    else
+    {
+        [m_AddFilterPanel orderFront:self];
+    }
 }
 
 @end
