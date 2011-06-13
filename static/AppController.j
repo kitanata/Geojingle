@@ -78,14 +78,6 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     [toolbar setVisible:YES];
     [theWindow setToolbar:toolbar];
 
-    [self initMenu];
-
-    m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
-    [m_ContentView addSubview:m_LeftSideTabView];
-
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
-    [m_ContentView addSubview:m_OverlayOptionsView];
-
     m_CountyItems = [CPArray array];
     m_SchoolDistrictItems = [CPArray array];
 
@@ -97,14 +89,22 @@ var m_HideOverlayOptionsToolbarId = 'hideOverlayOptions';
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
     m_MapWidth = m_MinMapWidth;
 
+    var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
+
     var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
     m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) center:loc];
-    
+
     [m_MapView setDelegate:self]
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
 
-    var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
+    [self initMenu];
+
+    m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
+    [m_ContentView addSubview:m_LeftSideTabView];
+
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
+    [m_ContentView addSubview:m_OverlayOptionsView];
 
     m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
     [m_TableScrollView setAutoresizingMask:CPViewMinYMargin | CPViewWidthSizable];
