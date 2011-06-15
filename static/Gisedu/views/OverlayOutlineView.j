@@ -15,7 +15,7 @@
 
     if(self)
     {
-        m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, 20, 280, CGRectGetHeight([self bounds]) - 30)];
+        m_OverlayFeaturesScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 20, 300, CGRectGetHeight([self bounds]) - 20)];
         [m_OverlayFeaturesScrollView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
         [self addSubview:m_OverlayFeaturesScrollView];
     }

@@ -26,6 +26,7 @@
 var m_ShowTablesToolbarId = 'showTables';
 var m_OverlayOptionsToolbarId = 'overlayOptions';
 var m_AddFilterToolbarId = 'addFilter';
+var m_DeleteFilterToolbarId = 'deleteFilter';
 
 @implementation AppController : CPObject
 {
@@ -35,8 +36,6 @@ var m_AddFilterToolbarId = 'addFilter';
 
     LeftSideTabView m_LeftSideTabView;
     OverlayOptionsView m_OverlayOptionsView;
-
-    AddFilterPanel m_AddFilterPanel;
 
     id m_CurSelectedItem;
 
@@ -76,12 +75,6 @@ var m_AddFilterToolbarId = 'addFilter';
 
     m_OverlayManager = [OverlayManager getInstance];
 
-    //Top View - Buttons and Controls
-    var toolbar = [[CPToolbar alloc] initWithIdentifier:"My Toolbar"];
-    [toolbar setDelegate:self];
-    [toolbar setVisible:YES];
-    [theWindow setToolbar:toolbar];
-
     m_CountyItems = [CPArray array];
     m_SchoolDistrictItems = [CPArray array];
 
@@ -102,8 +95,6 @@ var m_AddFilterToolbarId = 'addFilter';
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
 
-    [self initMenu];
-
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
     [m_ContentView addSubview:m_LeftSideTabView];
 
@@ -119,6 +110,14 @@ var m_AddFilterToolbarId = 'addFilter';
         [countyTableView addTableColumn:countyNameCol];
         [m_TableScrollView setDocumentView:countyTableView];
         console.log("Loaded Table View");
+
+    [self initMenu];
+
+    //Top View - Buttons and Controls
+    var toolbar = [[CPToolbar alloc] initWithIdentifier:"My Toolbar"];
+    [toolbar setDelegate:self];
+    [toolbar setVisible:YES];
+    [theWindow setToolbar:toolbar];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -140,13 +139,13 @@ var m_AddFilterToolbarId = 'addFilter';
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -195,9 +194,24 @@ var m_AddFilterToolbarId = 'addFilter';
         [toolbarItem setImage:image];
         [toolbarItem setAlternateImage:highlighted];
 
-        [toolbarItem setTarget:self];
+        [toolbarItem setTarget:[m_LeftSideTabView filtersView]];
         [toolbarItem setAction:@selector(onAddFilter:)];
         [toolbarItem setLabel:"Add Filter"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_DeleteFilterToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"delete_filter.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"delete_filter_highlighted.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:[m_LeftSideTabView filtersView]];
+        [toolbarItem setAction:@selector(onDeleteFilter:)];
+        [toolbarItem setLabel:"Delete Filter"];
 
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -523,20 +537,6 @@ var m_AddFilterToolbarId = 'addFilter';
     else
     {
         [self showOverlayOptionsView];
-    }
-}
-
-- (void)onAddFilter:(id)sender
-{
-    if(!m_AddFilterPanel)
-    {
-        m_AddFilterPanel = [AddFilterPanel makePanel];
-
-        [m_AddFilterPanel orderFront:self];
-    }
-    else
-    {
-        [m_AddFilterPanel orderFront:self];
     }
 }
 

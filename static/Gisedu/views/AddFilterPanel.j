@@ -9,7 +9,7 @@
     CPPopUpButton m_FilterType;
 }
 
-- (id)init
+- (id)initWithTarget:(id)target andAction:(SEL)action
 {
     self = [super initWithContentRect:CGRectMake(150,150,300,150) styleMask:CPClosableWindowMask];
 
@@ -25,18 +25,17 @@
         [m_CancelButton sizeToFit];
 
         m_AddFilterButton = [CPButton buttonWithTitle:"Add Filter"];
-        [m_AddFilterButton setTarget:self];
-        [m_AddFilterButton setAction:@selector(onAddFilter:)];
+        [m_AddFilterButton setTarget:target];
+        [m_AddFilterButton setAction:action];
         [m_AddFilterButton sizeToFit];
 
         m_FilterName = [CPTextField roundedTextFieldWithStringValue:"Filter Name" placeholder:"What What" width:260];
 
         m_FilterType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(20, 68, 260, 24)];
         [m_FilterType setTitle:"Filter Type"];
-        [m_FilterType addItemWithTitle:"County Contains"];
-        [m_FilterType addItemWithTitle:"County Intersects"];
-        [m_FilterType addItemWithTitle:"School District Contains"];
-        [m_FilterType addItemWithTitle:"School District Intersects"];
+        [m_FilterType addItemWithTitle:"County"];
+        [m_FilterType addItemWithTitle:"School District"];
+        [m_FilterType addItemWithTitle:"Organization"];
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
         var addWidth = CGRectGetWidth([m_AddFilterButton bounds]);
@@ -55,14 +54,21 @@
     return self;
 }
 
-- (void)onCancel:(id)sender
+- (CPString)filterName
 {
-    [self close];
+    return [m_FilterName stringValue];
 }
 
-+ (id)makePanel
+- (CPString)filterType
 {
-    return [[AddFilterPanel alloc] init];
+    return [[m_FilterType selectedItem] title];
+}
+
+- (void)onCancel:(id)sender
+{
+    [m_FilterType selectItemAtIndex:0];
+    [m_FilterName setStringValue:"Filter Name"];
+    [self close];
 }
 
 @end

@@ -1,12 +1,26 @@
-@import <Foundation/CPObject.j>
+@import <AppKit/CPTreeNode.j>
 
 ///////////////////////////////////////////////////////////////////
 //Class: GiseduFilter
 //Purpose: A base class for the filtering system
 ///////////////////////////////////////////////////////////////////
-@implementation GiseduFilter : CPObject
+@implementation GiseduFilter : CPTreeNode
 {
+    CPString m_szType @accessors(property=type);
+    CPString m_szName @accessors(property=name);
+}
 
+- (id)init
+{
+    self = [super initWithRepresentedObject:"Filter"];
+
+    if(self)
+    {
+        m_szType = "Gisedu Filter";
+        m_szName = "Gisedu Filter";
+    }
+
+    return self;
 }
 
 ///////////////////////////////////////////////////////////////////
