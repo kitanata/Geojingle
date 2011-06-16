@@ -8,7 +8,7 @@
     CPString m_ConnectionURL;
 
     CPInteger m_nIdentifier;
-    BOOL m_bVisibleOnLoad;  //To mark visible(Not related to ShowAll)
+    BOOL m_bVisibleOnLoad @accessors(property=showOnLoad);  //To mark visible(Not related to ShowAll)
 
     PolygonOverlay m_Polygon @accessors(property=overlay);
 }

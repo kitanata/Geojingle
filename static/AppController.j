@@ -27,6 +27,7 @@ var m_ShowTablesToolbarId = 'showTables';
 var m_OverlayOptionsToolbarId = 'overlayOptions';
 var m_AddFilterToolbarId = 'addFilter';
 var m_DeleteFilterToolbarId = 'deleteFilter';
+var m_UpdateMapToolbarId = 'updateMap';
 
 @implementation AppController : CPObject
 {
@@ -95,6 +96,9 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
     [m_ContentView addSubview:m_MapView];
 
+    [m_OverlayManager setMapView:m_MapView];
+    [m_OverlayManager setCountyLoadedAction:@selector(onCountyOverlayLoaded:)];
+
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
     [m_ContentView addSubview:m_LeftSideTabView];
 
@@ -139,13 +143,13 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId];
+   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -212,6 +216,21 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
         [toolbarItem setTarget:[m_LeftSideTabView filtersView]];
         [toolbarItem setAction:@selector(onDeleteFilter:)];
         [toolbarItem setLabel:"Delete Filter"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_UpdateMapToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"update_map.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"update_map_highlighted.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onUpdateMapFilters:)];
+        [toolbarItem setLabel:"Update Map"];
 
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
@@ -299,18 +318,13 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             for(var key in listData[i])
             {
                 m_CountyItems[i] = key;
-
-                countyOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:listData[i][key] andUrl:"http://127.0.0.1:8000/county/"];
-                [countyOverlayLoader setAction:@selector(OnCountyGeometryLoaded:)];
-                [countyOverlayLoader setTarget:self];
-                [countyOverlayLoader loadAndShow:NO];
-
                 [counties setObject:listData[i][key] forKey:key];
             }
         }
 
         [[m_LeftSideTabView outlineView] setCountyItems:m_CountyItems];
         console.log("Finished Loading Counties");
+        [self onUpdateMapFilters:self];
     }
     else if(aConnection == m_LoadSchoolDistrictList)
     {
@@ -347,15 +361,10 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     }
 }
 
-- (void)OnCountyGeometryLoaded:(id)sender
+- (void)onCountyOverlayLoaded:(id)sender
 {
-    overlay = [sender overlay];
-    [overlay setOnClickAction:@selector(OnCountyGeometrySelected:)];
-    [overlay setEventTarget:self];
-    countyOverlays = [m_OverlayManager countyOverlays];
-    
-    [countyOverlays setObject:overlay forKey:[overlay pk]];
-    [overlay addToMapView:m_MapView];
+    [sender setOnClickAction:@selector(OnCountyGeometrySelected:)];
+    [sender setEventTarget:self];
 }
 
 - (void)OnCountyGeometrySelected:(id)sender
@@ -538,6 +547,13 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     {
         [self showOverlayOptionsView];
     }
+}
+
+- (void)onUpdateMapFilters:(id)sender
+{
+    filterManager = [FilterManager getInstance];
+
+    [filterManager updateMap:m_MapView];
 }
 
 @end

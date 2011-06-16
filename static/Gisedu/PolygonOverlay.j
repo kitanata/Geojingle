@@ -109,7 +109,7 @@
     m_GooglePolygon.setMap([mapView gMap]);
 }
 
-- (void)removeFromMapView:(MKMapView)mapView
+- (void)removeFromMapView
 {
     m_GooglePolygon.setMap(null);
 }

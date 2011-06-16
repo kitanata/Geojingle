@@ -137,7 +137,7 @@
 
 - (void)onLineColorWell:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon removeFromMapView];
     [m_OverlayPolygon setLineColorCode:"#" + [[m_LineColorWell color] hexString]];
 
     if([m_OverlayPolygon visible])
@@ -148,7 +148,7 @@
 
 - (void)onFillColorWell:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon removeFromMapView];
     [m_OverlayPolygon setFillColorCode:"#" + [[m_FillColorWell color] hexString]];
 
     if([m_OverlayPolygon visible])
@@ -159,7 +159,7 @@
 
 - (void)onStrokeSlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon removeFromMapView];
     [m_OverlayPolygon setLineStroke:[m_LineStrokeSlider doubleValue]];
 
     if([m_OverlayPolygon visible])
@@ -170,7 +170,7 @@
 
 - (void)onLineOpacitySlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon removeFromMapView];
     [m_OverlayPolygon setLineOpacity:([m_LineOpacitySlider doubleValue] / 100)];
 
     if([m_OverlayPolygon visible])
@@ -181,7 +181,7 @@
 
 - (void)onFillOpacitySlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView:m_MapView];
+    [m_OverlayPolygon removeFromMapView];
     [m_OverlayPolygon setFillOpacity:([m_FillOpacitySlider doubleValue] / 100)];
 
     if([m_OverlayPolygon visible])
@@ -201,7 +201,7 @@
     else if([m_ShowButton state] == CPOffState)
     {
         [m_OverlayPolygon setVisible:NO];
-        [m_OverlayPolygon removeFromMapView:m_MapView];
+        [m_OverlayPolygon removeFromMapView];
     }
 }
 

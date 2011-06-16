@@ -6,6 +6,7 @@ var g_FilterManagerInstance = nil;
 
 @implementation FilterManager : CPObject
 {
+    OverlayManager m_OverlayManager;
     CPArray m_RootFilters @accessors(property=rootFilters);
 }
 
@@ -15,7 +16,10 @@ var g_FilterManagerInstance = nil;
 
     if(self)
     {
+        m_OverlayManager = [OverlayManager getInstance];
         m_RootFilters = [CPArray array];
+
+        [self addFilter:[[CountyFilter alloc] initWithName:"Default"] parent:nil];
     }
 
     return self;
@@ -82,6 +86,92 @@ var g_FilterManagerInstance = nil;
     }
 
     return g_FilterManagerInstance;
+}
+
+
+- (void)updateMap:(MKMapView)mapView
+{
+    console.log("FilterManager:updateMap called");
+    
+    resultSet = [[self processFilters] allObjects];
+
+    console.log("Result set is : " + resultSet);
+
+    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
+
+    [m_OverlayManager removeAllOverlaysFromMapView];
+    
+    countyOverlays = [m_OverlayManager countyOverlays];
+
+    for(var i=0; i < [resultSet count]; i++)
+    {
+        typeIdPair = [resultSet objectAtIndex:i];
+        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
+
+        itemType = [items objectAtIndex:0];
+        itemId = [items objectAtIndex:1];
+
+        if(itemType == "county")
+        {
+            //Add the County to the map
+            if([countyOverlays containsKey:itemId])
+            {
+                overlay = [countyOverlays objectForKey:itemId];
+                [overlay addToMapView:mapView];
+            }
+            else
+            {
+                [m_OverlayManager loadCountyOverlay:itemId andShowOnLoad:YES];
+            }
+        }
+    }
+}
+
+
+- (CPSet)processFilters
+{
+    return [self processFilters:m_RootFilters];
+}
+
+
+- (CPSet)processFilters:(CPArray)filters
+{
+    resultSet = [CPSet set];
+
+    for(var i=0; i < [filters count]; i++)
+    {
+        curFilter = [filters objectAtIndex:i];
+
+        if([[curFilter childNodes] count] > 0)
+        {
+            parentResult = [curFilter filter];
+            childResults = [self processFilters:[curFilter childNodes]];
+            intersectedResult = [self intersectFilterSet:parentResult withFilterSet:childResults];
+            resultSet = [resultSet setByAddingObjectsFromSet:intersectedResult];
+        }
+        else
+        {
+            result = [curFilter filter];
+
+            resultSet = [resultSet setByAddingObjectsFromSet:result];
+        }
+    }
+
+    return resultSet;
+}
+
+
+//TODO: Below
+// Each Set is a set of the type GiseduTypeIdPair (i.e. county/4 school/18)
+// A GiseduTypeIdPair is the following JSON {"type":"County", "id":1}
+
+- (CPSet)intersectFilterSet:(CPSet)firstSet withFilterSet:(CPSet)secondSet
+{
+    //based on the type of firstSet and type of SecondSet build a query for intersection
+    //for example with "county/4" and "organization/18" they query would be "gisedu.ohio.gov/org/18/in_county/4"
+
+    //As a dummy just unionize them TODO: Make this work correctly
+    return [firstSet setByAddingObjectsFromSet:secondSet];
 }
 
 @end

@@ -16,6 +16,8 @@ var overlayManagerInstance = nil;
 
 @implementation OverlayManager : CPObject
 {
+    MKMapView m_MapView @accessors(property=mapView);
+    
     CPDictionary m_Counties @accessors(property=counties);                                //Maps a County Name to it's PK
     CPDictionary m_CountyOverlays @accessors(property=countyOverlays);                    //Maps a County PK to it's Overlay
 
@@ -24,6 +26,8 @@ var overlayManagerInstance = nil;
 
     CPDictionary m_OrgToGid @accessors(property=orgs);                    //maps name of organization to it's primary key in the db
     CPDictionary m_OrgGidToOverlay @accessors(property=orgOverlays);      //maps the PK of the organization to a PointOverlay.
+
+    SEL m_selCountyOverlayLoaded @accessors(property=countyLoadedAction);
 }
 
 - (id)init
@@ -43,6 +47,43 @@ var overlayManagerInstance = nil;
     }
 
     return self;
+}
+
+- (void)loadCountyOverlay:(CPInteger)countyId
+{
+    [self loadCountyOverlay:countyId andShowOnLoad:NO];
+}
+
+- (void)loadCountyOverlay:(CPInteger)countyId andShowOnLoad:(BOOL)show
+{
+    countyOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:countyId andUrl:"http://127.0.0.1:8000/county/"];
+    [countyOverlayLoader setAction:@selector(onCountyOverlayLoaded:)];
+    [countyOverlayLoader setTarget:self];
+    [countyOverlayLoader loadAndShow:show];
+}
+
+- (void)onCountyOverlayLoaded:(id)sender
+{
+    overlay = [sender overlay];
+    
+    [m_CountyOverlays setObject:overlay forKey:[overlay pk]];
+
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView:m_MapView];
+    }
+
+    [overlay sendAction:m_selCountyOverlayLoaded to:[overlay target]];
+}
+
+- (void)removeAllOverlaysFromMapView
+{
+    countyOverlays = [m_CountyOverlays allValues];
+
+    for(var i=0; i < [countyOverlays count]; i++)
+    {
+        [[countyOverlays objectAtIndex:i] removeFromMapView];
+    }
 }
 
 + (OverlayManager)getInstance

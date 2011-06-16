@@ -99,8 +99,6 @@
 
 - (void) onOutlineItemSelected:(id)sender
 {
-    console.log("Item Selected");
-    
     if([m_OutlineView selectedRow] == CPNotFound)
     {
         if(m_CurrentFilterView)
@@ -114,8 +112,10 @@
         {
             if(m_CurrentFilterView)
                 [m_CurrentFilterView removeFromSuperview];
-                
-            m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds]];
+
+            m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
+            [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
+            [m_CurrentFilterView setTarget:self];
             [m_PropertiesView addSubview:m_CurrentFilterView];
         }
     }
@@ -207,6 +207,18 @@
     }
 
     [m_AddFilterPanel onCancel:sender];
+}
+
+- (void)onFilterPropertiesChanged:(id)sender
+{
+    curSelRow = [m_OutlineView selectedRow];
+
+    if(curSelRow != CPNotFound)
+    {
+        curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+
+        [m_OutlineView reloadItem:curSelItem reloadChildren:NO];
+    }
 }
 
 @end
