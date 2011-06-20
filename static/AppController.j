@@ -42,13 +42,11 @@ var m_UpdateMapToolbarId = 'updateMap';
 
     CPArray m_CountyItems;
     CPArray m_SchoolDistrictItems;
-    CPArray m_OrgTypes;                         //A List of all the possible organization types
 
     OverlayManager m_OverlayManager;
 
     CPURLConnection m_LoadCountyList;
     CPURLConnection m_LoadSchoolDistrictList;
-    CPURLConnection m_LoadOrgTypeList;
 
     TablesController m_TablesController;
 
@@ -75,6 +73,7 @@ var m_UpdateMapToolbarId = 'updateMap';
     [m_ContentView setBackgroundColor:[CPColor whiteColor]];
 
     m_OverlayManager = [OverlayManager getInstance];
+    [m_OverlayManager setDelegate:self];
 
     m_CountyItems = [CPArray array];
     m_SchoolDistrictItems = [CPArray array];
@@ -97,7 +96,6 @@ var m_UpdateMapToolbarId = 'updateMap';
     [m_ContentView addSubview:m_MapView];
 
     [m_OverlayManager setMapView:m_MapView];
-    [m_OverlayManager setCountyLoadedAction:@selector(onCountyOverlayLoaded:)];
 
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
     [m_ContentView addSubview:m_LeftSideTabView];
@@ -126,18 +124,17 @@ var m_UpdateMapToolbarId = 'updateMap';
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-    [m_LeftSideTabView mapViewIsReady:mapView];
-    [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
-    [[m_LeftSideTabView outlineView] setTarget:self];
-    
     [m_LoadCountyList cancel];
     m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
 
     [m_LoadSchoolDistrictList cancel];
     m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/school_district_list/"] delegate:self];
+    
+    [m_OverlayManager loadOrganizationTypeList];
 
-    [m_LoadOrgTypeList cancel];
-    m_LoadOrgTypeList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/org_type_list/"] delegate:self];
+    [m_LeftSideTabView mapViewIsReady:mapView];
+    [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
+    [[m_LeftSideTabView outlineView] setTarget:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -258,7 +255,6 @@ var m_UpdateMapToolbarId = 'updateMap';
   	var menuItem2 = [[CPMenuItem alloc] initWithTitle:@"Edit" action:nil keyEquivalent:@"4"];
   	[menu addItem:menuItem2];
 
-
   	var menu2 = [[CPMenu alloc] initWithTitle:@"dummy"];
   	var menuItem3 = [[CPMenuItem alloc] initWithTitle:@"CCC" action:@selector(showAlert:) keyEquivalent:@"3"];
   	[menu2 addItem:menuItem3];
@@ -292,11 +288,6 @@ var m_UpdateMapToolbarId = 'updateMap';
     {
         alert('Could not load school district information! ' + anError);
         m_LoadSchoolDistrictList = nil;
-    }
-    else if(aConnection == m_LoadOrgTypeList)
-    {
-        alert('Could not load organization type information! ' + anError);
-        m_LoadOrgTypeList = nil;
     }
     else
     {
@@ -343,28 +334,28 @@ var m_UpdateMapToolbarId = 'updateMap';
         [[m_LeftSideTabView outlineView] setSchoolDistrictItems:m_SchoolDistrictItems];
         console.log("Finished Loading School Districts");
     }
-    else if(aConnection == m_LoadOrgTypeList)
-    {
-        console.log("Loading Organization Type List");
-        
-        for(var i=0; i < listData.length; i++)
-        {
-            [[m_LeftSideTabView outlineView] addItem:listData[i]];
-            
-            loader = [[OrganizationListLoader alloc] initWithTypeName:listData[i]];
-            [loader setAction:@selector(OnOrgListLoaded:)];
-            [loader setTarget:self];
-            [loader load];
-        }
+}
 
-        m_OrgTypes = [CPArray arrayWithObjects:listData count:listData.length];
+- (void)onOrgTypeListLoaded
+{
+    var orgTypes = [[m_OverlayManager orgTypes] allKeys];
+
+    for(var i=0; i < [orgTypes count]; i++)
+    {
+        [[m_LeftSideTabView outlineView] addItem:[orgTypes objectAtIndex:i]];
     }
 }
 
-- (void)onCountyOverlayLoaded:(id)sender
+- (void)setCountyOverlayOnClick:(id)overlay
 {
-    [sender setOnClickAction:@selector(OnCountyGeometrySelected:)];
-    [sender setEventTarget:self];
+    [overlay setOnClickAction:@selector(OnCountyGeometrySelected:)];
+    [overlay setEventTarget:self];
+}
+
+- (void)setOrgOverlayOnClick:(id)overlay
+{
+    [overlay setOnClickAction:@selector(OnOrgGeometrySelected:)];
+    [overlay setEventTarget:self];
 }
 
 - (void)OnCountyGeometrySelected:(id)sender
@@ -372,16 +363,16 @@ var m_UpdateMapToolbarId = 'updateMap';
     [m_OverlayOptionsView setPolygonOverlayTarget:sender];
 }
 
-- (void)OnOrgListLoaded:(id)sender
+- (void)OnOrgGeometrySelected:(id)sender
 {
-    orgs = [sender orgs];
+    [m_OverlayOptionsView setPointOverlayTarget:sender];
+}
 
-    orgKeys = [orgs allKeys];
+- (void)onOrgListLoaded:(CPString)orgName
+{
+    orgKeys = [[m_OverlayManager orgs] allKeys];
 
-    [[m_LeftSideTabView outlineView] setArray:orgKeys forItem:[sender name]];
-
-    curOrgs = [m_OverlayManager orgs];
-    [curOrgs addEntriesFromDictionary:orgs];
+    [[m_LeftSideTabView outlineView] setArray:orgKeys forItem:orgName];
 }
 
 - (void)OnOrgGeometryLoaded:(id)sender
@@ -390,11 +381,11 @@ var m_UpdateMapToolbarId = 'updateMap';
 
     infoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:[orgOverlay pk] andUrl:"http://127.0.0.1:8000/edu_org_info/"];
     [orgOverlay setInfoLoader:infoLoader];
-    
+
     [m_OverlayOptionsView setPointOverlayTarget:orgOverlay];
 
     [[m_OverlayManager orgOverlays] setObject:orgOverlay forKey:[orgOverlay pk]];
-    
+
     [orgOverlay addToMapView:m_MapView];
 }
 
@@ -451,7 +442,7 @@ var m_UpdateMapToolbarId = 'updateMap';
 
         [self showOverlayOptionsView];
     }//Organizations
-    else if([m_OrgTypes containsObject:[sender parentForItem:item]])
+    else if([[m_OverlayManager orgTypeList] containsObject:[sender parentForItem:item]])
     {
         orgs = [m_OverlayManager orgs];
         orgOverlays = [m_OverlayManager orgOverlays];

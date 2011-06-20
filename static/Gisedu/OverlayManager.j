@@ -1,5 +1,7 @@
 @import <Foundation/CPObject.j>
 
+@import "loaders/OrganizationTypeListLoader.j"
+
 //IMPORTANT ************************************************************************************************************
 // Hi! You may be wondering why there are three separate variables tracking these items(two here and one in app controller).
 // Why do we need all these? Well the reason is two fold first the outline view works best with arrays of strings, which explains
@@ -24,10 +26,11 @@ var overlayManagerInstance = nil;
     CPDictionary m_SchoolDistricts @accessors(property=schoolDistricts);                  //Maps a School District Name with the PK
     CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
 
+    CPDictionary m_OrganizationTypes @accessors(property=orgTypes);       //maps organization type to an array of organization names
     CPDictionary m_OrgToGid @accessors(property=orgs);                    //maps name of organization to it's primary key in the db
     CPDictionary m_OrgGidToOverlay @accessors(property=orgOverlays);      //maps the PK of the organization to a PointOverlay.
 
-    SEL m_selCountyOverlayLoaded @accessors(property=countyLoadedAction);
+    id m_Delegate @accessors(property=delegate);
 }
 
 - (id)init
@@ -42,11 +45,18 @@ var overlayManagerInstance = nil;
         m_SchoolDistricts = [CPDictionary dictionary];
         m_SchoolDistrictOverlays = [CPDictionary dictionary];
 
+        m_OrganizationTypes = [CPDictionary dictionary];
+
         m_OrgToGid = [CPDictionary dictionary];
         m_OrgGidToOverlay = [CPDictionary dictionary];
     }
 
     return self;
+}
+
+- (CPArray)getOrganizationsOfType:(CPString)type
+{
+    return [m_OrganizationTypes objectForKey:type];
 }
 
 - (void)loadCountyOverlay:(CPInteger)countyId
@@ -62,6 +72,22 @@ var overlayManagerInstance = nil;
     [countyOverlayLoader loadAndShow:show];
 }
 
+- (void)loadOrganizationOverlay:(CPInteger)orgId andShowOnLoad:(BOOL)show
+{
+    pointOverlayLoader = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
+    [pointOverlayLoader setAction:@selector(onOrgOverlayLoaded:)];
+    [pointOverlayLoader setTarget:self];
+    [pointOverlayLoader loadAndShow:show];
+}
+
+- (void)loadOrganizationTypeList
+{
+    organizationTypeListLoader = [[OrganizationTypeListLoader alloc] init];
+    [organizationTypeListLoader setAction:@selector(onOrgTypeListLoaded:)];
+    [organizationTypeListLoader setTarget:self];
+    [organizationTypeListLoader load];
+}
+
 - (void)onCountyOverlayLoaded:(id)sender
 {
     overlay = [sender overlay];
@@ -73,16 +99,77 @@ var overlayManagerInstance = nil;
         [overlay addToMapView:m_MapView];
     }
 
-    [overlay sendAction:m_selCountyOverlayLoaded to:[overlay target]];
+    if([m_Delegate respondsToSelector:@selector(setCountyOverlayOnClick:)])
+        [m_Delegate setCountyOverlayOnClick:overlay];
+}
+
+- (void)onOrgOverlayLoaded:(id)sender
+{
+    overlay = [sender overlay];
+
+    [m_OrgGidToOverlay setObject:overlay forKey:[overlay pk]];
+
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView:m_MapView];
+    }
+
+    infoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:[overlay pk] andUrl:"http://127.0.0.1:8000/edu_org_info/"];
+    [overlay setInfoLoader:infoLoader];
+
+    if([m_Delegate respondsToSelector:@selector(setOrgOverlayOnClick:)])
+        [m_Delegate setOrgOverlayOnClick:overlay];
+}
+
+- (void)onOrgTypeListLoaded:(id)sender
+{
+    orgTypes = [sender orgTypes];
+    for(var i=0; i < [orgTypes count]; i++)
+    {
+        [m_OrganizationTypes setObject:[CPArray array] forKey:[orgTypes objectAtIndex:i]];
+
+        loader = [[OrganizationListLoader alloc] initWithTypeName:[orgTypes objectAtIndex:i]];
+        [loader setAction:@selector(onOrgListLoaded:)];
+        [loader setTarget:self];
+        [loader load];
+    }
+
+    if([m_Delegate respondsToSelector:@selector(onOrgTypeListLoaded)])
+        [m_Delegate onOrgTypeListLoaded];
+}
+
+- (void)onOrgListLoaded:(id)sender
+{
+    [m_OrganizationTypes setObject:[[sender orgs] allKeys] forKey:[sender name]];
+    [m_OrgToGid addEntriesFromDictionary:[sender orgs]];
+    
+    if([m_Delegate respondsToSelector:@selector(onOrgListLoaded:)])
+        [m_Delegate onOrgListLoaded:[sender name]];
 }
 
 - (void)removeAllOverlaysFromMapView
 {
-    countyOverlays = [m_CountyOverlays allValues];
+    [self removeAllCountyOverlaysFromMapView];
+    [self removeAllOrgOverlaysFromMapView];
+}
+
+- (void)removeAllCountyOverlaysFromMapView
+{
+    var countyOverlays = [m_CountyOverlays allValues];
 
     for(var i=0; i < [countyOverlays count]; i++)
     {
         [[countyOverlays objectAtIndex:i] removeFromMapView];
+    }
+}
+
+- (void)removeAllOrgOverlaysFromMapView
+{
+    var orgOverlays = [m_OrgGidToOverlay allValues];
+
+    for(var i=0; i < [orgOverlays count]; i++)
+    {
+        [[orgOverlays objectAtIndex:i] removeFromMapView];
     }
 }
 

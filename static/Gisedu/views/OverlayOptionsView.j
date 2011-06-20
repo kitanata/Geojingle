@@ -1,18 +1,15 @@
 @import <Foundation/CPObject.j>
 
-@import "MapOptionsView.j"
 @import "PolygonOverlayOptionsView.j"
 @import "PointOverlayOptionsView.j"
 
 @implementation OverlayOptionsView : CPView
 {
-    MapOptionsView m_MapOptionsView @accessors(property=mapOptionsView);
     PolygonOverlayOptionsView m_PolyOptionsView @accessors(property=polyOptionsView);
     PointOverlayOptionsView m_PointOptionsView @accessors(property=pointOptionsView);
 
     CPTabView m_TabView;
 
-    CPTabViewItem m_MapOptionsTabItem;
     CPTabViewItem m_PolyTabItem;
     CPTabViewItem m_PointTabItem;
 }
@@ -28,14 +25,8 @@
         [m_TabView setTabViewType:CPTopTabsBezelBorder];
         [m_TabView setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
-        m_MapOptionsView = [[MapOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];
         m_PolyOptionsView = [[PolygonOverlayOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];
         m_PointOptionsView = [[PointOverlayOptionsView alloc] initWithFrame:[m_TabView bounds] andMapView:mapView];
-
-        m_MapOptionsTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"MapOptionsTab"];
-        [m_MapOptionsTabItem setLabel:"Map Options"];
-        [m_MapOptionsTabItem setView:m_MapOptionsView];
-        [m_TabView addTabViewItem:m_MapOptionsTabItem];
 
         m_PolyTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"PolyOverlayOptTab"];
         [m_PolyTabItem setLabel:"Polygon Options"];

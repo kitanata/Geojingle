@@ -91,17 +91,14 @@ var g_FilterManagerInstance = nil;
 
 - (void)updateMap:(MKMapView)mapView
 {
-    console.log("FilterManager:updateMap called");
-    
     resultSet = [[self processFilters] allObjects];
-
-    console.log("Result set is : " + resultSet);
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
     [m_OverlayManager removeAllOverlaysFromMapView];
     
     countyOverlays = [m_OverlayManager countyOverlays];
+    orgOverlays = [m_OverlayManager orgOverlays];
 
     for(var i=0; i < [resultSet count]; i++)
     {
@@ -124,6 +121,18 @@ var g_FilterManagerInstance = nil;
                 [m_OverlayManager loadCountyOverlay:itemId andShowOnLoad:YES];
             }
         }
+        else if(itemType == "org")
+        {
+            if([orgOverlays containsKey:itemId])
+            {
+                overlay = [orgOverlays objectForKey:itemId];
+                [overlay addToMapView:mapView];
+            }
+            else
+            {
+                [m_OverlayManager loadOrganizationOverlay:itemId andShowOnLoad:YES];
+            }
+        }
     }
 }
 
@@ -142,19 +151,10 @@ var g_FilterManagerInstance = nil;
     {
         curFilter = [filters objectAtIndex:i];
 
-        if([[curFilter childNodes] count] > 0)
-        {
-            parentResult = [curFilter filter];
-            childResults = [self processFilters:[curFilter childNodes]];
-            intersectedResult = [self intersectFilterSet:parentResult withFilterSet:childResults];
-            resultSet = [resultSet setByAddingObjectsFromSet:intersectedResult];
-        }
+        if([curFilter parentNode])
+            resultSet = [resultSet setByAddingObjectsFromSet:[[curFilter parentNode] intersect:[curFilter filter]]];
         else
-        {
-            result = [curFilter filter];
-
-            resultSet = [resultSet setByAddingObjectsFromSet:result];
-        }
+            resultSet = [resultSet setByAddingObjectsFromSet:[curFilter filter]];
     }
 
     return resultSet;

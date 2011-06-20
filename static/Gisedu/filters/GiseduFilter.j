@@ -10,14 +10,14 @@
     CPString m_szName @accessors(property=name);
 }
 
-- (id)init
+- (id)initWithName:(CPString)name
 {
     self = [super initWithRepresentedObject:"Filter"];
 
     if(self)
     {
         m_szType = "Gisedu Filter";
-        m_szName = "Gisedu Filter";
+        m_szName = name;
     }
 
     return self;
@@ -32,6 +32,11 @@
 //Note: All deriving classes should override / implement this function
 ///////////////////////////////////////////////////////////////////
 - (CPSet)filter
+{
+
+}
+
+- (CPSet)intersect:(CPSet)childFilters
 {
 
 }

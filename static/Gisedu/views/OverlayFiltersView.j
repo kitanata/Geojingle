@@ -1,7 +1,11 @@
 @import <Foundation/CPObject.j>
 
 @import "../filters/CountyFilter.j"
+@import "../filters/OrganizationFilter.j"
+
 @import "filters/CountyFilterView.j"
+@import "filters/OrganizationFilterView.j"
+
 @import "../FilterManager.j"
 
 @implementation OverlayFiltersView : CPView
@@ -107,17 +111,18 @@
     else
     {
         filter = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+
+        if(m_CurrentFilterView)
+            [m_CurrentFilterView removeFromSuperview];
         
         if([filter type] == "County")
-        {
-            if(m_CurrentFilterView)
-                [m_CurrentFilterView removeFromSuperview];
-
             m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-            [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
-            [m_CurrentFilterView setTarget:self];
-            [m_PropertiesView addSubview:m_CurrentFilterView];
-        }
+        else if([filter type] == "Organization")
+            m_CurrentFilterView = [[OrganizationFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
+        
+        [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
+        [m_CurrentFilterView setTarget:self];
+        [m_PropertiesView addSubview:m_CurrentFilterView];
     }
 }
 
@@ -184,9 +189,9 @@
     var newFilter = nil;
     
     if(filterType == "County")
-    {
         newFilter = [[CountyFilter alloc] initWithName:[m_AddFilterPanel filterName]];
-    }
+    else if(filterType == "Organization")
+        newFilter = [[OrganizationFilter alloc] initWithName:[m_AddFilterPanel filterName]];
 
     if(newFilter)
     {

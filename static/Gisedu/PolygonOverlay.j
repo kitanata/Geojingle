@@ -3,6 +3,8 @@
 @import "../MapKit/MKMapItem.j"
 @import "../MapKit/MKLocation.j"
 
+@import "PointOverlay.j"
+
 @implementation PolygonOverlay : CPControl
 {
     CPString m_szName           @accessors(property=name);
@@ -147,6 +149,62 @@
     m_LineOpacity = opacity;
 
     [self createGooglePolygon];
+}
+
+- (BOOL)containsPoint:(PointOverlay)point
+{
+    //Note: This algorithm is called the simple ray casting algorithm for polygon point detection.
+    // It employs some pretty basic liner algebra but it will likely make your head hurt if you
+    // haven't been exposed to matrixs, determinants, and vectors. If this is the case turn away before
+    // you get hurt.
+
+    var point3 = [point point];
+    var point4 = [MKLocation locationWithLatitude:90.0 andLongitude:180.0];
+
+    //O (n^2)
+    for(var i=0; i < [m_Paths count]; i++)
+    {
+        var curPath = [m_Paths objectAtIndex:i];
+
+        var pathsCrossed = 0;
+
+        point1 = [curPath objectAtIndex:0];
+        for(var j=1; j < [curPath count]; j++)
+        {
+            point2 = [curPath objectAtIndex:i];
+
+            //test to see if the ray from the test point to the top left of the world crosses this path
+            //if it does increase the number of pathsCrossed by one
+
+            var point4latMinPoint3Lat = [point4 latitude] - [point3 latitude];
+            var point4longMinPoint3Long = [point4 longitude] - [point3 longitude];
+            var point2latMinPoint1Lat = [point2 latitude] - [point1 latitude];
+            var point2longMinPoint1Long = [point2 longitude] - [point1 longitude];
+
+            var point1LatMinPoint3Lat = [point1 latitude] - [point3 latitude];
+            var point1LongMinPoint3Long = [point1 longitude] - [point3 longitude];
+
+            denom = (point4latMinPoint3Lat * point2longMinPoint1Long) - (point4longMinPoint3Long * point2latMinPoint1Lat);
+
+            if(denom == 0) //lines are coincident or parallel
+                continue;
+
+            aNumer = (point4longMinPoint3Long * point1LatMinPoint3Lat) - (point4latMinPoint3Lat * point1LongMinPoint3Long)
+
+            if(aNumer - denom > 1 || aNumer - denom < 0)
+                continue;
+
+            bNumer = (point2longMinPoint1Long * point1LatMinPoint3Lat) - (point2latMinPoint1Lat * point1LongMinPoint3Long)
+
+            if(bNumer - denom > 1 || bNumer - denom < 0)
+                continue;
+
+            pathsCrossed++;
+        }
+
+        if(pathsCrossed % 2 == 1) //http://en.wikipedia.org/wiki/Point_in_polygon
+            return YES;
+    }
 }
 
 // EVENTS

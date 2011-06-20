@@ -7,9 +7,9 @@
     CPString m_szCounty @accessors(property=county);
 }
 
-- (id)init
+- (id)initWithName:(CPString)name
 {
-    self = [super init];
+    self = [super initWithName:name];
 
     if(self)
     {
@@ -20,34 +20,22 @@
     return self;
 }
 
-- (id)initWithName:(CPString)name
-{
-    self = [self init];
-
-    if(self)
-        m_szName = name;
-
-    return self;
-}
-
 - (CPSet)filter
 {
-    filterSet = [CPSet set];
-    
     overlayManager = [OverlayManager getInstance];
     
     if(m_szCounty == "All")
     {
-        countyIds = [[overlayManager counties] allValues];
+        var typeIds = [CPArray array];
+        var countyIds = [[overlayManager counties] allValues];
+        var numCountyIds = [countyIds count];
 
-        for(var i=0; i < [countyIds count]; i++)
+        for(var i=0; i < numCountyIds; i++)
         {
-            curId = [countyIds objectAtIndex:i];
-
-            typeIdPair = "county:"+curId;
-
-            filterSet = [filterSet setByAddingObject:typeIdPair];
+            [typeIds addObject:("county:"+[countyIds objectAtIndex:i])];
         }
+
+        return [CPSet setWithArray:typeIds];
     }
     else
     {
@@ -55,15 +43,16 @@
 
         if([counties containsKey:m_szCounty])
         {
-            curId = [counties objectForKey:m_szCounty];
-
-            typeIdPair = "county:"+curId;
-
-            filterSet = [filterSet setByAddingObject:typeIdPair];
+            return [CPSet setWithObject:("county:"+[counties objectForKey:m_szCounty])];
         }
     }
 
-    return filterSet;
+    return [CPSet set];
+}
+
+- (CPSet)intersect:(CPSet)childFilters
+{
+    
 }
 
 @end

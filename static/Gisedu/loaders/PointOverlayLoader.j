@@ -5,7 +5,7 @@
 @implementation PointOverlayLoader : CPControl
 {
     CPInteger m_nIdentifier @accessors(property=identifier);
-    BOOL m_bVisibleOnLoad;  //To mark visible(Not related to ShowAll)
+    BOOL m_bVisibleOnLoad @accessors(property=showOnLoad);
 
     PointOverlay m_PointOverlay @accessors(property=overlay);
 

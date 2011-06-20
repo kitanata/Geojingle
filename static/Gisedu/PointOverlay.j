@@ -5,7 +5,7 @@
 
 @import "loaders/InfoWindowOverlayLoader.j"
 
-@implementation PointOverlay : CPObject
+@implementation PointOverlay : CPControl
 {
     Marker m_GoogleMarker @accessors(property=marker);
 
@@ -17,6 +17,9 @@
 
     InfoWindowOverlayLoader m_InfoLoader;
     InfoWindowOverlay m_InfoWindow;
+
+    SEL m_OnClickAction         @accessors(property=onClickAction);
+    id m_EventTarget            @accessors(property=eventTarget);
 }
 
 - (id)init
@@ -60,7 +63,7 @@
 
     m_GoogleMarker = new gm.Marker(markerOptions);
 
-    gm.event.addListener(m_GoogleMarker, 'click', function() {[self toggleInfoWindow];});
+    gm.event.addListener(m_GoogleMarker, 'click', function() {[self onClick];});
 }
 
 - (void)setInfoLoader:(InfoWindowOverlayLoader)infoLoader
@@ -119,9 +122,21 @@
     m_GoogleMarker.setMap([mapView gMap]);
 }
 
-- (void)removeFromMapView:(MKMapView)mapView
+- (void)removeFromMapView
 {
     m_GoogleMarker.setMap(null);
+}
+
+// EVENTS
+
+- (void)onClick
+{
+    [self toggleInfoWindow];
+    
+    if(m_EventTarget && m_OnClickAction)
+    {
+        [self sendAction:m_OnClickAction to:m_EventTarget];
+    }
 }
 
 @end

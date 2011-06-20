@@ -55,7 +55,7 @@
     else if([m_ShowButton state] == CPOffState)
     {
         [m_OverlayTarget setVisible:NO];
-        [m_OverlayTarget removeFromMapView:m_MapView];
+        [m_OverlayTarget removeFromMapView];
     }
 }
 

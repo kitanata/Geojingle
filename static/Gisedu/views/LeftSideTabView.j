@@ -4,11 +4,11 @@
 
 @implementation LeftSideTabView : CPTabView
 {
-    CPTabViewItem m_OverlayOutlineTabItem;
-    OverlayOutlineView m_OverlayOutlineView @accessors(property=outlineView);
-
     CPTabViewItem m_OverlayFiltersTabItem;
     OverlayFiltersView m_OverlayFiltersView @accessors(property=filtersView);
+
+    CPTabViewItem m_OverlayOutlineTabItem;
+    OverlayOutlineView m_OverlayOutlineView @accessors(property=outlineView);
 }
 
 - (id) initWithContentView:(CPView)contentView
@@ -22,17 +22,18 @@
         m_OverlayOutlineView = [[OverlayOutlineView alloc] initWithFrame:[self bounds]];
         m_OverlayFiltersView = [[OverlayFiltersView alloc] initWithFrame:[self bounds]];
 
-        //Overlay Features
-        m_OverlayOutlineTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OutlineTab"];
-        [m_OverlayOutlineTabItem setLabel:"Overlay Features"];
-        [m_OverlayOutlineTabItem setView:m_OverlayOutlineView];
-        [self addTabViewItem:m_OverlayOutlineTabItem];
-
         //Overlay Filters
         m_OverlayFiltersTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"FiltersTab"];
-        [m_OverlayFiltersTabItem setLabel:"Overlay Filters"];
+        [m_OverlayFiltersTabItem setLabel:"Filter Engine"];
         [m_OverlayFiltersTabItem setView:m_OverlayFiltersView];
+
+        //Overlay Features
+        m_OverlayOutlineTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OutlineTab"];
+        [m_OverlayOutlineTabItem setLabel:"Feature Outline"];
+        [m_OverlayOutlineTabItem setView:m_OverlayOutlineView];
+
         [self addTabViewItem:m_OverlayFiltersTabItem];
+        [self addTabViewItem:m_OverlayOutlineTabItem];
     }
 
     return self;
