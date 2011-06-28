@@ -110,3 +110,39 @@ def org_infobox(request, org_id):
 
     return render_to_response('edu_org_info.html', {'org_name' : org.org_nm, 'address': org.address}, context_instance=RequestContext(request))
 
+
+##########################
+##FILTERS
+##########################
+
+def filter_county_by_name(request, county_name):
+
+    if county_name == "All":
+        counties = OhioCounties.objects.all()
+        countyIds = map(lambda county: county.gid, counties)
+
+        return render_to_response('json/base.json', {'json': json.dumps(countyIds)}, context_instance=RequestContext(request))
+    else:
+        county = OhioCounties.objects.get(name=county_name)
+        return render_to_response('json/base.json', {'json': json.dumps([county.gid])}, context_instance=RequestContext(request))
+
+def filter_org_by_type(request, type_name):
+
+    if type_name == "All":
+        orgs = GiseduOrg.objects.all()
+        orgIds = map(lambda org: org.gid, orgs)
+
+        return render_to_response('json/base.json', {'json': json.dumps(orgIds)}, context_instance=RequestContext(request))
+    else:
+        orgs = GiseduOrg.objects.filter(org_type__org_type_name=type_name)
+        orgIds = map(lambda org: org.gid, orgs)
+
+        return render_to_response('json/base.json', {'json': json.dumps(orgIds)}, context_instance=RequestContext(request))
+
+def filter_org_by_name(request, org_name):
+
+    orgs = GiseduOrg.objects.filter(org_nm=org_name)
+    orgIds = map(lambda org: org.gid, orgs)
+
+    return render_to_response('json/base.json', {'json': json.dumps(orgIds)}, context_instance=RequestContext(request))
+

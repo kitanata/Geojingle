@@ -71,7 +71,7 @@
 {
     if (item === nil)
     {
-        return [[m_FilterManager rootFilters] objectAtIndex:index];
+        return [[m_FilterManager userFilters] objectAtIndex:index];
     }
     else
     {
@@ -88,7 +88,7 @@
 {
     if (item === nil)
     {
-        return [[m_FilterManager rootFilters] count];
+        return [[m_FilterManager userFilters] count];
     }
     else
     {
@@ -115,9 +115,9 @@
         if(m_CurrentFilterView)
             [m_CurrentFilterView removeFromSuperview];
         
-        if([filter type] == "County")
+        if([filter type] == "county")
             m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-        else if([filter type] == "Organization")
+        else if([filter type] == "org")
             m_CurrentFilterView = [[OrganizationFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
         
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];

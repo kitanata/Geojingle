@@ -70,8 +70,10 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
+    if([m_Filter county] != [m_CountyType titleOfSelectedItem])
+        [m_Filter setCached:NO];
+        
     [m_Filter setName:[m_FilterName stringValue]];
-
     [m_Filter setCounty:[m_CountyType titleOfSelectedItem]];
 
     if(_action && _target)

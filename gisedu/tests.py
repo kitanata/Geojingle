@@ -64,5 +64,49 @@ class TestOrgGeom(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, expected)
 
-        
 
+
+class TestFilters(TestCase):
+    fixtures = ['gisedu_org', 'gisedu_org_type']
+#
+#    def test_county_all(self):
+#
+#        c = Client()
+#
+#        response = c.get('/filter/county_by_name/All/')
+#
+#        expected = '\n[]\n'
+#
+#        self.assertEqual(response.status_code, 200)
+#        self.assertEqual(response.content, expected)
+#
+#    def test_county_athens(self):
+#
+#        c = Client()
+#
+#        response = c.get('/filter/county_by_name/Athens/')
+#
+#        expected = '\n[]\n'
+#
+#        self.assertEqual(response.status_code, 200)
+#        self.assertEqual(response.content, expected)
+
+    def test_org_by_type(self):
+
+        c = Client()
+
+        response = c.get('/filter/org_by_type/Area Media Center/')
+        expected = '\n[]\n'
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected)
+
+    def test_org_by_name(self):
+
+        c = Client()
+
+        response = c.get('/filter/org_by_name/Eastland Career Center/')
+        expected = '\n[]\n'
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, expected)

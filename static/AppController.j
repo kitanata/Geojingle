@@ -516,8 +516,13 @@ var m_UpdateMapToolbarId = 'updateMap';
 - (void)onUpdateMapFilters:(id)sender
 {
     filterManager = [FilterManager getInstance];
+    [filterManager setDelegate:self];
+    [filterManager triggerFilters];
+}
 
-    resultSet = [[filterManager processFilters] allObjects];
+- (void)onFilterManagerFiltered:(CPSet)filterResult
+{
+    var resultSet = [filterResult allObjects];
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 

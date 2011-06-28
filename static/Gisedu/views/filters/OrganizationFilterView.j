@@ -116,6 +116,12 @@
 {
     [m_Filter setName:[m_FilterName stringValue]];
 
+    if([m_Filter organizationType] != [m_OrganizationType titleOfSelectedItem] ||
+            [m_Filter organization] != [m_Organization titleOfSelectedItem])
+    {
+        [m_Filter setCached:NO];
+    }
+
     [m_Filter setOrganizationType:[m_OrganizationType titleOfSelectedItem]];
     [m_Filter setOrganization:[m_Organization titleOfSelectedItem]];
 

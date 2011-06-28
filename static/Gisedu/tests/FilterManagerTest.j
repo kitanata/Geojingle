@@ -25,7 +25,7 @@
 {
     instance = [[FilterManager alloc] init];
 
-    [self assertNotNull:[instance rootFilters]];
+    [self assertNotNull:[instance userFilters]];
 }
 
 - (void)testAddFilterNilParent_CountyFilter
@@ -36,7 +36,7 @@
 
     [instance addFilter:countyFilter parent:nil];
 
-    [self assert:1 equals:[[instance rootFilters] count]];
+    [self assert:1 equals:[[instance userFilters] count]];
 }
 
 - (void)testAddFilterValidParent_CountyFilter
@@ -49,7 +49,7 @@
     [instance addFilter:countyFilterParent parent:nil];
     [instance addFilter:countyFilterChild parent:countyFilterParent];
 
-    [self assert:1 equals:[[instance rootFilters] count]];
+    [self assert:1 equals:[[instance userFilters] count]];
     [self assert:1 equals:[[countyFilterParent childNodes] count]];
 }
 
@@ -61,7 +61,7 @@
 
     [instance deleteFilter:countyFilter];
 
-    [self assert:0 equals:[[instance rootFilters] count]];
+    [self assert:0 equals:[[instance userFilters] count]];
 }
 
 - (void)testDeleteFilterValidParent_CountyFilter
@@ -76,7 +76,7 @@
 
     [instance deleteFilter:countyFilterChild];
 
-    [self assert:1 equals:[[instance rootFilters] count]];
+    [self assert:1 equals:[[instance userFilters] count]];
     [self assert:0 equals:[[countyFilterParent childNodes] count]];
 }
 

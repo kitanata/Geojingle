@@ -7,7 +7,11 @@ var g_FilterManagerInstance = nil;
 @implementation FilterManager : CPObject
 {
     OverlayManager m_OverlayManager;
-    CPArray m_RootFilters @accessors(property=rootFilters);
+
+    CPArray m_UserFilters       @accessors(property=userFilters); //Filters that the user declares
+    CPArray m_ProcessedFilters;                                   //Filters that the filter engine optimizes for
+
+    id m_Delegate         @accessors(property=delegate);
 }
 
 - (void)init
@@ -17,9 +21,9 @@ var g_FilterManagerInstance = nil;
     if(self)
     {
         m_OverlayManager = [OverlayManager getInstance];
-        m_RootFilters = [CPArray array];
+        m_UserFilters = [CPArray array];
 
-        [self addFilter:[[CountyFilter alloc] initWithName:"Default"] parent:nil];
+        [self addFilter:[[CountyFilter alloc] initWithName:"All Counties"] parent:nil];
     }
 
     return self;
@@ -30,7 +34,7 @@ var g_FilterManagerInstance = nil;
     if(!filter)
         return NO;
 
-    return [self containsFilter:filter withNodes:m_RootFilters];
+    return [self containsFilter:filter withNodes:m_UserFilters];
 }
 
 - (BOOL)containsFilter:(GiseduFilter)filter withNodes:(CPArray)nodes
@@ -53,7 +57,7 @@ var g_FilterManagerInstance = nil;
 {
     if(!parent)
     {
-        [m_RootFilters addObject:filter];
+        [m_UserFilters addObject:filter];
     }
     else if([self containsFilter:parent])
     {
@@ -69,7 +73,7 @@ var g_FilterManagerInstance = nil;
 
         if(!parent)
         {
-            [m_RootFilters removeObject:filter];
+            [m_UserFilters removeObject:filter];
         }
         else
         {
@@ -88,9 +92,65 @@ var g_FilterManagerInstance = nil;
     return g_FilterManagerInstance;
 }
 
+- (void)triggerFilters
+{
+    [self triggerFilters:m_UserFilters];
+}
+
+- (void)triggerFilters:(CPArray)filters
+{
+    for(var i=0; i < [filters count]; i++)
+    {
+        curFilter = [filters objectAtIndex:i];
+
+        if([curFilter isLeaf])
+        {
+            if([curFilter parentNode])
+            {
+                //Build Intersection Filter
+            }
+            else
+            {
+                //Trigger Unary Filter
+                [curFilter trigger];
+            }
+        }
+    }
+}
+
+- (void)onFilterLoaded:(id)filter
+{
+    if([self filtersAreFinished])
+    {
+        if([m_Delegate respondsToSelector:@selector(onFilterManagerFiltered:)])
+            [m_Delegate onFilterManagerFiltered:[self processFilters]];
+    }
+}
+
+- (BOOL)filtersAreFinished
+{
+    return [self filtersAreFinished:m_UserFilters];
+}
+
+- (BOOL)filtersAreFinished:(CPArray)filters
+{
+    for(var i=0; i < [filters count]; i++)
+    {
+        curFilter = [filters objectAtIndex:i];
+
+        if(![curFilter finished])
+            return NO;
+
+        if(![self filtersAreFinished:[curFilter childNodes]])
+            return NO;
+    }
+
+    return YES;
+}
+
 - (CPSet)processFilters
 {
-    return [self processFilters:m_RootFilters];
+    return [self processFilters:m_UserFilters];
 }
 
 
@@ -109,20 +169,6 @@ var g_FilterManagerInstance = nil;
     }
 
     return resultSet;
-}
-
-
-//TODO: Below
-// Each Set is a set of the type GiseduTypeIdPair (i.e. county/4 school/18)
-// A GiseduTypeIdPair is the following JSON {"type":"County", "id":1}
-
-- (CPSet)intersectFilterSet:(CPSet)firstSet withFilterSet:(CPSet)secondSet
-{
-    //based on the type of firstSet and type of SecondSet build a query for intersection
-    //for example with "county/4" and "organization/18" they query would be "gisedu.ohio.gov/org/18/in_county/4"
-
-    //As a dummy just unionize them TODO: Make this work correctly
-    return [firstSet setByAddingObjectsFromSet:secondSet];
 }
 
 @end

@@ -14,45 +14,20 @@
     if(self)
     {
         m_szCounty = "All";
-        m_szType = "County";
+        m_szType = "county";
     }
 
     return self;
 }
 
-- (CPSet)filter
+- (CPString)requestUrl
 {
-    overlayManager = [OverlayManager getInstance];
-    
-    if(m_szCounty == "All")
-    {
-        var typeIds = [CPArray array];
-        var countyIds = [[overlayManager counties] allValues];
-        var numCountyIds = [countyIds count];
-
-        for(var i=0; i < numCountyIds; i++)
-        {
-            [typeIds addObject:("county:"+[countyIds objectAtIndex:i])];
-        }
-
-        return [CPSet setWithArray:typeIds];
-    }
-    else
-    {
-        counties = [overlayManager counties];
-
-        if([counties containsKey:m_szCounty])
-        {
-            return [CPSet setWithObject:("county:"+[counties objectForKey:m_szCounty])];
-        }
-    }
-
-    return [CPSet set];
+    return "http://127.0.0.1:8000/filter/county_by_name/" + m_szCounty;
 }
 
-- (CPSet)intersect:(CPSet)childFilters
+- (void)onError
 {
-    
+    alert('County Filter failed to load filter data! ' + anError);
 }
 
 @end
