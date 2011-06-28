@@ -12,14 +12,10 @@
     MKLocation m_Point @accessors(property=point);
 
     CPInteger m_nIdentifier @accessors(property=pk);
-    CPString m_szName @accessors(property=name);
+    CPString m_szTitle      @accessors(property=title);
     BOOL m_bVisible @accessors(property=visible);
 
-    InfoWindowOverlayLoader m_InfoLoader;
-    InfoWindowOverlay m_InfoWindow;
-
-    SEL m_OnClickAction         @accessors(property=onClickAction);
-    id m_EventTarget            @accessors(property=eventTarget);
+    id m_Delegate   @accessors(property=delegate);
 }
 
 - (id)init
@@ -58,58 +54,12 @@
         position: latLng,
         clickable: true,
         draggable: false,
-        title: m_szName
+        title: m_szTitle
      };
 
     m_GoogleMarker = new gm.Marker(markerOptions);
 
     gm.event.addListener(m_GoogleMarker, 'click', function() {[self onClick];});
-}
-
-- (void)setInfoLoader:(InfoWindowOverlayLoader)infoLoader
-{
-    m_InfoLoader = infoLoader;
-    [m_InfoLoader setTarget:self];
-    [m_InfoLoader setAction:@selector(OnInfoLoaded:)];
-}
-
-- (void)OnInfoLoaded:(id)sender
-{
-    m_InfoWindow = [sender overlay];
-
-    [m_InfoWindow open:m_GoogleMarker];
-}
-
-- (void)openInfoWindow
-{
-    if(m_InfoWindow)
-    {
-        [m_InfoWindow open:m_GoogleMarker];
-    }
-    else if(m_InfoLoader)
-    {
-        [m_InfoLoader load];
-    }
-}
-
-- (void)closeInfoWindow
-{
-    if(m_InfoWindow)
-    {
-        [m_InfoWindow close];
-    }
-}
-
-- (void)toggleInfoWindow
-{
-    if([m_InfoWindow opened])
-    {
-        [self closeInfoWindow];
-    }
-    else
-    {
-        [self openInfoWindow];
-    }
 }
 
 - (void)addToMapView:(MKMapView)mapView
@@ -131,12 +81,11 @@
 
 - (void)onClick
 {
-    [self toggleInfoWindow];
+    console.log("On Click Called");
+    console.log("Delegate is " + m_Delegate);
     
-    if(m_EventTarget && m_OnClickAction)
-    {
-        [self sendAction:m_OnClickAction to:m_EventTarget];
-    }
+    if([m_Delegate respondsToSelector:@selector(onClick)])
+        [m_Delegate onClick];
 }
 
 @end

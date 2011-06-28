@@ -52,17 +52,12 @@
         var aData = JSON.parse(aData);
 
         var nPk = 0;
-        var szName = '';
 
         for(key in aData)
         {
             if(key == 'gid')
             {
                 nPk = aData[key];
-            }
-            else if(key == 'name')
-            {
-                szName = aData[key];
             }
             else if(key == 'the_geom')
             {
@@ -74,7 +69,6 @@
 
         if(m_PointOverlay != nil)
         {
-            [m_PointOverlay setName:szName];
             [m_PointOverlay setPk:nPk];
             [m_PointOverlay setVisible:m_bVisibleOnLoad];
         }

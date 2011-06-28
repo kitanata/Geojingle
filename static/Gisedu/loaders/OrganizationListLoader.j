@@ -1,9 +1,11 @@
 @import <Foundation/CPObject.j>
 
+@import "../Organization.j"
+
 @implementation OrganizationListLoader : CPControl
 {
     CPString m_szName @accessors(property=name); //The name of the organization type
-    CPDictionary m_Organizations @accessors(property=orgs);
+    CPArray m_Organizations @accessors(property=orgs);
     
     CPURLConnection m_Connection; //To pull data from django
     CPString m_ConnectionURL @accessors(property=url);
@@ -15,7 +17,7 @@
 
     m_ConnectionURL = "http://127.0.0.1:8000/org_list_by_typename/";
 
-    m_Organizations = [[CPDictionary alloc] init];
+    m_Organizations = [CPArray array];
 
     return self;
 }
@@ -43,17 +45,23 @@
 {
     var aData = aData.replace('while(1);', '');
     var listData = JSON.parse(aData);
-
-    console.log("It did get here");
     
     if (aConnection == m_Connection)
     {
         for(var i=0; i < listData.length; i++)
         {
+            var curOrg = [[Organization alloc] init];
+            [curOrg setType:m_szName];
+
             for(var key in listData[i])
             {
-                [m_Organizations setObject:listData[i][key] forKey:key];
+                if(key == "gid")
+                    [curOrg setPk:listData[i][key]];
+                else if(key == "name")
+                    [curOrg setName:listData[i][key]];
             }
+
+            [m_Organizations addObject:curOrg];
         }
 
         if(_action != nil && _target != nil)

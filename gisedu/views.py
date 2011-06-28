@@ -54,7 +54,7 @@ def org_list_by_typename(request, type_name):
 
     orgs = GiseduOrg.objects.filter(org_type__org_type_name=type_name)
 
-    orgs = map(lambda org: {str(org.org_nm) : int(org.gid)}, orgs)
+    orgs = map(lambda org: {"name": str(org.org_nm), "gid": int(org.gid)}, orgs)
 
     orgs.sort()
 
@@ -84,16 +84,27 @@ def school_district(request, district_id):
 
 
 
-def edu_org(request, org_id):
+def org_geom(request, org_id):
 
     org = GiseduOrg.objects.get(pk=org_id)
 
-    response = json.dumps({'name' : str(org.org_nm), 'gid' : int(org.gid), 'the_geom' : json.loads(org.the_geom.json)})
+    response = json.dumps({'gid' : int(org.gid), 'the_geom' : json.loads(org.the_geom.json)})
 
     return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
 
 
-def edu_org_info(request, org_id):
+
+def org_info(request, org_id):
+
+    org = GiseduOrg.objects.get(pk=org_id)
+
+    response = json.dumps({'gid' : int(org.gid), 'name' : org.org_nm, 'type' : org.org_type.org_type_name })
+
+    return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
+
+
+
+def org_infobox(request, org_id):
 
     org = GiseduOrg.objects.get(pk=org_id)
 

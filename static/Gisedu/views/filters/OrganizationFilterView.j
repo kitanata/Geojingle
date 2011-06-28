@@ -102,11 +102,12 @@
 
     if(orgType != "All")
     {
-        orgs = [m_OverlayManager getOrganizationsOfType:[m_OrganizationType titleOfSelectedItem]];
+        orgIds = [m_OverlayManager getOrganizationsOfType:[m_OrganizationType titleOfSelectedItem]];
 
-        for(var i=0; i < [orgs count]; i++)
+        for(var i=0; i < [orgIds count]; i++)
         {
-            [m_Organization addItemWithTitle:[orgs objectAtIndex:i]];
+            var curOrg = [m_OverlayManager getOrganization:[orgIds objectAtIndex:i]];
+            [m_Organization addItemWithTitle:[curOrg name]];
         }
     }
 }

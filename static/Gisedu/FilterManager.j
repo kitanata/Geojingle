@@ -88,55 +88,6 @@ var g_FilterManagerInstance = nil;
     return g_FilterManagerInstance;
 }
 
-
-- (void)updateMap:(MKMapView)mapView
-{
-    resultSet = [[self processFilters] allObjects];
-
-    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
-
-    [m_OverlayManager removeAllOverlaysFromMapView];
-    
-    countyOverlays = [m_OverlayManager countyOverlays];
-    orgOverlays = [m_OverlayManager orgOverlays];
-
-    for(var i=0; i < [resultSet count]; i++)
-    {
-        typeIdPair = [resultSet objectAtIndex:i];
-        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
-
-        itemType = [items objectAtIndex:0];
-        itemId = [items objectAtIndex:1];
-
-        if(itemType == "county")
-        {
-            //Add the County to the map
-            if([countyOverlays containsKey:itemId])
-            {
-                overlay = [countyOverlays objectForKey:itemId];
-                [overlay addToMapView:mapView];
-            }
-            else
-            {
-                [m_OverlayManager loadCountyOverlay:itemId andShowOnLoad:YES];
-            }
-        }
-        else if(itemType == "org")
-        {
-            if([orgOverlays containsKey:itemId])
-            {
-                overlay = [orgOverlays objectForKey:itemId];
-                [overlay addToMapView:mapView];
-            }
-            else
-            {
-                [m_OverlayManager loadOrganizationOverlay:itemId andShowOnLoad:YES];
-            }
-        }
-    }
-}
-
-
 - (CPSet)processFilters
 {
     return [self processFilters:m_RootFilters];

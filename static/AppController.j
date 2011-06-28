@@ -89,7 +89,7 @@ var m_UpdateMapToolbarId = 'updateMap';
     var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
 
     var loc = [[MKLocation alloc] initWithLatitude:39.962226 andLongitude:-83.000642];
-    m_MapView = [[MKMapView alloc] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) center:loc];
+    m_MapView = [[MKMapView getInstance] initWithFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight) center:loc];
 
     [m_MapView setDelegate:self]
     [m_MapView setAutoresizingMask:CPViewHeightSizable | CPViewWidthSizable];
@@ -313,7 +313,6 @@ var m_UpdateMapToolbarId = 'updateMap';
             }
         }
 
-        [[m_LeftSideTabView outlineView] setCountyItems:m_CountyItems];
         console.log("Finished Loading Counties");
         [self onUpdateMapFilters:self];
     }
@@ -331,31 +330,26 @@ var m_UpdateMapToolbarId = 'updateMap';
             }
         }
 
-        [[m_LeftSideTabView outlineView] setSchoolDistrictItems:m_SchoolDistrictItems];
         console.log("Finished Loading School Districts");
     }
 }
 
-- (void)onOrgTypeListLoaded
-{
-    var orgTypes = [[m_OverlayManager orgTypes] allKeys];
-
-    for(var i=0; i < [orgTypes count]; i++)
-    {
-        [[m_LeftSideTabView outlineView] addItem:[orgTypes objectAtIndex:i]];
-    }
-}
-
-- (void)setCountyOverlayOnClick:(id)overlay
+- (void)onCountyOverlayLoaded:(id)overlay
 {
     [overlay setOnClickAction:@selector(OnCountyGeometrySelected:)];
     [overlay setEventTarget:self];
+
+    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
 }
 
-- (void)setOrgOverlayOnClick:(id)overlay
+- (void)onOrgOverlayLoaded:(id)organization
 {
+    overlay = [organization overlay];
+    
     [overlay setOnClickAction:@selector(OnOrgGeometrySelected:)];
     [overlay setEventTarget:self];
+
+    [[m_LeftSideTabView outlineView] addItem:[organization name] forCategory:[organization type]];
 }
 
 - (void)OnCountyGeometrySelected:(id)sender
@@ -366,27 +360,6 @@ var m_UpdateMapToolbarId = 'updateMap';
 - (void)OnOrgGeometrySelected:(id)sender
 {
     [m_OverlayOptionsView setPointOverlayTarget:sender];
-}
-
-- (void)onOrgListLoaded:(CPString)orgName
-{
-    orgKeys = [[m_OverlayManager orgs] allKeys];
-
-    [[m_LeftSideTabView outlineView] setArray:orgKeys forItem:orgName];
-}
-
-- (void)OnOrgGeometryLoaded:(id)sender
-{
-    orgOverlay = [sender overlay];
-
-    infoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:[orgOverlay pk] andUrl:"http://127.0.0.1:8000/edu_org_info/"];
-    [orgOverlay setInfoLoader:infoLoader];
-
-    [m_OverlayOptionsView setPointOverlayTarget:orgOverlay];
-
-    [[m_OverlayManager orgOverlays] setObject:orgOverlay forKey:[orgOverlay pk]];
-
-    [orgOverlay addToMapView:m_MapView];
 }
 
 - (void)onSchoolDistrictGeometryLoaded:(id)sender
@@ -544,7 +517,55 @@ var m_UpdateMapToolbarId = 'updateMap';
 {
     filterManager = [FilterManager getInstance];
 
-    [filterManager updateMap:m_MapView];
+    resultSet = [[filterManager processFilters] allObjects];
+
+    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
+
+    [m_OverlayManager removeAllOverlaysFromMapView];
+    [[m_LeftSideTabView outlineView] clearItems];
+
+    countyOverlays = [m_OverlayManager countyOverlays];
+    var organizations = [m_OverlayManager organizations];
+
+    for(var i=0; i < [resultSet count]; i++)
+    {
+        typeIdPair = [resultSet objectAtIndex:i];
+        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
+
+        itemType = [items objectAtIndex:0];
+        itemId = [items objectAtIndex:1];
+
+        if(itemType == "county")
+        {
+            //Add the County to the map
+            if([countyOverlays containsKey:itemId])
+            {
+                overlay = [countyOverlays objectForKey:itemId];
+                [overlay addToMapView:m_MapView];
+                [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
+            }
+            else
+            {
+                [m_OverlayManager loadCountyOverlay:itemId andShowOnLoad:YES];
+            }
+        }
+        else if(itemType == "org")
+        {
+            if([[m_OverlayManager getOrganization:itemId] overlay])
+            {
+                var curOrg = [organizations objectForKey:itemId];
+                [[curOrg overlay] addToMapView:m_MapView];
+                [[m_LeftSideTabView outlineView] addItem:[curOrg name] forCategory:[curOrg type]];
+            }
+            else
+            {
+                var curOrg = [organizations objectForKey:itemId];
+                [curOrg loadPointOverlay:YES];
+            }
+        }
+    }
+
+    [[m_LeftSideTabView outlineView] sortItems];
 }
 
 @end

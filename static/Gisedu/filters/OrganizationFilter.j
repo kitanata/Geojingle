@@ -28,12 +28,11 @@
 
     if(m_szOrganizationType == "All")
     {
-        orgIds = [[overlayManager orgs] allValues];
+        orgIds = [[overlayManager organizations] allKeys];
 
-        var numOrgs = [orgIds count];
         var typeIds = [CPArray array];
 
-        for(var i=0; i < numOrgs; i++)
+        for(var i=0; i < [orgIds count]; i++)
         {
             [typeIds addObject:("org:"+[orgIds objectAtIndex:i])];
         }
@@ -42,26 +41,24 @@
     }
     else if(m_szOrganization == "All")
     {
-        var orgNames = [[overlayManager orgTypes] objectForKey:m_szOrganizationType];
-        
-        var numOrgs = [orgNames count];
+        var orgIds = [[overlayManager orgTypes] objectForKey:m_szOrganizationType];
 
         var typeIds = [CPArray array];
 
-        for(var i=0; i < numOrgs; i++)
+        for(var i=0; i < [orgIds count]; i++)
         {
-            [typeIds addObject:("org:"+[[overlayManager orgs] objectForKey:[orgNames objectAtIndex:i]])];
+            [typeIds addObject:("org:"+[orgIds objectAtIndex:i])];
         }
 
         return [CPSet setWithArray:typeIds];
     }
     else
     {
-        var orgs = [overlayManager orgs];
+        var orgNames = [overlayManager orgNames];
 
-        if([orgs containsKey:m_szOrganization])
+        if([orgNames containsKey:m_szOrganization])
         {
-            return [CPSet setWithObject:("org:"+[orgs objectForKey:m_szOrganization])];
+            return [CPSet setWithObject:("org:"+[orgNames objectForKey:m_szOrganization])];
         }
     }
 

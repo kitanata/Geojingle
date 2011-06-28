@@ -19,7 +19,6 @@
 
     if(self)
     {
-        m_OverlayOutlineView = [[OverlayOutlineView alloc] initWithFrame:[self bounds]];
         m_OverlayFiltersView = [[OverlayFiltersView alloc] initWithFrame:[self bounds]];
 
         //Overlay Filters
@@ -30,7 +29,6 @@
         //Overlay Features
         m_OverlayOutlineTabItem = [[CPTabViewItem alloc] initWithIdentifier:@"OutlineTab"];
         [m_OverlayOutlineTabItem setLabel:"Feature Outline"];
-        [m_OverlayOutlineTabItem setView:m_OverlayOutlineView];
 
         [self addTabViewItem:m_OverlayFiltersTabItem];
         [self addTabViewItem:m_OverlayOutlineTabItem];
@@ -41,7 +39,8 @@
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
-    [m_OverlayOutlineView loadOutline];
+    m_OverlayOutlineView = [[OverlayOutlineView alloc] initWithFrame:[self bounds]];
+    [m_OverlayOutlineTabItem setView:m_OverlayOutlineView];
 }
 
 @end

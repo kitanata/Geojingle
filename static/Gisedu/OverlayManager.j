@@ -26,9 +26,9 @@ var overlayManagerInstance = nil;
     CPDictionary m_SchoolDistricts @accessors(property=schoolDistricts);                  //Maps a School District Name with the PK
     CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
 
-    CPDictionary m_OrganizationTypes @accessors(property=orgTypes);       //maps organization type to an array of organization names
-    CPDictionary m_OrgToGid @accessors(property=orgs);                    //maps name of organization to it's primary key in the db
-    CPDictionary m_OrgGidToOverlay @accessors(property=orgOverlays);      //maps the PK of the organization to a PointOverlay.
+    CPDictionary m_OrganizationTypes @accessors(property=orgTypes);       //maps organization type to an array of organization pks
+    CPDictionary m_OrgToGid @accessors(property=orgNames);                    //maps name of organization to it's primary key in the db
+    CPDictionary m_OrgGidToOrg @accessors(property=organizations);        //maps the the organization primary key to it's object
 
     id m_Delegate @accessors(property=delegate);
 }
@@ -48,7 +48,7 @@ var overlayManagerInstance = nil;
         m_OrganizationTypes = [CPDictionary dictionary];
 
         m_OrgToGid = [CPDictionary dictionary];
-        m_OrgGidToOverlay = [CPDictionary dictionary];
+        m_OrgGidToOrg = [CPDictionary dictionary];
     }
 
     return self;
@@ -57,6 +57,11 @@ var overlayManagerInstance = nil;
 - (CPArray)getOrganizationsOfType:(CPString)type
 {
     return [m_OrganizationTypes objectForKey:type];
+}
+
+- (id)getOrganization:(CPInteger)gid
+{
+    return [m_OrgGidToOrg objectForKey:gid];
 }
 
 - (void)loadCountyOverlay:(CPInteger)countyId
@@ -70,14 +75,6 @@ var overlayManagerInstance = nil;
     [countyOverlayLoader setAction:@selector(onCountyOverlayLoaded:)];
     [countyOverlayLoader setTarget:self];
     [countyOverlayLoader loadAndShow:show];
-}
-
-- (void)loadOrganizationOverlay:(CPInteger)orgId andShowOnLoad:(BOOL)show
-{
-    pointOverlayLoader = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
-    [pointOverlayLoader setAction:@selector(onOrgOverlayLoaded:)];
-    [pointOverlayLoader setTarget:self];
-    [pointOverlayLoader loadAndShow:show];
 }
 
 - (void)loadOrganizationTypeList
@@ -99,26 +96,8 @@ var overlayManagerInstance = nil;
         [overlay addToMapView:m_MapView];
     }
 
-    if([m_Delegate respondsToSelector:@selector(setCountyOverlayOnClick:)])
-        [m_Delegate setCountyOverlayOnClick:overlay];
-}
-
-- (void)onOrgOverlayLoaded:(id)sender
-{
-    overlay = [sender overlay];
-
-    [m_OrgGidToOverlay setObject:overlay forKey:[overlay pk]];
-
-    if([sender showOnLoad])
-    {
-        [overlay addToMapView:m_MapView];
-    }
-
-    infoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:[overlay pk] andUrl:"http://127.0.0.1:8000/edu_org_info/"];
-    [overlay setInfoLoader:infoLoader];
-
-    if([m_Delegate respondsToSelector:@selector(setOrgOverlayOnClick:)])
-        [m_Delegate setOrgOverlayOnClick:overlay];
+    if([m_Delegate respondsToSelector:@selector(onCountyOverlayLoaded:)])
+        [m_Delegate onCountyOverlayLoaded:overlay];
 }
 
 - (void)onOrgTypeListLoaded:(id)sender
@@ -140,8 +119,20 @@ var overlayManagerInstance = nil;
 
 - (void)onOrgListLoaded:(id)sender
 {
-    [m_OrganizationTypes setObject:[[sender orgs] allKeys] forKey:[sender name]];
-    [m_OrgToGid addEntriesFromDictionary:[sender orgs]];
+    var orgIds = [CPArray array];
+
+    var senderOrgs = [sender orgs];
+
+    for(var i=0; i < [senderOrgs count]; i++)
+    {
+        var curOrg = [senderOrgs objectAtIndex:i];
+
+        [orgIds addObject:[curOrg pk]];
+        [m_OrgToGid setObject:[curOrg pk] forKey:[curOrg name]];
+        [m_OrgGidToOrg setObject:curOrg forKey:[curOrg pk]];
+    }
+
+    [m_OrganizationTypes setObject:orgIds forKey:[sender name]];
     
     if([m_Delegate respondsToSelector:@selector(onOrgListLoaded:)])
         [m_Delegate onOrgListLoaded:[sender name]];
@@ -165,11 +156,11 @@ var overlayManagerInstance = nil;
 
 - (void)removeAllOrgOverlaysFromMapView
 {
-    var orgOverlays = [m_OrgGidToOverlay allValues];
+    var orgOverlays = [m_OrgGidToOrg allValues];
 
     for(var i=0; i < [orgOverlays count]; i++)
     {
-        [[orgOverlays objectAtIndex:i] removeFromMapView];
+        [[[orgOverlays objectAtIndex:i] overlay] removeFromMapView];
     }
 }
 
