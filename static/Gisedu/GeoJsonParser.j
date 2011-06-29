@@ -3,6 +3,7 @@
 @import "PointOverlay.j"
 @import "PolygonOverlay.j"
 @import "../MapKit/MKLocation.j"
+@import "../MapKit/MKMapView.j"
 
 @implementation GeoJsonParser : CPObject
 {
@@ -18,6 +19,8 @@
 
         polygons = objectData['coordinates'];
 
+        var gm = [MKMapView gmNamespace];
+
         for(var i =0; i < polygons.length; i++)
         {
             var polygon = polygons[i];
@@ -30,10 +33,10 @@
 
                 for(var k=0; k < coords.length; k++)
                 {
-                    locarray[k] = [[MKLocation alloc] initWithLatitude:coords[k][1] andLongitude:coords[k][0] ];
+                    locarray[k] = new gm.LatLng(coords[k][1], coords[k][0]);
                 }
 
-                var locations = [[CPArray alloc] initWithArray:locarray];
+                var locations = [CPArray arrayWithObjects:locarray count:locarray.length];
 
                 [overlay addPolygonPath:locations];
             }

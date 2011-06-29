@@ -336,10 +336,18 @@ var m_UpdateMapToolbarId = 'updateMap';
 
 - (void)onCountyOverlayLoaded:(id)overlay
 {
-    [overlay setOnClickAction:@selector(OnCountyGeometrySelected:)];
+    [overlay setOnClickAction:@selector(OnPolygonGeometrySelected:)];
     [overlay setEventTarget:self];
 
     [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
+}
+
+- (void)onSchoolDistrictOverlayLoader:(id)overlay
+{
+    [overlay setOnClickAction:@selector(OnPolygonGeometrySelected:)];
+    [overlay setEventTarget:self];
+
+    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
 }
 
 - (void)onOrgOverlayLoaded:(id)organization
@@ -352,7 +360,7 @@ var m_UpdateMapToolbarId = 'updateMap';
     [[m_LeftSideTabView outlineView] addItem:[organization name] forCategory:[organization type]];
 }
 
-- (void)OnCountyGeometrySelected:(id)sender
+- (void)OnPolygonGeometrySelected:(id)sender
 {
     [m_OverlayOptionsView setPolygonOverlayTarget:sender];
 }
@@ -364,12 +372,7 @@ var m_UpdateMapToolbarId = 'updateMap';
 
 - (void)onSchoolDistrictGeometryLoaded:(id)sender
 {
-    pkToOverlay = [m_OverlayManager schoolDistrictOverlays];
-    schoolDistOverlay = [sender overlay];
 
-    [m_OverlayOptionsView setPolygonOverlayTarget:schoolDistOverlay];
-    [pkToOverlay setObject:schoolDistOverlay forKey:[schoolDistOverlay pk]];
-    [schoolDistOverlay addToMapView:m_MapView];
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -530,6 +533,7 @@ var m_UpdateMapToolbarId = 'updateMap';
     [[m_LeftSideTabView outlineView] clearItems];
 
     countyOverlays = [m_OverlayManager countyOverlays];
+    schoolDistrictOverlays = [m_OverlayManager schoolDistrictOverlays];
     var organizations = [m_OverlayManager organizations];
 
     for(var i=0; i < [resultSet count]; i++)
@@ -566,6 +570,19 @@ var m_UpdateMapToolbarId = 'updateMap';
             {
                 var curOrg = [organizations objectForKey:itemId];
                 [curOrg loadPointOverlay:YES];
+            }
+        }
+        else if(itemType == "school_district")
+        {
+            if([schoolDistrictOverlays containsKey:itemId])
+            {
+                var curOverlay = [schoolDistrictOverlays objectForKey:itemId];
+                [curOverlay addToMapView:m_MapView];
+                [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
+            }
+            else
+            {
+                [m_OverlayManager loadSchoolDistrictOverlay:itemId andShowOnLoad:YES];
             }
         }
     }

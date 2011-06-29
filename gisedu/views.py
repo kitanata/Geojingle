@@ -146,3 +146,14 @@ def filter_org_by_name(request, org_name):
 
     return render_to_response('json/base.json', {'json': json.dumps(orgIds)}, context_instance=RequestContext(request))
 
+def filter_school_district_by_name(request, name):
+
+    school_districts = []
+    if name == "All":
+        school_districts = OhioSchoolDistricts.objects.all()
+    else:
+        school_districts = OhioSchoolDistricts.objects.filter(name=name)
+
+    school_district_ids = map(lambda sd: sd.gid, school_districts)
+    return render_to_response('json/base.json', {'json': json.dumps(school_district_ids)}, context_instance=RequestContext(request))
+

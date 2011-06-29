@@ -59,18 +59,7 @@
 
         for(var i=0; i < [m_Paths count]; i++)
         {
-            var locations = [m_Paths objectAtIndex:i];
-
-            var lineCoordinates = [];
-
-            for(var k=0; k < [locations count]; k++)
-            {
-                loc = [locations objectAtIndex:k];
-
-                lineCoordinates.push([loc googleLatLng]);
-            }
-
-            linePaths.push(lineCoordinates);
+            linePaths.push([m_Paths objectAtIndex:i]);
         }
 
         var zIndex = 0;

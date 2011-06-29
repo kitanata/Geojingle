@@ -2,9 +2,11 @@
 
 @import "../filters/CountyFilter.j"
 @import "../filters/OrganizationFilter.j"
+@import "../filters/SchoolDistrictFilter.j"
 
 @import "filters/CountyFilterView.j"
 @import "filters/OrganizationFilterView.j"
+@import "filters/SchoolDistrictFilterView.j"
 
 @import "../FilterManager.j"
 
@@ -117,9 +119,11 @@
         
         if([filter type] == "county")
             m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
+        else if([filter type] == "school_district")
+            m_CurrentFilterView = [[SchoolDistrictFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
         else if([filter type] == "org")
             m_CurrentFilterView = [[OrganizationFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-        
+
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
         [m_CurrentFilterView setTarget:self];
         [m_PropertiesView addSubview:m_CurrentFilterView];
@@ -187,9 +191,11 @@
     filterType = [m_AddFilterPanel filterType];
 
     var newFilter = nil;
-    
+
     if(filterType == "County")
         newFilter = [[CountyFilter alloc] initWithName:[m_AddFilterPanel filterName]];
+    else if(filterType == "School District")
+        newFilter = [[SchoolDistrictFilter alloc] initWithName:[m_AddFilterPanel filterName]];
     else if(filterType == "Organization")
         newFilter = [[OrganizationFilter alloc] initWithName:[m_AddFilterPanel filterName]];
 

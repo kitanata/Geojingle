@@ -30,11 +30,8 @@
         [m_OrganizationType addItemWithTitle:"All"];
 
         orgTypes = [[m_OverlayManager orgTypes] allKeys];
-
-        for(var i=0; i < [orgTypes count]; i++)
-        {
-            [m_OrganizationType addItemWithTitle:[orgTypes objectAtIndex:i]];
-        }
+        if([orgTypes count] < 100)
+            [m_OrganizationType addItemsWithTitles:orgTypes];
 
         m_Organization = [[CPPopUpButton alloc] initWithFrame:CGRectMakeZero()];
 
@@ -104,10 +101,13 @@
     {
         orgIds = [m_OverlayManager getOrganizationsOfType:[m_OrganizationType titleOfSelectedItem]];
 
-        for(var i=0; i < [orgIds count]; i++)
+        if([orgIds count] < 100)
         {
-            var curOrg = [m_OverlayManager getOrganization:[orgIds objectAtIndex:i]];
-            [m_Organization addItemWithTitle:[curOrg name]];
+            for(var i=0; i < [orgIds count]; i++)
+            {
+                var curOrg = [m_OverlayManager getOrganization:[orgIds objectAtIndex:i]];
+                [m_Organization addItemWithTitle:[curOrg name]];
+            }
         }
     }
 }

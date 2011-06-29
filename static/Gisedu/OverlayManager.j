@@ -77,6 +77,19 @@ var overlayManagerInstance = nil;
     [countyOverlayLoader loadAndShow:show];
 }
 
+- (void)loadSchoolDistrictOverlay:(CPInteger)itemId
+{
+    [self loadSchoolDistrictOverlay:itemId andShowOnLoad:NO];
+}
+
+- (void)loadSchoolDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
+{
+    schoolDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:"http://127.0.0.1:8000/school_district/"];
+    [schoolDistrictOverlayLoader setAction:@selector(onSchoolDistrictOverlayLoader:)];
+    [schoolDistrictOverlayLoader setTarget:self];
+    [schoolDistrictOverlayLoader loadAndShow:show];
+}
+
 - (void)loadOrganizationTypeList
 {
     organizationTypeListLoader = [[OrganizationTypeListLoader alloc] init];
@@ -98,6 +111,21 @@ var overlayManagerInstance = nil;
 
     if([m_Delegate respondsToSelector:@selector(onCountyOverlayLoaded:)])
         [m_Delegate onCountyOverlayLoaded:overlay];
+}
+
+- (void)onSchoolDistrictOverlayLoader:(id)sender
+{
+    overlay = [sender overlay];
+
+    [m_SchoolDistrictOverlays setObject:overlay forKey:[overlay pk]];
+
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView:m_MapView];
+    }
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolDistrictOverlayLoader:)])
+        [m_Delegate onSchoolDistrictOverlayLoader:overlay];
 }
 
 - (void)onOrgTypeListLoaded:(id)sender
@@ -141,6 +169,7 @@ var overlayManagerInstance = nil;
 - (void)removeAllOverlaysFromMapView
 {
     [self removeAllCountyOverlaysFromMapView];
+    [self removeAllSchoolDistrictOverlaysFromMapView];
     [self removeAllOrgOverlaysFromMapView];
 }
 
@@ -151,6 +180,16 @@ var overlayManagerInstance = nil;
     for(var i=0; i < [countyOverlays count]; i++)
     {
         [[countyOverlays objectAtIndex:i] removeFromMapView];
+    }
+}
+
+- (void)removeAllSchoolDistrictOverlaysFromMapView
+{
+    var overlays = [m_SchoolDistrictOverlays allValues];
+
+    for(var i=0; i < [overlays count]; i++)
+    {
+        [[overlays objectAtIndex:i] removeFromMapView];
     }
 }
 

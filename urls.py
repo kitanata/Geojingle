@@ -29,4 +29,5 @@ urlpatterns = patterns('',
     (r'filter/county_by_name/(?P<county_name>(\w+\s\W*)*\w+\W*)/', 'gisedu.views.filter_county_by_name'),
     (r'filter/org_by_type/(?P<type_name>(\w+\s\W*)*\w+\W*)/', 'gisedu.views.filter_org_by_type'),
     (r'filter/org_by_name/(?P<org_name>(\w+\s\W*)*\w+\W*)/', 'gisedu.views.filter_org_by_name'),
+    (r'filter/school_district_by_name/(?P<name>(\w+\s\W*)*\w+\W*)/', 'gisedu.views.filter_school_district_by_name'),
 )

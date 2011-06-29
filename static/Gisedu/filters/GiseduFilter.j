@@ -100,8 +100,6 @@
     {
         [typeIds addObject:(m_szType + ":" + [m_ObjectIds objectAtIndex:i])];
     }
-
-    console.log(typeIds);
     
     return [CPSet setWithArray:typeIds];
 }
