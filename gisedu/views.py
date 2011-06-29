@@ -157,3 +157,37 @@ def filter_school_district_by_name(request, name):
     school_district_ids = map(lambda sd: sd.gid, school_districts)
     return render_to_response('json/base.json', {'json': json.dumps(school_district_ids)}, context_instance=RequestContext(request))
 
+def intersect_org_type__county_name(request, org_type, county_name):
+
+    if county_name == "All":
+        orgs = GiseduOrg.objects.all()
+    else:
+        county = OhioCounties.objects.get(name=county_name)
+
+        if org_type == "All":
+            orgs = GiseduOrg.objects.all()
+            orgs = orgs.filter(the_geom__contained=county.the_geom)
+        else:
+            orgs = GiseduOrg.objects.filter(org_type__org_type_name=org_type)
+            orgs = orgs.filter(the_geom__contained=county.the_geom)
+
+    return render_to_response('json/base.json', {'json': json.dumps(map(lambda org: org.gid, orgs))},
+                                  context_instance=RequestContext(request))
+
+def intersect_org_type__school_district_name(request, org_type, school_district_name):
+
+    if school_district_name == "All":
+        orgs = GiseduOrg.objects.all()
+    else:
+        school_district = OhioSchoolDistricts.objects.get(name=school_district_name)
+
+        if org_type == "All":
+            orgs = GiseduOrg.objects.all()
+            orgs = orgs.filter(the_geom__within=school_district.the_geom)
+        else:
+            orgs = GiseduOrg.objects.filter(org_type__org_type_name=org_type)
+            orgs = orgs.filter(the_geom__within=school_district.the_geom)
+
+
+    return render_to_response('json/base.json', {'json': json.dumps(map(lambda org: org.gid, orgs))},
+                                  context_instance=RequestContext(request))

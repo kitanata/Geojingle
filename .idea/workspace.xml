@@ -23,55 +23,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="AppController.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/AppController.j">
+      <file leaf-file-name="CountyOrgIntersectionFilter.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/CountyOrgIntersectionFilter.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="531" column="52" selection-start="18263" selection-end="18263" vertical-scroll-proportion="0.0">
+            <state line="19" column="5" selection-start="0" selection-end="1082" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="GeoJsonParser.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/GeoJsonParser.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="49" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PolygonOverlay.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="9" selection-start="1820" selection-end="1820" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="MKLocation.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/MapKit/MKLocation.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="4" selection-start="1165" selection-end="1247" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="OverlayManager.j" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="OverlayManager.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="191" column="55" selection-start="6923" selection-end="6923" vertical-scroll-proportion="0.53636366">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SchoolDistrictFilter.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictFilter.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="32" selection-start="337" selection-end="352" vertical-scroll-proportion="0.0">
+            <state line="192" column="5" selection-start="6929" selection-end="6929" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -80,7 +44,70 @@
       <file leaf-file-name="FilterManager.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="106" column="9" selection-start="2278" selection-end="2278" vertical-scroll-proportion="0.0">
+            <state line="118" column="32" selection-start="2684" selection-end="2684" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="34" column="104" selection-start="1936" selection-end="1956" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/views.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="185" column="73" selection-start="6155" selection-end="6155" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gisedu/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="27" column="35" selection-start="1140" selection-end="1140" vertical-scroll-proportion="0.5">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SchoolDistrictOrgIntersectionFilter.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictOrgIntersectionFilter.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="34" selection-start="306" selection-end="334" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GiseduFilter.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/GiseduFilter.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="101" column="5" selection-start="2260" selection-end="2260" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CountyFilter.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/CountyFilter.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="29" selection-start="0" selection-end="529" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OrganizationFilter.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/OrganizationFilter.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="4" selection-start="475" selection-end="675" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -100,22 +127,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/static/Gisedu/filters/CountyFilter.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/filters/OrganizationFilter.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictFilter.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/filters/GiseduFilter.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/views/filters/OrganizationFilterView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j" />
         <option value="$PROJECT_DIR$/gisedu/tests.py" />
-        <option value="$PROJECT_DIR$/urls.py" />
-        <option value="$PROJECT_DIR$/gisedu/views.py" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/filters/CountyFilterView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/filters/SchoolDistrictFilterView.j" />
         <option value="$PROJECT_DIR$/static/AppController.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/GeoJsonParser.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/OverlayManager.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/filters/OrganizationFilter.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/filters/CountyFilter.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/filters/GiseduFilter.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/filters/CountyOrgIntersectionFilter.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictOrgIntersectionFilter.j" />
+        <option value="$PROJECT_DIR$/urls.py" />
+        <option value="$PROJECT_DIR$/static/Gisedu/FilterManager.j" />
+        <option value="$PROJECT_DIR$/gisedu/views.py" />
       </list>
     </option>
   </component>
@@ -145,6 +172,7 @@
       <sortByType />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -283,17 +311,16 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
       <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.HTML" />
     <property name="recentsLimit" value="5" />
-    <property name="options.searchVisible" value="true" />
+    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.HTML" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -304,7 +331,7 @@
       <recent name="$PROJECT_DIR$/static" />
     </key>
   </component>
-  <component name="RunManager" selected="Django tests.Test: gisedu">
+  <component name="RunManager" selected="Django server.Gis_Demo">
     <configuration default="false" name="Test: gisedu" type="DjangoTestsConfigurationType" factoryName="Django tests" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -533,112 +560,102 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/gisedu/models.py">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="8" selection-start="1493" selection-end="1497" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="71" column="1" selection-start="2253" selection-end="2253" vertical-scroll-proportion="0.7818182" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/urls.py">
+    <entry file="file://$PROJECT_DIR$/static/AppController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="81" selection-start="575" selection-end="575" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="531" column="52" selection-start="18263" selection-end="18263" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/tests.py">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/GeoJsonParser.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="108" column="27" selection-start="3006" selection-end="3006" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="27" column="49" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/views.py">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="147" column="0" selection-start="4611" selection-end="4611" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="69" column="9" selection-start="1820" selection-end="1820" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/filters/SchoolDistrictFilterView.j">
+    <entry file="file://$PROJECT_DIR$/static/MapKit/MKLocation.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="0" selection-start="610" selection-end="610" vertical-scroll-proportion="0.49636364">
+        <state line="49" column="4" selection-start="1165" selection-end="1247" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictFilter.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="32" selection-start="337" selection-end="352" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="192" column="5" selection-start="6929" selection-end="6929" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/CountyFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="1" selection-start="361" selection-end="361" vertical-scroll-proportion="0.6272727">
+        <state line="11" column="29" selection-start="0" selection-end="529" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/OrganizationFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="1" selection-start="909" selection-end="909" vertical-scroll-proportion="0.5181818">
+        <state line="24" column="4" selection-start="475" selection-end="675" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/filters/CountyFilterView.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/GiseduFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="60" selection-start="972" selection-end="972" vertical-scroll-proportion="0.49808428">
+        <state line="101" column="5" selection-start="2260" selection-end="2260" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/CountyOrgIntersectionFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="1" selection-start="2253" selection-end="2253" vertical-scroll-proportion="0.7818182">
+        <state line="19" column="5" selection-start="0" selection-end="1082" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictFilter.j">
+    <entry file="file://$PROJECT_DIR$/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="32" selection-start="337" selection-end="352" vertical-scroll-proportion="0.0">
+        <state line="34" column="104" selection-start="1936" selection-end="1956" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/MapKit/MKLocation.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/filters/SchoolDistrictOrgIntersectionFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="4" selection-start="1165" selection-end="1247" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/GeoJsonParser.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="49" selection-start="610" selection-end="610" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="9" selection-start="1820" selection-end="1820" vertical-scroll-proportion="0.0">
+        <state line="10" column="34" selection-start="306" selection-end="334" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="106" column="9" selection-start="2278" selection-end="2278" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/AppController.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="531" column="52" selection-start="18263" selection-end="18263" vertical-scroll-proportion="0.0">
+        <state line="118" column="32" selection-start="2684" selection-end="2684" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
+    <entry file="file://$PROJECT_DIR$/gisedu/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="191" column="55" selection-start="6923" selection-end="6923" vertical-scroll-proportion="0.53636366">
+        <state line="185" column="73" selection-start="6155" selection-end="6155" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="35" selection-start="1140" selection-end="1140" vertical-scroll-proportion="0.5">
           <folding />
         </state>
       </provider>

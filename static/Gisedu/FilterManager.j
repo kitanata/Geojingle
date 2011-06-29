@@ -2,6 +2,9 @@
 
 @import "filters/CountyFilter.j"
 
+@import "filters/CountyOrgIntersectionFilter.j"
+@import "filters/SchoolDistrictOrgIntersectionFilter.j"
+
 var g_FilterManagerInstance = nil;
 
 @implementation FilterManager : CPObject
@@ -22,6 +25,7 @@ var g_FilterManagerInstance = nil;
     {
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
+        m_ProcessedFilters = [CPArray array];
 
         [self addFilter:[[CountyFilter alloc] initWithName:"All Counties"] parent:nil];
     }
@@ -99,20 +103,72 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters:(CPArray)filters
 {
+    [m_ProcessedFilters removeAllObjects];
+    
     for(var i=0; i < [filters count]; i++)
     {
         curFilter = [filters objectAtIndex:i];
 
-        if([curFilter isLeaf])
+        if(![curFilter isLeaf])
         {
-            if([curFilter parentNode])
+            [self triggerFilters:[curFilter childNodes]];
+        }
+        else if(![curFilter parentNode])
+        {
+            [m_ProcessedFilters addObject:curFilter];
+            [curFilter trigger];
+        }
+        else
+        {
+            var parentFilter = [curFilter parentNode];
+
+            if([parentFilter type] == "county")
             {
-                //Build Intersection Filter
+                if([curFilter type] == "org")
+                {
+                    //build org in county filter
+                    var newFilter = [[CountyOrgIntersectionFilter alloc] initWithCountyFilter:parentFilter orgFilter:curFilter];
+                    [m_ProcessedFilters addObject:newFilter];
+                    [newFilter trigger];
+                }
+
+                [m_ProcessedFilters addObject:parentFilter];
+                [parentFilter trigger];
             }
-            else
+            else if([parentFilter type] == "school_district")
             {
-                //Trigger Unary Filter
-                [curFilter trigger];
+                if([curFilter type] == "org")
+                {
+                    //build org in school_district filter
+                    var newFilter = [[SchoolDistrictOrgIntersectionFilter alloc] initWithSchoolDistrictFilter:parentFilter orgFilter:curFilter];
+                    [m_ProcessedFilters addObject:newFilter];
+                    [newFilter trigger];
+                }
+
+                [m_ProcessedFilters addObject:parentFilter];
+                [parentFilter trigger];
+            }
+            else if([parentFilter type] == "org")
+            {
+                if([curFilter type] == "county")
+                {
+                    //build org in county filter
+                    var newFilter = [[CountyOrgIntersectionFilter alloc] initWithCountyFilter:curFilter orgFilter:parentFilter];
+                    [m_ProcessedFilters addObject:newFilter];
+                    [newFilter trigger];
+
+                    [m_ProcessedFilters addObject:curFilter];
+                    [curFilter trigger];
+                 }
+                else if([curFilter type] == "school_district")
+                {
+                    //build org in school_district filter
+                    var newFilter = [[SchoolDistrictOrgIntersectionFilter alloc] initWithSchoolDistrictFilter:curFilter orgFilter:parentFilter];
+                    [m_ProcessedFilters addObject:newFilter];
+                    [newFilter trigger];
+                    [m_ProcessedFilters addObject:curFilter];
+                    [curFilter trigger];
+                }
             }
         }
     }
@@ -120,6 +176,8 @@ var g_FilterManagerInstance = nil;
 
 - (void)onFilterLoaded:(id)filter
 {
+    console.log("onFilterLoaded called");
+    
     if([self filtersAreFinished])
     {
         if([m_Delegate respondsToSelector:@selector(onFilterManagerFiltered:)])
@@ -129,7 +187,7 @@ var g_FilterManagerInstance = nil;
 
 - (BOOL)filtersAreFinished
 {
-    return [self filtersAreFinished:m_UserFilters];
+    return [self filtersAreFinished:m_ProcessedFilters];
 }
 
 - (BOOL)filtersAreFinished:(CPArray)filters
@@ -138,10 +196,9 @@ var g_FilterManagerInstance = nil;
     {
         curFilter = [filters objectAtIndex:i];
 
-        if(![curFilter finished])
-            return NO;
+        console.log("FiltersAreFinished curFilter is " + curFilter);
 
-        if(![self filtersAreFinished:[curFilter childNodes]])
+        if(![curFilter finished])
             return NO;
     }
 
@@ -150,7 +207,9 @@ var g_FilterManagerInstance = nil;
 
 - (CPSet)processFilters
 {
-    return [self processFilters:m_UserFilters];
+    console.log(m_ProcessedFilters);
+
+    return [self processFilters:m_ProcessedFilters];
 }
 
 
@@ -162,10 +221,7 @@ var g_FilterManagerInstance = nil;
     {
         curFilter = [filters objectAtIndex:i];
 
-        if([curFilter parentNode])
-            resultSet = [resultSet setByAddingObjectsFromSet:[[curFilter parentNode] intersect:[curFilter filter]]];
-        else
-            resultSet = [resultSet setByAddingObjectsFromSet:[curFilter filter]];
+        resultSet = [resultSet setByAddingObjectsFromSet:[curFilter filter]];
     }
 
     return resultSet;
