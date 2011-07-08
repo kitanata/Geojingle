@@ -2,8 +2,7 @@
 
 @import "filters/CountyFilter.j"
 
-@import "filters/CountyOrgIntersectionFilter.j"
-@import "filters/SchoolDistrictOrgIntersectionFilter.j"
+@import "filters/GiseduFilterRequest.j"
 
 var g_FilterManagerInstance = nil;
 
@@ -27,7 +26,7 @@ var g_FilterManagerInstance = nil;
         m_UserFilters = [CPArray array];
         m_ProcessedFilters = [CPArray array];
 
-        [self addFilter:[[CountyFilter alloc] initWithName:"All Counties"] parent:nil];
+        [self addFilter:[[CountyFilter alloc] init] parent:nil];
     }
 
     return self;
@@ -98,86 +97,132 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters
 {
-    [self triggerFilters:m_UserFilters];
+    [m_ProcessedFilters removeAllObjects];
+    [m_OverlayManager removeAllOverlaysFromMapView];
+
+    [self _triggerFilters:m_UserFilters];
 }
 
-- (void)triggerFilters:(CPArray)filters
+- (void)_triggerFilters:(CPArray)filters
 {
-    [m_ProcessedFilters removeAllObjects];
-    
     for(var i=0; i < [filters count]; i++)
     {
         curFilter = [filters objectAtIndex:i];
+        console.log("triggerFilters curFilter is " + curFilter);
 
         if(![curFilter isLeaf])
         {
-            [self triggerFilters:[curFilter childNodes]];
+            console.log("curFilter is not a leaf");
+            [self _triggerFilters:[curFilter childNodes]];
         }
         else if(![curFilter parentNode])
         {
-            [m_ProcessedFilters addObject:curFilter];
-            [curFilter trigger];
+            console.log("curFilter is a root filter without children");
+
+            if([curFilter type] == "county")
+                url = "http://127.0.0.1:8000/filter/county_by_name:" + [curFilter county];
+            else if([curFilter type] == "school_district")
+                url = "http://127.0.0.1:8000/filter/school_district_by_name:" + [curFilter schoolDistrict];
+            else if([curFilter type] == "school")
+                url = "http://127.0.0.1:8000/filter/school_by_type:" + [curFilter schoolType];
+            else if([curFilter type] == "org")
+                url = "http://127.0.0.1:8000/filter/organization_by_type:" + [curFilter organizationType];
+
+            if(url)
+            {
+                var newFilterRequest = [GiseduFilterRequest requestWithUrl:url];
+                [m_ProcessedFilters addObject:newFilterRequest];
+                [newFilterRequest trigger];
+            }
         }
-        else
+        else//leaf and has a parent
         {
-            var parentFilter = [curFilter parentNode];
+            console.log("Current Filter is leaf and has parent");
+            var requestUrl = [self _buildRequestUrlFromFilter:curFilter];
 
-            if([parentFilter type] == "county")
+            if(requestUrl)
             {
-                if([curFilter type] == "org")
-                {
-                    //build org in county filter
-                    var newFilter = [[CountyOrgIntersectionFilter alloc] initWithCountyFilter:parentFilter orgFilter:curFilter];
-                    [m_ProcessedFilters addObject:newFilter];
-                    [newFilter trigger];
-                }
-
-                [m_ProcessedFilters addObject:parentFilter];
-                [parentFilter trigger];
-            }
-            else if([parentFilter type] == "school_district")
-            {
-                if([curFilter type] == "org")
-                {
-                    //build org in school_district filter
-                    var newFilter = [[SchoolDistrictOrgIntersectionFilter alloc] initWithSchoolDistrictFilter:parentFilter orgFilter:curFilter];
-                    [m_ProcessedFilters addObject:newFilter];
-                    [newFilter trigger];
-                }
-
-                [m_ProcessedFilters addObject:parentFilter];
-                [parentFilter trigger];
-            }
-            else if([parentFilter type] == "org")
-            {
-                if([curFilter type] == "county")
-                {
-                    //build org in county filter
-                    var newFilter = [[CountyOrgIntersectionFilter alloc] initWithCountyFilter:curFilter orgFilter:parentFilter];
-                    [m_ProcessedFilters addObject:newFilter];
-                    [newFilter trigger];
-
-                    [m_ProcessedFilters addObject:curFilter];
-                    [curFilter trigger];
-                 }
-                else if([curFilter type] == "school_district")
-                {
-                    //build org in school_district filter
-                    var newFilter = [[SchoolDistrictOrgIntersectionFilter alloc] initWithSchoolDistrictFilter:curFilter orgFilter:parentFilter];
-                    [m_ProcessedFilters addObject:newFilter];
-                    [newFilter trigger];
-                    [m_ProcessedFilters addObject:curFilter];
-                    [curFilter trigger];
-                }
+                var newFilterRequest = [GiseduFilterRequest requestWithUrl:requestUrl];
+                [m_ProcessedFilters addObject:newFilterRequest];
+                [newFilterRequest trigger];
             }
         }
     }
 }
 
+- (CPString)_buildRequestUrlFromFilter:(id)leaf
+{
+    console.log("Building Request URL");
+    
+    //First build the filter chain (leaf to parent)
+    var filterChain = [CPArray array];
+    [self _buildFilterChain:leaf withArray:filterChain];
+
+    console.log(filterChain);
+
+    //Find the "key" filter (org or school)
+    var keyFilter = [self _extractKeyFilter:filterChain];
+    var keyFilterRequest = [self _buildKeyFilterRequest:keyFilter];
+
+    console.log("The Key Filter is " + keyFilter);
+    console.log("The Rest of the Filters are " + filterChain);
+
+    var requestUrl = "http://127.0.0.1:8000/filter" + keyFilterRequest;
+
+    for(var i=0; i < [filterChain count]; i++)
+    {
+        var curFilter = [filterChain objectAtIndex:i];
+        requestUrl += [self _buildFilterRequestModifier:curFilter];
+    }
+
+    console.log("Resulting Request URL is: " + requestUrl);
+
+    return requestUrl;
+}
+
+- (void)_buildFilterChain:(id)filter withArray:(CPArray)filterChain
+{
+    if([filter parentNode])
+        [self _buildFilterChain:[filter parentNode] withArray:filterChain];
+
+    [filterChain addObject:filter];
+}
+
+- (id)_extractKeyFilter:(CPArray)filterChain
+{
+    for(var i=0; i < [filterChain count]; i++)
+    {
+        var curFilter = [filterChain objectAtIndex:i];
+
+        if([curFilter type] == "org" || [curFilter type] == "school")
+        {
+            [filterChain removeObject:curFilter];
+
+            return curFilter;
+        }
+    }
+}
+
+- (CPString)_buildKeyFilterRequest:(id)keyFilter
+{
+    if([keyFilter type] == "org")
+        return "/organization_by_type:" + [keyFilter organizationType];
+    else if([keyFilter type] == "school")
+        return "/school_by_type:" + [keyFilter schoolType];
+}
+
+- (CPString)_buildFilterRequestModifier:(id)filter
+{
+    if([filter type] == "county")
+        return "/in_county:" + [filter county];
+    else if([filter type] == "school_district")
+        return "/in_school_district:" + [filter schoolDistrict];
+}
+
 - (void)onFilterLoaded:(id)filter
 {
     console.log("onFilterLoaded called");
-    
+
     if([self filtersAreFinished])
     {
         if([m_Delegate respondsToSelector:@selector(onFilterManagerFiltered:)])
@@ -209,11 +254,11 @@ var g_FilterManagerInstance = nil;
 {
     console.log(m_ProcessedFilters);
 
-    return [self processFilters:m_ProcessedFilters];
+    return [self _processFilters:m_ProcessedFilters];
 }
 
 
-- (CPSet)processFilters:(CPArray)filters
+- (CPSet)_processFilters:(CPArray)filters
 {
     resultSet = [CPSet set];
 
@@ -221,7 +266,7 @@ var g_FilterManagerInstance = nil;
     {
         curFilter = [filters objectAtIndex:i];
 
-        resultSet = [resultSet setByAddingObjectsFromSet:[curFilter filter]];
+        resultSet = [resultSet setByAddingObjectsFromArray:[curFilter resultSet]];
     }
 
     return resultSet;

@@ -5,7 +5,6 @@
     CPButton m_CancelButton;
     CPButton m_AddFilterButton;
 
-    CPTextField m_FilterName;
     CPPopUpButton m_FilterType;
 }
 
@@ -29,34 +28,26 @@
         [m_AddFilterButton setAction:action];
         [m_AddFilterButton sizeToFit];
 
-        m_FilterName = [CPTextField roundedTextFieldWithStringValue:"Filter Name" placeholder:"What What" width:260];
-
-        m_FilterType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(20, 68, 260, 24)];
+        m_FilterType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(20, 48, 260, 24)];
         [m_FilterType setTitle:"Filter Type"];
         [m_FilterType addItemWithTitle:"County"];
         [m_FilterType addItemWithTitle:"School District"];
+        [m_FilterType addItemWithTitle:"Public School"];
         [m_FilterType addItemWithTitle:"Organization"];
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
         var addWidth = CGRectGetWidth([m_AddFilterButton bounds]);
 
-        [m_FilterName setFrameOrigin:CGPointMake(20, 20)];
         [m_CancelButton setFrameOrigin:CGPointMake(300 - (addWidth + cancelWidth + 30), 115)];
         [m_AddFilterButton setFrameOrigin:CGPointMake(300 - (addWidth + 15), 115)];
 
         contentView = [self contentView];
-        [contentView addSubview:m_FilterName];
         [contentView addSubview:m_FilterType];
         [contentView addSubview:m_CancelButton];
         [contentView addSubview:m_AddFilterButton];
     }
 
     return self;
-}
-
-- (CPString)filterName
-{
-    return [m_FilterName stringValue];
 }
 
 - (CPString)filterType
@@ -67,7 +58,6 @@
 - (void)onCancel:(id)sender
 {
     [m_FilterType selectItemAtIndex:0];
-    [m_FilterName setStringValue:"Filter Name"];
     [self close];
 }
 

@@ -21,7 +21,6 @@
 
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
-@import "Gisedu/loaders/OrganizationListLoader.j"
 
 var m_ShowTablesToolbarId = 'showTables';
 var m_OverlayOptionsToolbarId = 'overlayOptions';
@@ -131,6 +130,7 @@ var m_UpdateMapToolbarId = 'updateMap';
     m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/school_district_list/"] delegate:self];
     
     [m_OverlayManager loadOrganizationTypeList];
+    [m_OverlayManager loadSchoolTypeList];
 
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
@@ -529,12 +529,12 @@ var m_UpdateMapToolbarId = 'updateMap';
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
-    [m_OverlayManager removeAllOverlaysFromMapView];
     [[m_LeftSideTabView outlineView] clearItems];
 
     countyOverlays = [m_OverlayManager countyOverlays];
     schoolDistrictOverlays = [m_OverlayManager schoolDistrictOverlays];
     var organizations = [m_OverlayManager organizations];
+    var schools = [m_OverlayManager schools];
 
     for(var i=0; i < [resultSet count]; i++)
     {
@@ -560,16 +560,36 @@ var m_UpdateMapToolbarId = 'updateMap';
         }
         else if(itemType == "org")
         {
-            if([[m_OverlayManager getOrganization:itemId] overlay])
+            var curOrg = [m_OverlayManager getOrganization:itemId];
+
+            if([curOrg overlay])
             {
-                var curOrg = [organizations objectForKey:itemId];
                 [[curOrg overlay] addToMapView:m_MapView];
                 [[m_LeftSideTabView outlineView] addItem:[curOrg name] forCategory:[curOrg type]];
             }
             else
             {
-                var curOrg = [organizations objectForKey:itemId];
                 [curOrg loadPointOverlay:YES];
+            }
+        }
+        else if(itemType == "school")
+        {
+            var curSchool = [m_OverlayManager getSchool:itemId];
+            
+            if([curSchool overlay])
+            {
+                console.log("Using Existing School Data");
+                [[curSchool overlay] addToMapView:m_MapView];
+                console.log("Is this a problem?");
+                console.log("Overlay is " + [curSchool overlay]);
+                console.log("Name is " + [curSchool name]);
+                console.log("Type is " + [curSchool type]);
+                [[m_LeftSideTabView outlineView] addItem:[curSchool name] forCategory:[curSchool type]];
+                console.log("Is this a problem 2?");
+            }
+            else
+            {
+                [curSchool loadPointOverlay:YES];
             }
         }
         else if(itemType == "school_district")

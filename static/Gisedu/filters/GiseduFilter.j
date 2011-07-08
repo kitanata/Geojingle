@@ -7,7 +7,6 @@
 @implementation GiseduFilter : CPTreeNode
 {
     CPString m_szType @accessors(property=type);
-    CPString m_szName @accessors(property=name);
 
     BOOL m_bFinished    @accessors(property=finished);
     BOOL m_bCached      @accessors(property=cached);
@@ -17,14 +16,13 @@
     CPArray m_ObjectIds @accessors(property=objects);
 }
 
-- (id)initWithName:(CPString)name
+- (id)init
 {
     self = [super initWithRepresentedObject:"Filter"];
 
     if(self)
     {
         m_szType = "Gisedu Filter";
-        m_szName = name;
 
         m_bFinished = NO;
         m_bCached = NO;
@@ -33,6 +31,16 @@
     }
 
     return self;
+}
+
+- (CPString)name
+{
+    return m_szType;
+}
+
+- (CPString)typeIdPrefix
+{
+    return m_szType;
 }
 
 - (void)trigger
@@ -98,7 +106,7 @@
 
     for(var i=0; i < [m_ObjectIds count]; i++)
     {
-        [typeIds addObject:(m_szType + ":" + [m_ObjectIds objectAtIndex:i])];
+        [typeIds addObject:([self typeIdPrefix] + ":" + [m_ObjectIds objectAtIndex:i])];
     }
     
     return [CPSet setWithArray:typeIds];

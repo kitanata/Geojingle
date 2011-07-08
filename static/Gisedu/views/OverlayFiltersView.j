@@ -3,10 +3,12 @@
 @import "../filters/CountyFilter.j"
 @import "../filters/OrganizationFilter.j"
 @import "../filters/SchoolDistrictFilter.j"
+@import "../filters/SchoolFilter.j"
 
 @import "filters/CountyFilterView.j"
 @import "filters/OrganizationFilterView.j"
 @import "filters/SchoolDistrictFilterView.j"
+@import "filters/SchoolFilterView.j"
 
 @import "../FilterManager.j"
 
@@ -100,7 +102,7 @@
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
-    return [item type] + " Filter : " + [item name];
+    return [item name];
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -123,6 +125,8 @@
             m_CurrentFilterView = [[SchoolDistrictFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
         else if([filter type] == "org")
             m_CurrentFilterView = [[OrganizationFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
+        else if([filter type] == "school")
+            m_CurrentFilterView = [[SchoolFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
 
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
         [m_CurrentFilterView setTarget:self];
@@ -154,8 +158,6 @@
 
 -(void)alertDidEnd:(CPAlert)theAlert returnCode:(int)returnCode
 {
-    console.log("Delete Filter Called");
-
     if(theAlert == m_DeleteFilterAlert)
     {
         if(returnCode == 1)
@@ -193,11 +195,13 @@
     var newFilter = nil;
 
     if(filterType == "County")
-        newFilter = [[CountyFilter alloc] initWithName:[m_AddFilterPanel filterName]];
+        newFilter = [[CountyFilter alloc] init];
     else if(filterType == "School District")
-        newFilter = [[SchoolDistrictFilter alloc] initWithName:[m_AddFilterPanel filterName]];
+        newFilter = [[SchoolDistrictFilter alloc] init];
     else if(filterType == "Organization")
-        newFilter = [[OrganizationFilter alloc] initWithName:[m_AddFilterPanel filterName]];
+        newFilter = [[OrganizationFilter alloc] init];
+    else if(filterType == "Public School")
+        newFilter = [[SchoolFilter alloc] init];
 
     if(newFilter)
     {
@@ -214,7 +218,13 @@
 
             [m_FilterManager addFilter:newFilter parent:curSelItem];
             [m_OutlineView reloadItem:curSelItem reloadChildren:YES];
+            [m_OutlineView expandItem:curSelItem];
         }
+
+        var newFilterIndex = [m_OutlineView rowForItem:newFilter];
+        [m_OutlineView selectRowIndexes:[CPIndexSet indexSetWithIndex:newFilterIndex] byExtendingSelection:NO];
+        [self onOutlineItemSelected:self];
+
     }
 
     [m_AddFilterPanel onCancel:sender];

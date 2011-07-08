@@ -7,9 +7,9 @@
     CPString m_szCounty @accessors(property=county);
 }
 
-- (id)initWithName:(CPString)name
+- (id)init
 {
-    self = [super initWithName:name];
+    self = [super init];
 
     if(self)
     {
@@ -20,9 +20,17 @@
     return self;
 }
 
+- (CPString)name
+{
+    if(m_szCounty == "All")
+        return "All Counties Filter";
+    else
+        return m_szCounty + " County Filter";
+}
+
 - (CPString)requestUrl
 {
-    return "http://127.0.0.1:8000/filter/county_by_name/" + m_szCounty;
+    return "http://127.0.0.1:8000/filter/county_by_name:" + m_szCounty;
 }
 
 - (void)onError

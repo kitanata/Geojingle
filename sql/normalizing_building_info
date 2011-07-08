@@ -1,0 +1,144 @@
+﻿-- ALTER TABLE building_info ADD COLUMN area_class_id integer;
+
+-- UPDATE building_info SET area_class_id = 10 WHERE building_info.typologyde is null;
+
+-- SELECT * FROM building_info WHERE area_class_id is null;
+
+-- INSERT INTO school_area_classification (classification) VALUES ('Not Assigned or Unknown');
+
+-- SELECT * FROM school_area_classification;
+
+-- ALTER TABLE building_info DROP COLUMN typologyde;
+
+-- SELECT DISTINCT itc from building_info;
+
+-- ALTER TABLE building_info ADD COLUMN itc_id integer;
+
+/* CREATE TABLE school_itc
+(
+  gid serial NOT NULL,
+  itc character varying(80),
+  CONSTRAINT school_itc_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE school_itc OWNER TO postgres;
+GRANT ALL ON TABLE school_itc TO postgres;
+GRANT ALL ON TABLE school_itc TO gis_demo_role;
+
+INSERT INTO school_itc (itc) SELECT DISTINCT itc FROM building_info;
+
+SELECT * FROM school_itc;*/
+
+-- UPDATE building_info SET itc_id = school_itc.gid FROM school_itc WHERE school_itc.itc = building_info.itc;
+
+-- ALTER TABLE building_info DROP COLUMN itc;
+
+-- SELECT DISTINCT grades FROM building_info;
+
+-- SELECT * FROM building_info;
+
+/*CREATE TABLE grade
+(
+  gid serial NOT NULL,
+  grade_num integer UNIQUE,
+  grade_name character varying(80),
+  CONSTRAINT grade_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE grade OWNER TO postgres;
+GRANT ALL ON TABLE grade TO postgres;
+GRANT ALL ON TABLE grade TO gis_demo_role;
+
+INSERT INTO grade (grade_num, grade_name) VALUES (-1, 'Preschool');
+INSERT INTO grade (grade_num, grade_name) VALUES (0, 'Kindergarten');
+INSERT INTO grade (grade_num, grade_name) VALUES (1, 'First');
+INSERT INTO grade (grade_num, grade_name) VALUES (2, 'Second');
+INSERT INTO grade (grade_num, grade_name) VALUES (3, 'Third');
+INSERT INTO grade (grade_num, grade_name) VALUES (4, 'Fourth');
+INSERT INTO grade (grade_num, grade_name) VALUES (5, 'Fifth');
+INSERT INTO grade (grade_num, grade_name) VALUES (6, 'Sixth');
+INSERT INTO grade (grade_num, grade_name) VALUES (7, 'Seventh');
+INSERT INTO grade (grade_num, grade_name) VALUES (8, 'Eighth');
+INSERT INTO grade (grade_num, grade_name) VALUES (9, 'Freshman');
+INSERT INTO grade (grade_num, grade_name) VALUES (10,'Sophmore');
+INSERT INTO grade (grade_num, grade_name) VALUES (11,'Junior');
+INSERT INTO grade (grade_num, grade_name) VALUES (12,'Senior');
+INSERT INTO grade (grade_num, grade_name) VALUES (20,'SN');
+INSERT INTO grade (grade_num, grade_name) VALUES (21,'UN');
+INSERT INTO grade (grade_num, grade_name) VALUES (22,'UNG');
+INSERT INTO grade (grade_num, grade_name) VALUES (23,'H');
+INSERT INTO grade (grade_num, grade_name) VALUES (24,'D');
+INSERT INTO grade (grade_num, grade_name) VALUES (25,'S');
+
+
+SELECT * FROM grade;
+
+DROP TABLE ohio_school_grade;
+
+CREATE TABLE ohio_school_grade
+(
+  gid serial NOT NULL,
+  school_id integer,
+  grade_id integer,
+  CONSTRAINT ohio_school_grade_pkey PRIMARY KEY (gid)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE ohio_school_grade OWNER TO postgres;
+GRANT ALL ON TABLE ohio_school_grade TO postgres;
+GRANT ALL ON TABLE ohio_school_grade TO gis_demo_role;*/
+
+/*ALTER TABLE building_info DROP COLUMN grades;
+SELECT * FROM building_info limit 100;*/
+
+
+
+
+-- ALTER TABLE gisedu_org ADD COLUMN building_irn integer;
+
+-- UPDATE gisedu_org SET building_irn = bldgirn::integer WHERE bldgirn is not null and bldgirn != 'r Null';
+
+-- ALTER TABLE gisedu_org DROP COLUMN bldgirn;
+
+-- UPDATE building_info SET org_id = gisedu_org.gid FROM gisedu_org WHERE building_info.birn = gisedu_org.building_irn;
+
+-- SELECT * FROM building_info WHERE dirn = 43489;
+
+-- UPDATE ohio_school_districts SET district_irn = ode_irn::integer WHERE ode_irn is not null;
+
+-- ALTER TABLE building_info ADD COLUMN school_district_id integer;
+
+-- UPDATE building_info SET school_district_id = ohio_school_districts.gid FROM ohio_school_districts WHERE building_info.dirn = ohio_school_districts.district_irn;
+
+-- SELECT * FROM building_info WHERE school_district_id is null;
+
+/* SELECT updategeometrysrid('building_info', 'the_geom', 4326);
+UPDATE building_info SET the_geom = setsrid(the_geom, 4326);
+
+SELECT getsrid(the_geom) FROM building_info;
+SELECT asewkt(the_geom) FROM building_info limit 100; */
+
+-- INSERT INTO gisedu_org (org_nm, building_irn, the_geom) SELECT bname, birn, the_geom FROM building_info WHERE building_info.org_id is null;
+
+-- UPDATE building_info SET org_id = gisedu_org.gid FROM gisedu_org WHERE gisedu_org.building_irn = building_info.birn;
+
+/* UPDATE gisedu_org SET org_type_id = 44 
+	FROM building_info WHERE building_info.org_id = gisedu_org.gid 
+	and building_info.buildlevel = 'vocational';
+
+SELECT * FROM building_info JOIN gisedu_org on (building_info.org_id = gisedu_org.gid) WHERE org_type_id != 44 and buildlevel = 'vocational'; */
+
+-- SELECT * FROM building_info JOIN gisedu_org on (building_info.org_id = gisedu_org.gid) WHERE org_type_id is not null and irn1 is not null;-- and irn1::integer != birn::integer;
+
+-- UPDATE gisedu_org SET irn1 = null FROM building_info WHERE building_info.org_id = gisedu_org.gid and gisedu_org.org_type_id is not null and gisedu_org.irn1 is not null;
+
+-- SELECT * FROM building_info JOIN gisedu_org on (building_info.org_id = gisedu_org.gid) WHERE building_irn != birn;
+
+ALTER TABLE building_info DROP COLUMN buildingty;
+
+SELECT * FROM building_info limit 100;

@@ -3,29 +3,32 @@
 @implementation OrganizationFilter : GiseduFilter
 {
     CPString m_szOrganizationType   @accessors(property=organizationType);
-    CPString m_szOrganization       @accessors(property=organization);
 }
 
-- (id)initWithName:(CPString)name
+- (id)init
 {
-    self = [super initWithName:name];
+    self = [super init];
 
     if(self)
     {
         m_szOrganizationType = "All";
-        m_szOrganization = "All";
         m_szType = "org";
     }
 
     return self;
 }
 
+- (CPString)name
+{
+    if(m_szOrganizationType == "All")
+        return "All Organizations Filter";
+    else
+        return "All " + m_szOrganizationType + " Filter";
+}
+
 - (CPString)requestUrl
 {
-    if(m_szOrganization == "All")
-        return "http://127.0.0.1:8000/filter/org_by_type/" + m_szOrganizationType;
-    else
-        return "http://127.0.0.1:8000/filter/org_by_name/" + m_szOrganization;
+    return "http://127.0.0.1:8000/filter/org_by_type/" + m_szOrganizationType;
 }
 
 - (void)onError

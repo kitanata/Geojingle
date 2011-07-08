@@ -1,6 +1,9 @@
 @import <Foundation/CPObject.j>
 
-@import "loaders/OrganizationTypeListLoader.j"
+@import "loaders/ListLoader.j"
+@import "loaders/DictionaryLoader.j"
+
+@import "School.j"
 
 //IMPORTANT ************************************************************************************************************
 // Hi! You may be wondering why there are three separate variables tracking these items(two here and one in app controller).
@@ -19,7 +22,7 @@ var overlayManagerInstance = nil;
 @implementation OverlayManager : CPObject
 {
     MKMapView m_MapView @accessors(property=mapView);
-    
+
     CPDictionary m_Counties @accessors(property=counties);                                //Maps a County Name to it's PK
     CPDictionary m_CountyOverlays @accessors(property=countyOverlays);                    //Maps a County PK to it's Overlay
 
@@ -27,8 +30,12 @@ var overlayManagerInstance = nil;
     CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
 
     CPDictionary m_OrganizationTypes @accessors(property=orgTypes);       //maps organization type to an array of organization pks
-    CPDictionary m_OrgToGid @accessors(property=orgNames);                    //maps name of organization to it's primary key in the db
+    CPDictionary m_OrgToGid @accessors(property=orgNames);                //maps name of organization to it's primary key in the db
     CPDictionary m_OrgGidToOrg @accessors(property=organizations);        //maps the the organization primary key to it's object
+
+    CPDictionary m_SchoolTypes       @accessors(property=schoolTypes);     //maps school type to an array of school pks
+    CPDictionary m_SchoolToGid       @accessors(property=schoolToGid);     //maps name of school to it's primary key in the db
+    CPDictionary m_SchoolGidToSchool @accessors(property=schools);         //maps school pk to it's object
 
     id m_Delegate @accessors(property=delegate);
 }
@@ -41,7 +48,7 @@ var overlayManagerInstance = nil;
     {
         m_Counties = [CPDictionary dictionary];
         m_CountyOverlays = [CPDictionary dictionary];
-        
+
         m_SchoolDistricts = [CPDictionary dictionary];
         m_SchoolDistrictOverlays = [CPDictionary dictionary];
 
@@ -49,6 +56,10 @@ var overlayManagerInstance = nil;
 
         m_OrgToGid = [CPDictionary dictionary];
         m_OrgGidToOrg = [CPDictionary dictionary];
+
+        m_SchoolTypes = [CPDictionary dictionary];
+        m_SchoolToGid = [CPDictionary dictionary];
+        m_SchoolGidToSchool = [CPDictionary dictionary];
     }
 
     return self;
@@ -62,6 +73,25 @@ var overlayManagerInstance = nil;
 - (id)getOrganization:(CPInteger)gid
 {
     return [m_OrgGidToOrg objectForKey:gid];
+}
+
+- (id)createOrganization:(CPInteger)gid
+{
+    newOrg = [[Organization alloc] initWithIdentifier:gid];
+    [m_OrgGidToOrg setObject:newOrg forKey:gid];
+    return newOrg;
+}
+
+- (id)getSchool:(CPInteger)gid
+{
+    return [m_SchoolGidToSchool objectForKey:gid];
+}
+
+- (id)createSchool:(CPInteger)gid
+{
+    newSchool = [[School alloc] initWithIdentifier:gid];
+    [m_SchoolGidToSchool setObject:newSchool forKey:gid];
+    return newSchool;
 }
 
 - (void)loadCountyOverlay:(CPInteger)countyId
@@ -92,16 +122,24 @@ var overlayManagerInstance = nil;
 
 - (void)loadOrganizationTypeList
 {
-    organizationTypeListLoader = [[OrganizationTypeListLoader alloc] init];
+    organizationTypeListLoader = [[ListLoader alloc] initWithUrl:"http://127.0.0.1:8000/org_type_list/"];
     [organizationTypeListLoader setAction:@selector(onOrgTypeListLoaded:)];
     [organizationTypeListLoader setTarget:self];
     [organizationTypeListLoader load];
 }
 
+- (void)loadSchoolTypeList
+{
+    schoolTypeListLoader = [[ListLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_type_list/"];
+    [schoolTypeListLoader setAction:@selector(onSchoolTypeListLoaded:)];
+    [schoolTypeListLoader setTarget:self];
+    [schoolTypeListLoader load];
+}
+
 - (void)onCountyOverlayLoaded:(id)sender
 {
     overlay = [sender overlay];
-    
+
     [m_CountyOverlays setObject:overlay forKey:[overlay pk]];
 
     if([sender showOnLoad])
@@ -130,12 +168,15 @@ var overlayManagerInstance = nil;
 
 - (void)onOrgTypeListLoaded:(id)sender
 {
-    orgTypes = [sender orgTypes];
+    orgTypes = [sender list];
+    
     for(var i=0; i < [orgTypes count]; i++)
     {
-        [m_OrganizationTypes setObject:[CPArray array] forKey:[orgTypes objectAtIndex:i]];
+        var curOrgType = [orgTypes objectAtIndex:i];
+        [m_OrganizationTypes setObject:[CPArray array] forKey:curOrgType];
 
-        loader = [[OrganizationListLoader alloc] initWithTypeName:[orgTypes objectAtIndex:i]];
+        loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/org_list_by_typename/" + curOrgType];
+        [loader setCategory:curOrgType];
         [loader setAction:@selector(onOrgListLoaded:)];
         [loader setTarget:self];
         [loader load];
@@ -145,25 +186,74 @@ var overlayManagerInstance = nil;
         [m_Delegate onOrgTypeListLoaded];
 }
 
+- (void)onSchoolTypeListLoaded:(id)sender
+{
+    schoolTypes = [sender list];
+
+    for(var i=0; i < [schoolTypes count]; i++)
+    {
+        var curSchoolType = [schoolTypes objectAtIndex:i];
+        [m_SchoolTypes setObject:[CPArray array] forKey:[schoolTypes objectAtIndex:i]];
+
+        loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_list_by_typename/" + curSchoolType];
+        [loader setCategory:curSchoolType];
+        [loader setAction:@selector(onSchoolListLoaded:)];
+        [loader setTarget:self];
+        [loader load];
+    }
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolTypeListLoaded)])
+        [m_Delegate onSchoolTypeListLoaded];
+
+    console.log("Finished Loading School Type List");
+}
+
 - (void)onOrgListLoaded:(id)sender
 {
     var orgIds = [CPArray array];
 
-    var senderOrgs = [sender orgs];
+    var orgDict = [sender dictionary];
+    var keys = [orgDict allKeys];
 
-    for(var i=0; i < [senderOrgs count]; i++)
+    for(var i=0; i < [keys count]; i++)
     {
-        var curOrg = [senderOrgs objectAtIndex:i];
+        var curOrgId = [keys objectAtIndex:i];
+        var curOrgName = [orgDict objectForKey:curOrgId];
 
-        [orgIds addObject:[curOrg pk]];
-        [m_OrgToGid setObject:[curOrg pk] forKey:[curOrg name]];
-        [m_OrgGidToOrg setObject:curOrg forKey:[curOrg pk]];
+        [orgIds addObject:curOrgId];
+        [m_OrgToGid setObject:curOrgId forKey:curOrgName];
+
+        var curOrg = [self createOrganization:curOrgId];
+        [curOrg setName:curOrgName];
+        [curOrg setType:[sender category]];
     }
 
-    [m_OrganizationTypes setObject:orgIds forKey:[sender name]];
-    
     if([m_Delegate respondsToSelector:@selector(onOrgListLoaded:)])
-        [m_Delegate onOrgListLoaded:[sender name]];
+        [m_Delegate onOrgListLoaded:[sender category]];
+}
+
+- (void)onSchoolListLoaded:(id)sender
+{
+    var schoolIds = [CPArray array];
+
+    var schoolDict = [sender dictionary];
+    var keys = [schoolDict allKeys];
+
+    for(var i=0; i < [keys count]; i++)
+    {
+        var curSchoolId = [keys objectAtIndex:i];
+        var curSchoolName = [schoolDict objectForKey:curSchoolId];
+
+        [schoolIds addObject:curSchoolId];
+        [m_SchoolToGid setObject:curSchoolId forKey:curSchoolName];
+
+        var curSchool = [self createSchool:curSchoolId];
+        [curSchool setName:curSchoolName];
+        [curSchool setType:[sender category]];
+    }
+    
+    if([m_Delegate respondsToSelector:@selector(onSchoolListLoaded:)])
+        [m_Delegate onSchoolListLoaded:[sender category]];
 }
 
 - (void)removeAllOverlaysFromMapView
@@ -171,6 +261,7 @@ var overlayManagerInstance = nil;
     [self removeAllCountyOverlaysFromMapView];
     [self removeAllSchoolDistrictOverlaysFromMapView];
     [self removeAllOrgOverlaysFromMapView];
+    [self removeAllSchoolOverlaysFromMapView];
 }
 
 - (void)removeAllCountyOverlaysFromMapView
@@ -200,6 +291,16 @@ var overlayManagerInstance = nil;
     for(var i=0; i < [orgOverlays count]; i++)
     {
         [[[orgOverlays objectAtIndex:i] overlay] removeFromMapView];
+    }
+}
+
+- (void)removeAllSchoolOverlaysFromMapView
+{
+    var overlays = [m_SchoolGidToSchool allValues];
+
+    for(var i=0; i < [overlays count]; i++)
+    {
+        [[[overlays objectAtIndex:i] overlay] removeFromMapView];
     }
 }
 

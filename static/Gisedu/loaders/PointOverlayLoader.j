@@ -49,27 +49,12 @@
     if (aConnection == m_Connection)
     {
         var aData = aData.replace('while(1);', '');
-        var aData = JSON.parse(aData);
 
-        var nPk = 0;
-
-        for(key in aData)
-        {
-            if(key == 'gid')
-            {
-                nPk = aData[key];
-            }
-            else if(key == 'the_geom')
-            {
-                geoJson = JSON.stringify(aData[key]);
-
-                m_PointOverlay = [[GeoJsonParser alloc] parse:geoJson];
-            }
-        }
+        m_PointOverlay = [[GeoJsonParser alloc] parse:aData];
 
         if(m_PointOverlay != nil)
         {
-            [m_PointOverlay setPk:nPk];
+            [m_PointOverlay setPk:m_nIdentifier];
             [m_PointOverlay setVisible:m_bVisibleOnLoad];
         }
 

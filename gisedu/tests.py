@@ -17,7 +17,6 @@ class TestOrgTypeList(TestCase):
         response = c.get('/org_type_list/')
 
         self.assertEqual(response.status_code, 200)
-    
         self.assertEqual(response.content, '\n["Library", "Media Center", "Other", "School"]\n')
 
     def test_org_list_by_type(self):
@@ -28,7 +27,6 @@ class TestOrgTypeList(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, '\n[{"gid": 1, "name": "College Corner"}, {"gid": 10751, "name": "Anthony Wayne"}]\n')
-
 
 
 class TestOrgGeom(TestCase):

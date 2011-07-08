@@ -81,9 +81,6 @@
 
 - (void)onClick
 {
-    console.log("On Click Called");
-    console.log("Delegate is " + m_Delegate);
-    
     if([m_Delegate respondsToSelector:@selector(onClick)])
         [m_Delegate onClick];
 }

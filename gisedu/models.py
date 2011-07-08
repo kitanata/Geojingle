@@ -32,12 +32,10 @@ class OhioCounties(models.Model):
         return str(self.name)
 
 
-
 class OhioSchoolDistricts(models.Model):
     gid = models.IntegerField(primary_key=True)
     objectid = models.IntegerField()
     shape_leng = models.DecimalField(max_digits=1000, decimal_places=999)
-    ode_irn = models.CharField(max_length=6)
     name = models.CharField(max_length=51)
     lea_id = models.CharField(max_length=5)
     beg_grade = models.CharField(max_length=2)
@@ -50,64 +48,15 @@ class OhioSchoolDistricts(models.Model):
     shape_area = models.DecimalField(max_digits=1000, decimal_places=999)
     shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
     the_geom = models.MultiPolygonField()
+    district_irn = models.IntegerField()
     objects = models.GeoManager()
+
     class Meta:
         db_table = u'ohio_school_districts'
         verbose_name_plural = "Ohio School Districts"
 
     def __str__(self):
         return str(self.name)
-
-
-
-class GiseduOrgType(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    org_type_name = models.CharField(max_length=254)
-
-    class Meta:
-        db_table = u'gisedu_org_type'
-        verbose_name_plural = "Educational Organization Types"
-
-
-
-class GiseduOrgAddress(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    street_num = models.IntegerField()
-    street_name = models.CharField(max_length=254)
-    mail_stop = models.CharField(max_length=254)
-    address_line_one = models.CharField(max_length=254)
-    address_line_two = models.CharField(max_length=254)
-    city = models.CharField(max_length=254)
-    state = models.CharField(max_length=254)
-    zip10 = models.CharField(max_length=254)
-
-    class Meta:
-        db_table = u'gisedu_org_address'
-        verbose_name_plural = "Educational Organization Addresses"
-
-
-
-class GiseduOrg(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    objectid = models.IntegerField()
-    org_key = models.IntegerField()
-    irn = models.CharField(max_length=254)
-    org_nm = models.CharField(max_length=254)
-    ref_org_ty = models.IntegerField()
-    bldgirn = models.CharField(max_length=6)
-    irn1 = models.CharField(max_length=6)
-    the_geom = models.PointField()
-    address = models.ForeignKey(GiseduOrgAddress)
-    org_type = models.ForeignKey(GiseduOrgType)
-    objects = models.GeoManager()
-
-    class Meta:
-        db_table = u'gisedu_org'
-        verbose_name_plural = "Educational Organizations"
-
-    def __str__(self):
-        return str(self.org_nm)
-
 
 
 class OhioLibraries(models.Model):
