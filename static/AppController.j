@@ -350,24 +350,25 @@ var m_UpdateMapToolbarId = 'updateMap';
     [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
 }
 
-- (void)onOrgOverlayLoaded:(id)organization
-{
-    overlay = [organization overlay];
-    
-    [overlay setOnClickAction:@selector(OnOrgGeometrySelected:)];
-    [overlay setEventTarget:self];
-
-    [[m_LeftSideTabView outlineView] addItem:[organization name] forCategory:[organization type]];
-}
-
 - (void)OnPolygonGeometrySelected:(id)sender
 {
     [m_OverlayOptionsView setPolygonOverlayTarget:sender];
 }
 
-- (void)OnOrgGeometrySelected:(id)sender
+- (void)onOrgOverlaySelected:(id)organization
 {
-    [m_OverlayOptionsView setPointOverlayTarget:sender];
+    console.log("AppController::onOrgOverlaySelected Called");
+    [m_OverlayOptionsView setPointOverlayTarget:[organization overlay]];
+
+    [[m_LeftSideTabView outlineView] selectItem:[organization name]];
+}
+
+- (void)onSchoolOverlaySelected:(id)school
+{
+    console.log("AppController:onSchoolOverlaySelected Called");
+    [m_OverlayOptionsView setPointOverlayTarget:[school overlay]];
+
+    [[m_LeftSideTabView outlineView] selectItem:[school name]];
 }
 
 - (void)onSchoolDistrictGeometryLoaded:(id)sender
@@ -570,6 +571,7 @@ var m_UpdateMapToolbarId = 'updateMap';
             else
             {
                 [curOrg loadPointOverlay:YES];
+                [[m_LeftSideTabView outlineView] addItem:[curOrg name] forCategory:[curOrg type]];
             }
         }
         else if(itemType == "school")
@@ -578,18 +580,13 @@ var m_UpdateMapToolbarId = 'updateMap';
             
             if([curSchool overlay])
             {
-                console.log("Using Existing School Data");
                 [[curSchool overlay] addToMapView:m_MapView];
-                console.log("Is this a problem?");
-                console.log("Overlay is " + [curSchool overlay]);
-                console.log("Name is " + [curSchool name]);
-                console.log("Type is " + [curSchool type]);
                 [[m_LeftSideTabView outlineView] addItem:[curSchool name] forCategory:[curSchool type]];
-                console.log("Is this a problem 2?");
             }
             else
             {
                 [curSchool loadPointOverlay:YES];
+                [[m_LeftSideTabView outlineView] addItem:[curSchool name] forCategory:[curSchool type]];
             }
         }
         else if(itemType == "school_district")

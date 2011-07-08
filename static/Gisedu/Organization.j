@@ -43,6 +43,9 @@
 - (void)onClick
 {
     [self toggleInfoWindow];
+
+    if([m_Delegate respondsToSelector:@selector(onOrgOverlaySelected:)])
+        [m_Delegate onOrgOverlaySelected:self];
 }
 
 - (void)loadPointOverlay:(BOOL)showOnLoad
@@ -71,7 +74,7 @@
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
 
     if([m_Delegate respondsToSelector:@selector(onOrgOverlayLoaded:)])
-        [m_Delegate onOrgOverlayLoaded:organization];
+        [m_Delegate onOrgOverlayLoaded:self];
 }
 
 - (void)onInfoWindowLoaded:(id)sender

@@ -226,6 +226,7 @@ var overlayManagerInstance = nil;
         var curOrg = [self createOrganization:curOrgId];
         [curOrg setName:curOrgName];
         [curOrg setType:[sender category]];
+        [curOrg setDelegate:self];
     }
 
     if([m_Delegate respondsToSelector:@selector(onOrgListLoaded:)])
@@ -250,10 +251,43 @@ var overlayManagerInstance = nil;
         var curSchool = [self createSchool:curSchoolId];
         [curSchool setName:curSchoolName];
         [curSchool setType:[sender category]];
+        [curSchool setDelegate:self];
     }
     
     if([m_Delegate respondsToSelector:@selector(onSchoolListLoaded:)])
         [m_Delegate onSchoolListLoaded:[sender category]];
+}
+
+- (void)onOrgOverlayLoaded:(id)sender
+{
+    console.log("OverlayManager::onOrgOverlayLoaded Called");
+
+    if([m_Delegate respondsToSelector:@selector(onOrgOverlayLoaded:)])
+        [m_Delegate onOrgOverlayLoaded:sender];
+}
+
+- (void)onSchoolOverlayLoaded:(id)sender
+{
+    console.log("OverlayManager:onSchoolOverlayLoaded Called");
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolOverlayLoaded:)])
+        [m_Delegate onSchoolOverlayLoaded:sender];
+}
+
+- (void)onOrgOverlaySelected:(id)sender
+{
+    console.log("OverlayManager:onOrgOverlaySelected Called");
+
+    if([m_Delegate respondsToSelector:@selector(onOrgOverlaySelected:)])
+        [m_Delegate onOrgOverlaySelected:sender];
+}
+
+- (void)onSchoolOverlaySelected:(id)sender
+{
+    console.log("OverlayManager:onSchoolOverlaySelected Called");
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolOverlaySelected:)])
+        [m_Delegate onSchoolOverlaySelected:sender];
 }
 
 - (void)removeAllOverlaysFromMapView

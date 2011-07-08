@@ -37,6 +37,9 @@
 - (void)onClick
 {
     [self toggleInfoWindow];
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolOverlaySelected:)])
+        [m_Delegate onSchoolOverlaySelected:self];
 }
 
 - (void)loadPointOverlay:(BOOL)showOnLoad
@@ -65,7 +68,7 @@
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
 
     if([m_Delegate respondsToSelector:@selector(onSchoolOverlayLoaded:)])
-        [m_Delegate onSchoolOverlayLoaded:m_Overlay];
+        [m_Delegate onSchoolOverlayLoaded:self];
 }
 
 - (void)onInfoWindowLoaded:(id)sender

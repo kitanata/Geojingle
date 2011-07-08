@@ -62,6 +62,22 @@
     [m_OutlineView reloadItem:nil reloadChildren:YES];
 }
 
+- (void) selectItem:(CPString)item
+{
+    parentItem = [m_OutlineView parentForItem:item];
+
+    console.log(m_Items);
+
+    console.log("Parent Item is " + parentItem);
+
+    if(parentItem)
+        [m_OutlineView expandItem:parentItem];
+
+    var itemIndex = [m_OutlineView rowForItem:item];
+    console.log("Selecting Item item is: " + item + " and it's index is: " + itemIndex);
+    [m_OutlineView selectRowIndexes:[CPIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
+}
+
 - (void) sortItems
 {
     var itemCategories = [m_Items allKeys];
@@ -72,6 +88,8 @@
         var sortedArray = [itemArray sortedArrayUsingSelector:@selector(compare:)];
         [m_Items setObject:sortedArray forKey:[itemCategories objectAtIndex:i]];
     }
+
+    [m_OutlineView reloadItem:nil reloadChildren:YES];
 }
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
