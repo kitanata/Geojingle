@@ -53,9 +53,6 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
-    if([m_Filter county] != [m_CountySearchField stringValue])
-        [m_Filter setCached:NO];
-        
     [m_Filter setCounty:[m_CountySearchField stringValue]];
 
     if(_action && _target)

@@ -53,9 +53,6 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
-    if([m_Filter schoolDistrict] != [m_SchoolDistrictSearch stringValue])
-        [m_Filter setCached:NO];
-        
     [m_Filter setSchoolDistrict:[m_SchoolDistrictSearch stringValue]];
 
     if(_action && _target)

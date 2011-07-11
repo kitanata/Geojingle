@@ -28,14 +28,4 @@
         return m_szSchoolDistrict + " Filter";
 }
 
-- (CPString)requestUrl
-{
-    return "http://127.0.0.1:8000/filter/school_district_by_name/" + m_szSchoolDistrict;
-}
-
-- (void)onError
-{
-    alert('County Filter failed to load filter data! ' + anError);
-}
-
 @end

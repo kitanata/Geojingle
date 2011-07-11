@@ -28,14 +28,4 @@
         return m_szCounty + " County Filter";
 }
 
-- (CPString)requestUrl
-{
-    return "http://127.0.0.1:8000/filter/county_by_name:" + m_szCounty;
-}
-
-- (void)onError
-{
-    alert('County Filter failed to load filter data! ' + anError);
-}
-
 @end

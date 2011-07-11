@@ -58,9 +58,6 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
-    if([m_Filter schoolType] != [m_SchoolType titleOfSelectedItem])
-        [m_Filter setCached:NO];
-
     [m_Filter setSchoolType:[m_SchoolType titleOfSelectedItem]];
 
     if(_action && _target)

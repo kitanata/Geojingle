@@ -31,17 +31,4 @@
         return m_szOrganization + " Organization Filter";
 }
 
-- (CPString)requestUrl
-{
-    if(m_szOrganization == "All")
-        return "http://127.0.0.1:8000/filter/org_by_connectivity/" + m_szOrganizationType;
-    else
-        return "http://127.0.0.1:8000/filter/org_by_name/" + m_szOrganization;
-}
-
-- (void)onError
-{
-    alert('Organization Filter failed to load filter data! ' + anError);
-}
-
 @end

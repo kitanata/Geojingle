@@ -23,19 +23,4 @@
     return m_szSchoolType + " School Filter";
 }
 
-- (CPString)typeIdPrefix
-{
-    return "org";
-}
-
-- (CPString)requestUrl
-{
-    return "http://127.0.0.1:8000/filter/schools_by_type/" + m_szSchoolType;
-}
-
-- (void)onError
-{
-    alert('School Filter failed to load filter data! ' + anError);
-}
-
 @end

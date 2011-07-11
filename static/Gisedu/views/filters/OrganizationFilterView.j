@@ -61,11 +61,6 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
-    if([m_Filter organizationType] != [m_OrganizationType titleOfSelectedItem])
-    {
-        [m_Filter setCached:NO];
-    }
-
     [m_Filter setOrganizationType:[m_OrganizationType titleOfSelectedItem]];
 
     if(_action && _target)
