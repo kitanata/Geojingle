@@ -1,6 +1,6 @@
 @import <Foundation/CPObject.j>
 
-@import "filters/CountyFilter.j"
+@import "filters/StringFilter.j"
 
 @import "filters/GiseduFilterRequest.j"
 
@@ -14,6 +14,8 @@ var g_FilterManagerInstance = nil;
     CPArray m_ProcessedFilters;                                   //Filters that the filter engine optimizes for
 
     id m_Delegate         @accessors(property=delegate);
+
+    CPDictionary m_FilterMap    @accessors(property=filterMap);   //Maps Filter to Filter Type Name (ListFilter -> 'org', IntegerFilter -> 'mbit_less')
 }
 
 - (void)init
@@ -25,8 +27,9 @@ var g_FilterManagerInstance = nil;
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
         m_ProcessedFilters = [CPArray array];
+        m_FilterMap = [CPDictionary dictionary];
 
-        [self addFilter:[[CountyFilter alloc] init] parent:nil];
+        [self addFilter:[self createFilter:'county'] parent:nil];
     }
 
     return self;
@@ -55,6 +58,30 @@ var g_FilterManagerInstance = nil;
 
     return NO;
 }
+
+- (GiseduFilter)createFilter:(CPString)type
+ {
+    var newFilter = nil;
+
+    if(type == 'county')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    else if(type == 'school_district')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    else if(type == 'organization')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    else if(type == 'school')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+
+    console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
+    [m_FilterMap setObject:type forKey:newFilter];
+
+    return newFilter;
+ }
+
+ - (CPString)typeFromFilter:(GiseduFilter)filter
+ {
+    return [m_FilterMap objectForKey:filter];
+ }
 
 - (void)addFilter:(GiseduFilter)filter parent:(GiseduFilter)parent
 {
@@ -119,14 +146,17 @@ var g_FilterManagerInstance = nil;
         {
             console.log("curFilter is a root filter without children");
 
-            if([curFilter type] == "county")
-                url = "http://127.0.0.1:8000/filter/county_by_name:" + [curFilter county];
-            else if([curFilter type] == "school_district")
-                url = "http://127.0.0.1:8000/filter/school_district_by_name:" + [curFilter schoolDistrict];
-            else if([curFilter type] == "school")
-                url = "http://127.0.0.1:8000/filter/school_by_type:" + [curFilter schoolType];
-            else if([curFilter type] == "org")
-                url = "http://127.0.0.1:8000/filter/organization_by_type:" + [curFilter organizationType];
+            var curFilterType = [m_FilterMap objectForKey:curFilter];
+            console.log("curFilterType is " + curFilterType);
+
+            if(curFilterType == "county")
+                url = "http://127.0.0.1:8000/filter/county_by_name:" + [curFilter value];
+            else if(curFilterType == "school_district")
+                url = "http://127.0.0.1:8000/filter/school_district_by_name:" + [curFilter value];
+            else if(curFilterType == "school")
+                url = "http://127.0.0.1:8000/filter/school_by_type:" + [curFilter value];
+            else if(curFilterType == "organization")
+                url = "http://127.0.0.1:8000/filter/organization_by_type:" + [curFilter value];
 
             if(url)
             {
@@ -193,8 +223,9 @@ var g_FilterManagerInstance = nil;
     for(var i=0; i < [filterChain count]; i++)
     {
         var curFilter = [filterChain objectAtIndex:i];
+        var curFilterType = [self typeFromFilter:curFilter];
 
-        if([curFilter type] == "org" || [curFilter type] == "school")
+        if(curFilterType == "organization" || curFilterType == "school")
         {
             [filterChain removeObject:curFilter];
 
@@ -205,18 +236,22 @@ var g_FilterManagerInstance = nil;
 
 - (CPString)_buildKeyFilterRequest:(id)keyFilter
 {
-    if([keyFilter type] == "org")
-        return "/organization_by_type:" + [keyFilter organizationType];
-    else if([keyFilter type] == "school")
-        return "/school_by_type:" + [keyFilter schoolType];
+    var filterType = [self typeFromFilter:keyFilter];
+
+    if(filterType == "organization")
+        return "/organization_by_type:" + [keyFilter value];
+    else if(filterType == "school")
+        return "/school_by_type:" + [keyFilter value];
 }
 
 - (CPString)_buildFilterRequestModifier:(id)filter
 {
-    if([filter type] == "county")
-        return "/in_county:" + [filter county];
-    else if([filter type] == "school_district")
-        return "/in_school_district:" + [filter schoolDistrict];
+    var filterType = [self typeFromFilter:filter];
+
+    if(filterType == "county")
+        return "/in_county:" + [filter value];
+    else if(filterType == "school_district")
+        return "/in_school_district:" + [filter value];
 }
 
 - (void)onFilterLoaded:(id)filter

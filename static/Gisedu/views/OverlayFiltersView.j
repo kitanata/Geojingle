@@ -1,16 +1,9 @@
 @import <Foundation/CPObject.j>
 
-@import "../filters/CountyFilter.j"
-@import "../filters/OrganizationFilter.j"
-@import "../filters/SchoolDistrictFilter.j"
-@import "../filters/SchoolFilter.j"
-
-@import "filters/CountyFilterView.j"
-@import "filters/OrganizationFilterView.j"
-@import "filters/SchoolDistrictFilterView.j"
-@import "filters/SchoolFilterView.j"
+@import "filters/StringFilterView.j"
 
 @import "../FilterManager.j"
+@import "../OverlayManager.j"
 
 @implementation OverlayFiltersView : CPView
 {
@@ -24,6 +17,7 @@
     CPView m_CurrentFilterView;
 
     FilterManager m_FilterManager;
+    OverlayManager m_OverlayManager;
 }
 
 - (id) initWithFrame:(CGRect)aFrame
@@ -33,6 +27,7 @@
     if(self)
     {
         m_FilterManager = [FilterManager getInstance];
+        m_OverlayManager = [OverlayManager getInstance];
         
         m_DeleteFilterAlert = [CPAlert alertWithError:"Are you sure you want to delete this filter?"];
         [m_DeleteFilterAlert addButtonWithTitle:"No, not yet."];
@@ -102,7 +97,7 @@
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
-    return [item name];
+    return [item value] + " " + [m_FilterManager typeFromFilter:item] + " Filter";
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -118,15 +113,29 @@
 
         if(m_CurrentFilterView)
             [m_CurrentFilterView removeFromSuperview];
-        
-        if([filter type] == "county")
-            m_CurrentFilterView = [[CountyFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-        else if([filter type] == "school_district")
-            m_CurrentFilterView = [[SchoolDistrictFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-        else if([filter type] == "org")
-            m_CurrentFilterView = [[OrganizationFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
-        else if([filter type] == "school")
-            m_CurrentFilterView = [[SchoolFilterView alloc] initWithFrame:[m_PropertiesView bounds] andFilter:filter];
+
+        var filterType = [m_FilterManager typeFromFilter:filter];
+
+        if(filterType == "county")
+        {
+            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[[m_OverlayManager counties] allKeys]];
+        }
+        else if(filterType == "school_district")
+        {
+            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[[m_OverlayManager schoolDistricts] allKeys]];
+        }
+        else if(filterType == "organization")
+        {
+            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[[m_OverlayManager orgTypes] allKeys]];
+        }
+        else if(filterType == "school")
+        {
+            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[[m_OverlayManager schoolTypes] allKeys]];
+        }
 
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
         [m_CurrentFilterView setTarget:self];
@@ -195,13 +204,13 @@
     var newFilter = nil;
 
     if(filterType == "County")
-        newFilter = [[CountyFilter alloc] init];
+        newFilter = [m_FilterManager createFilter:'county'];
     else if(filterType == "School District")
-        newFilter = [[SchoolDistrictFilter alloc] init];
+        newFilter = [m_FilterManager createFilter:'school_district'];
     else if(filterType == "Organization")
-        newFilter = [[OrganizationFilter alloc] init];
+        newFilter = [m_FilterManager createFilter:'organization'];
     else if(filterType == "Public School")
-        newFilter = [[SchoolFilter alloc] init];
+        newFilter = [m_FilterManager createFilter:'school'];
 
     if(newFilter)
     {

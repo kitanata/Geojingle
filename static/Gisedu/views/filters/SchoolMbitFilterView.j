@@ -2,12 +2,11 @@
 
 @import "../../OverlayManager.j"
 
-@implementation OrganizationFilterView : CPControl
+@implementation SchoolMbitFilterView : CPControl
 {
     OverlayManager m_OverlayManager;
-    
-    CPPopUpButton m_OrganizationType;
-    CPPopUpButton m_Organization;
+
+    CPPopUpButton m_puThreshold;
 
     CPButton m_UpdateButton;
 
