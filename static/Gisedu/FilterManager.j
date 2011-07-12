@@ -1,6 +1,7 @@
 @import <Foundation/CPObject.j>
 
 @import "filters/StringFilter.j"
+@import "filters/IntegerFilter.j"
 
 @import "filters/GiseduFilterRequest.j"
 
@@ -70,6 +71,14 @@ var g_FilterManagerInstance = nil;
     else if(type == 'organization')
         newFilter = [[StringFilter alloc] initWithValue:'All'];
     else if(type == 'school')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    else if(type == 'connectivity_less')
+        newFilter = [[IntegerFilter alloc] initWithValue:100];
+    else if(type == 'connectivity_greater')
+        newFilter = [[IntegerFilter alloc] initWithValue:100];
+    else if(type == 'school_itc')
+        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    else if(type == 'ode_class')
         newFilter = [[StringFilter alloc] initWithValue:'All'];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
@@ -183,7 +192,7 @@ var g_FilterManagerInstance = nil;
 - (CPString)_buildRequestUrlFromFilter:(id)leaf
 {
     console.log("Building Request URL");
-    
+
     //First build the filter chain (leaf to parent)
     var filterChain = [CPArray array];
     [self _buildFilterChain:leaf withArray:filterChain];
@@ -252,6 +261,14 @@ var g_FilterManagerInstance = nil;
         return "/in_county:" + [filter value];
     else if(filterType == "school_district")
         return "/in_school_district:" + [filter value];
+    else if(filterType == "connectivity_less")
+        return "/with_broadband_less:" + [filter value];
+    else if(filterType == "connectivity_greater")
+        return "/with_broadband_greater:" + [filter value];
+    else if(filterType == "school_itc")
+        return "/with_itc:" + [filter value];
+    else if(filterType == "ode_class")
+        return "/with_ode_class:" + [filter value];
 }
 
 - (void)onFilterLoaded:(id)filter

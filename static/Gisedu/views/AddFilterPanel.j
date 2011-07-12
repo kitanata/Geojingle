@@ -1,14 +1,20 @@
 @import <Foundation/CPObject.j>
 
+@import "../FilterManager.j"
+@import "../filters/GiseduFilter.j"
+
 @implementation AddFilterPanel : CPPanel
 {
     CPButton m_CancelButton;
     CPButton m_AddFilterButton;
 
     CPPopUpButton m_FilterType;
+
+    GiseduFilter m_ParentFilter;
+    id m_Delegate   @accessors(property=delegate);
 }
 
-- (id)initWithTarget:(id)target andAction:(SEL)action
+- (id)initWithParentFilter:(id)parentFilter
 {
     self = [super initWithContentRect:CGRectMake(150,150,300,150) styleMask:CPClosableWindowMask];
 
@@ -24,16 +30,42 @@
         [m_CancelButton sizeToFit];
 
         m_AddFilterButton = [CPButton buttonWithTitle:"Add Filter"];
-        [m_AddFilterButton setTarget:target];
-        [m_AddFilterButton setAction:action];
+        [m_AddFilterButton setTarget:self];
+        [m_AddFilterButton setAction:@selector(onAddFilterConfirm:)];
         [m_AddFilterButton sizeToFit];
 
         m_FilterType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(20, 48, 260, 24)];
-        [m_FilterType setTitle:"Filter Type"];
-        [m_FilterType addItemWithTitle:"County"];
-        [m_FilterType addItemWithTitle:"School District"];
-        [m_FilterType addItemWithTitle:"Public School"];
-        [m_FilterType addItemWithTitle:"Organization"];
+        [m_FilterType setTitle:"Select Filter Here"];
+
+        filterManager = [FilterManager getInstance];
+        parentType = [filterManager typeFromFilter:parentFilter]
+
+        if(!parentFilter || !parentType) //can be root filter
+        {
+            [m_FilterType addItemWithTitle:"County"];
+            [m_FilterType addItemWithTitle:"School District"];
+            [m_FilterType addItemWithTitle:"Public School"];
+            [m_FilterType addItemWithTitle:"Organization"];
+        }
+        else if(parentType == 'county' || parentType == 'school_district') //can be combined with County or School District
+        {
+            [m_FilterType addItemWithTitle:"Public School"];
+            [m_FilterType addItemWithTitle:"Organization"];
+        }
+        else if(parentType == 'school') // Can be combined with Schools
+        {
+            [m_FilterType addItemWithTitle:"Connectivity Less Than"];
+            [m_FilterType addItemWithTitle:"Connectivity Greater Than"];
+            [m_FilterType addItemWithTitle:"School ITC"];
+            [m_FilterType addItemWithTitle:"ODE Income Classification"];
+        }
+        else //can be combined with anything
+        {
+            [m_FilterType addItemWithTitle:"Connectivity Less Than"];
+            [m_FilterType addItemWithTitle:"Connectivity Greater Than"];
+            [m_FilterType addItemWithTitle:"School ITC"];
+            [m_FilterType addItemWithTitle:"ODE Income Classification"];
+        }
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
         var addWidth = CGRectGetWidth([m_AddFilterButton bounds]);
@@ -50,9 +82,34 @@
     return self;
 }
 
-- (CPString)filterType
+- (void)onAddFilterConfirm:(id)sender
 {
-    return [[m_FilterType selectedItem] title];
+    var curSelFilterName = [[m_FilterType selectedItem] title];
+
+    var newFilterType = nil;
+
+    if(curSelFilterName == "County")
+        newFilterType = 'county';
+    else if(curSelFilterName == "School District")
+        newFilterType = 'school_district';
+    else if(curSelFilterName == "Organization")
+        newFilterType = 'organization';
+    else if(curSelFilterName == "Public School")
+        newFilterType = 'school';
+    else if(curSelFilterName == "Connectivity Less Than")
+        newFilterType = 'connectivity_less';
+    else if(curSelFilterName == "Connectivity Greater Than")
+        newFilterType = 'connectivity_greater';
+    else if(curSelFilterName == "School ITC")
+        newFilterType = 'school_itc';
+    else if(curSelFilterName == "ODE Income Classification")
+        newFilterType = 'ode_class';
+
+    if(newFilterType && [m_Delegate respondsToSelector:@selector(onAddFilterConfirm:)])
+        [m_Delegate onAddFilterConfirm:newFilterType];
+
+    [m_FilterType selectItemAtIndex:0];
+    [self close];
 }
 
 - (void)onCancel:(id)sender

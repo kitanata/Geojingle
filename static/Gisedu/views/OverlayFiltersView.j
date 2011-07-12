@@ -1,6 +1,8 @@
 @import <Foundation/CPObject.j>
 
 @import "filters/StringFilterView.j"
+@import "filters/IntegerFilterView.j"
+@import "filters/StringIdMapFilterView.j"
 
 @import "../FilterManager.j"
 @import "../OverlayManager.j"
@@ -97,7 +99,30 @@
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
-    return [item value] + " " + [m_FilterManager typeFromFilter:item] + " Filter";
+    var filterType = [m_FilterManager typeFromFilter:item];
+
+    var names = nil;
+
+    if(filterType == "school")
+        names = [[m_OverlayManager schoolTypes] allKeysForObject:[item value]];
+    if(filterType == "school_itc")
+        names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
+    else if(filterType == "ode_class")
+        names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
+
+    if(names)
+    {
+        if([names count] > 0)
+            return [names objectAtIndex:0] + " " + filterType + " Filter";
+        else
+            return "Generic " + filterType + " Filter";
+    }
+    else
+    {
+        return [item value] + " " + filterType + " Filter";
+    }
+
+    return "Generic Filter";
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -133,8 +158,27 @@
         }
         else if(filterType == "school")
         {
-            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[[m_OverlayManager schoolTypes] allKeys]];
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager schoolTypes]];
+        }
+        else if(filterType == "school_itc")
+        {
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager schoolItcTypes]];
+        }
+        else if(filterType == "ode_class")
+        {
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager schoolOdeTypes]];
+        }
+        else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
+        {
+            var acceptedValues = [CPArray arrayWithObjects:"1", "10", "100", "1000"];
+
+            console.log("Accepted Values are " + acceptedValues);
+            
+            m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:acceptedValues];
         }
 
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
@@ -145,16 +189,12 @@
 
 - (void) onAddFilter:(id)sender
 {
-    if(!m_AddFilterPanel)
-    {
-        m_AddFilterPanel = [[AddFilterPanel alloc] initWithTarget:self andAction:@selector(onAddFilterConfirm:)];
+    curSelRow = [m_OutlineView selectedRow];
+    parentFilter = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
 
-        [m_AddFilterPanel orderFront:self];
-    }
-    else
-    {
-        [m_AddFilterPanel orderFront:self];
-    }
+    m_AddFilterPanel = [[AddFilterPanel alloc] initWithParentFilter:parentFilter];
+    [m_AddFilterPanel setDelegate:self];
+    [m_AddFilterPanel orderFront:self];
 }
 
 - (void) onDeleteFilter:(id)sender
@@ -197,46 +237,32 @@
     }
 }
 
-- (void) onAddFilterConfirm:(id)sender
+- (void) onAddFilterConfirm:(CPString)filterType
 {
-    filterType = [m_AddFilterPanel filterType];
+    console.log("onAddFilterConfirm filterType is " + filterType);
+    
+    var newFilter = [m_FilterManager createFilter:filterType];
 
-    var newFilter = nil;
+    curSelRow = [m_OutlineView selectedRow];
 
-    if(filterType == "County")
-        newFilter = [m_FilterManager createFilter:'county'];
-    else if(filterType == "School District")
-        newFilter = [m_FilterManager createFilter:'school_district'];
-    else if(filterType == "Organization")
-        newFilter = [m_FilterManager createFilter:'organization'];
-    else if(filterType == "Public School")
-        newFilter = [m_FilterManager createFilter:'school'];
-
-    if(newFilter)
+    if(curSelRow == CPNotFound)
     {
-        curSelRow = [m_OutlineView selectedRow];
-
-        if(curSelRow == CPNotFound)
-        {
-            [m_FilterManager addFilter:newFilter parent:nil];
-            [m_OutlineView reloadItem:nil reloadChildren:YES];
-        }
-        else
-        {
-            curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
-
-            [m_FilterManager addFilter:newFilter parent:curSelItem];
-            [m_OutlineView reloadItem:curSelItem reloadChildren:YES];
-            [m_OutlineView expandItem:curSelItem];
-        }
-
-        var newFilterIndex = [m_OutlineView rowForItem:newFilter];
-        [m_OutlineView selectRowIndexes:[CPIndexSet indexSetWithIndex:newFilterIndex] byExtendingSelection:NO];
-        [self onOutlineItemSelected:self];
-
+        [m_FilterManager addFilter:newFilter parent:nil];
+        [m_OutlineView reloadItem:nil reloadChildren:YES];
+    }
+    else
+    {
+        curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+        console.log("Filter is " + newFilter + " and parent is " + curSelItem);
+        
+        [m_FilterManager addFilter:newFilter parent:curSelItem];
+        [m_OutlineView reloadItem:curSelItem reloadChildren:YES];
+        [m_OutlineView expandItem:curSelItem];
     }
 
-    [m_AddFilterPanel onCancel:sender];
+    var newFilterIndex = [m_OutlineView rowForItem:newFilter];
+    [m_OutlineView selectRowIndexes:[CPIndexSet indexSetWithIndex:newFilterIndex] byExtendingSelection:NO];
+    [self onOutlineItemSelected:self];
 }
 
 - (void)onFilterPropertiesChanged:(id)sender

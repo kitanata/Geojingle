@@ -33,6 +33,9 @@ urlpatterns = patterns('',
     
     (r'^org_type_list/', 'organizations.views.org_type_list'),
     (r'^school_type_list/', 'schools.views.school_type_list'),
+    (r'^school_itc_list/', 'schools.views.school_itc_list'),
+    (r'^school_ode_list/', 'schools.views.school_ode_list'),
+
 
     (r'^org_list_by_typename/(?P<type_name>(\w+\s\W*)*\w+\W*)/', 'organizations.views.org_list_by_typename'),
     (r'^school_list_by_typename/(?P<type_name>(\w+\s\W*)*\w+\W*)/', 'schools.views.school_list_by_typename'),

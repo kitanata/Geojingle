@@ -5,7 +5,10 @@
 @import "../../OverlayManager.j"
 @import "../CPDynamicSearch.j"
 
-@implementation StringFilterView : CPControl
+//A Little Note: This filter view uses a dictionary of accepted key value pairs of type <String:Integer>
+//This allows us to provide a nice view to the user(the strings) and a nice view to the server(the Integer)
+//during future filter requests
+@implementation StringIdMapFilterView : CPControl
 {
     OverlayManager m_OverlayManager;
 
@@ -15,11 +18,11 @@
 
     CPButton m_UpdateButton;
 
-    StringFilter m_Filter       @accessors(property=filter);
-    CPArray m_AcceptedValues    @accessors(property=acceptedValues);
+    StringFilter m_Filter            @accessors(property=filter);
+    CPDictionary m_AcceptedValues    @accessors(property=acceptedValues);
 }
 
-- (id)initWithFrame:(CGRect)aFrame andFilter:(StringFilter)filter andAcceptedValues:(CPArray)acceptedValues
+- (id)initWithFrame:(CGRect)aFrame andFilter:(StringFilter)filter andAcceptedValues:(CPDictionary)acceptedValues
 {
     self = [super initWithFrame:aFrame];
 
@@ -35,12 +38,15 @@
         {
             m_SelectionControl = [[CPPopUpButton alloc] initWithFrame:CGRectMakeZero()];
             [m_SelectionControl addItemWithTitle:"All"];
-            [m_SelectionControl addItemsWithTitles:m_AcceptedValues];
+            [m_SelectionControl addItemsWithTitles:[m_AcceptedValues allKeys]];
 
             [m_SelectionControl sizeToFit];
             [m_SelectionControl setFrameOrigin:CGPointMake(20, 40)];
             [m_SelectionControl setFrameSize:CGSizeMake(260, CGRectGetHeight([m_SelectionControl bounds]))];
-            [m_SelectionControl selectItemWithTitle:[m_Filter value]];
+
+            var curKeysForFilterValue = [m_AcceptedValues allKeysForObject:[m_Filter value]];
+            if([curKeysForFilterValue count] > 0)
+                [m_SelectionControl selectItemWithTitle:[curKeysForFilterValue objectAtIndex:0]];
         }
         else
         {
@@ -49,7 +55,11 @@
             [m_SelectionControl addSearchString:"All"];
             [m_SelectionControl setDefaultSearch:"All"];
             [m_SelectionControl setSearchSensitivity:1];
-            [m_SelectionControl setStringValue:[m_Filter value]];
+            
+            var curKeysForFilterValue = [m_AcceptedValues allKeysForObject:[m_Filter value]];
+            if([curKeysForFilterValue count] > 0)
+                [m_SelectionControl setStringValue:[curKeysForFilterValue objectAtIndex:0]];
+                
             [m_SelectionControl sizeToFit];
         }
 
@@ -74,11 +84,17 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
-    if(m_bPopUp)
-        [m_Filter setValue:[m_SelectionControl titleOfSelectedItem]];
-    else
-        [m_Filter setValue:[m_SelectionControl stringValue]];
+    var curSelItem = nil;
 
+    if(m_bPopUp)
+        curSelItem = [m_SelectionControl titleOfSelectedItem];
+    else
+        curSelItem = [m_SelectionControl stringValue];
+
+    if(curSelItem == "All")
+        [m_Filter setValue:"All"];
+    else
+        [m_Filter setValue:[m_AcceptedValues objectForKey:curSelItem]];
 
     if(_action && _target)
     {

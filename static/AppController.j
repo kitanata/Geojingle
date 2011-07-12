@@ -131,6 +131,8 @@ var m_UpdateMapToolbarId = 'updateMap';
     
     [m_OverlayManager loadOrganizationTypeList];
     [m_OverlayManager loadSchoolTypeList];
+    [m_OverlayManager loadSchoolItcTypeList];
+    [m_OverlayManager loadSchoolOdeTypeList];
 
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
@@ -419,29 +421,14 @@ var m_UpdateMapToolbarId = 'updateMap';
 
         [self showOverlayOptionsView];
     }//Organizations
-    else if([[m_OverlayManager orgTypeList] containsObject:[sender parentForItem:item]])
+    else if([[m_OverlayManager orgTypes] containsKey:[sender parentForItem:item]])
     {
-        orgs = [m_OverlayManager orgs];
-        orgOverlays = [m_OverlayManager orgOverlays];
-        var orgId = [orgs objectForKey:item];
+        orgNames = [m_OverlayManager orgNames];
+        var orgId = [orgNames objectForKey:item];
+        var curOrg = [[m_OverlayManager organizations] objectForKey:orgId];
 
-        if([orgOverlays objectForKey:orgId] == nil)
-        {
-              overlay = [[PointOverlayLoader alloc] initWithIdentifier:orgId andUrl:"http://127.0.0.1:8000/edu_org/"];
-              [overlay setAction:@selector(OnOrgGeometryLoaded:)];
-              [overlay setTarget:self];
-              [overlay loadAndShow:YES];
-        }
-        else
-        {
-            overlay = [orgOverlays objectForKey:orgId];
-
-            if(m_CurSelectedItem == item)
-            {
-                [overlay toggleInfoWindow];
-            }
-            [m_OverlayOptionsView setPointOverlayTarget:overlay];
-        }
+        [[curOrg overlay] toggleInfoWindow];
+        [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];
 
         [self showOverlayOptionsView];
     }
@@ -577,6 +564,8 @@ var m_UpdateMapToolbarId = 'updateMap';
         else if(itemType == "school")
         {
             var curSchool = [m_OverlayManager getSchool:itemId];
+
+            console.log("Current School is " + curSchool);
             
             if([curSchool overlay])
             {

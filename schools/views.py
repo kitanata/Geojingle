@@ -3,13 +3,28 @@ import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from models import GiseduSchoolType, GiseduSchool
+from schools.models import SchoolItc, SchoolAreaClassification
 
 def school_type_list(request):
     types = GiseduSchoolType.objects.all()
-    types = map(lambda type: str(type.school_type), types)
-    types.sort()
-    type_list = json.dumps(types)
-    return render_to_response('json/base.json', {'json' : type_list}, context_instance=RequestContext(request))
+    type_names = map(lambda type: str(type.school_type), types)
+    type_ids = map(lambda type: type.gid, types)
+    types = dict(zip(type_names, type_ids))
+    return render_to_response('json/base.json', {'json' : json.dumps(types)}, context_instance=RequestContext(request))
+
+def school_itc_list(request):
+    itcs = SchoolItc.objects.all()
+    itc_names = map(lambda itc: str(itc.itc), itcs)
+    itc_ids = map(lambda itc: itc.gid, itcs)
+    itcs = dict(zip(itc_names, itc_ids))
+    return render_to_response('json/base.json', {'json' : json.dumps(itcs)}, context_instance=RequestContext(request))
+
+def school_ode_list(request):
+    classes = SchoolAreaClassification.objects.all()
+    ode_names = map(lambda cls: cls.classification, classes)
+    ode_ids = map(lambda cls: cls.gid, classes)
+    classes = dict(zip(ode_names, ode_ids))
+    return render_to_response('json/base.json', {'json' : json.dumps(classes)}, context_instance=RequestContext(request))
 
 def school_list_by_typename(request, type_name):
     schools = GiseduSchool.objects.filter(school_type__school_type=type_name)

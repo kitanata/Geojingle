@@ -3,16 +3,15 @@
 @implementation IntegerFilter : GiseduFilter
 {
     CPInteger m_nValue          @accessors(property=value);
-    CPArray m_AcceptedValues    @accessors(property=acceptedValues);
 }
 
-- (id)init
+- (id)initWithValue:(CPInteger)value
 {
     self = [super init];
 
     if(self)
     {
-        m_nValue = 100;
+        m_nValue = value;
     }
 
     return self;

@@ -34,7 +34,10 @@ def parse_filter(request, filter_chain):
             query_results.append(school_district)
 
     elif filter_key == "school_by_type":
-        key_objects = GiseduSchool.objects.filter(school_type__school_type=filter_key_arg)
+        if filter_key_arg == "All":
+            key_objects = GiseduSchool.objects.all()
+        else:
+            key_objects = GiseduSchool.objects.filter(school_type__gid=filter_key_arg)
         for query in queries:
             key, arg = string.split(query, ':')
             if key == "in_county":
@@ -57,6 +60,12 @@ def parse_filter(request, filter_chain):
                 key_objects = key_objects.filter(building_info__mbit__gte=arg)
             elif key == "with_broadband_less":
                 key_objects = key_objects.filter(building_info__mbit__lte=arg)
+            elif key == "with_itc":
+                if arg != "All":
+                    key_objects = key_objects.filter(building_info__itc__gid=arg)
+            elif key == "with_ode_class":
+                if arg != "All":
+                    key_objects = key_objects.filter(building_info__area_class__gid=arg)
         query_results.extend(key_objects)
 
     elif filter_key == "organization_by_type":

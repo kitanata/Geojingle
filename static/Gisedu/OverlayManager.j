@@ -33,9 +33,12 @@ var overlayManagerInstance = nil;
     CPDictionary m_OrgToGid @accessors(property=orgNames);                //maps name of organization to it's primary key in the db
     CPDictionary m_OrgGidToOrg @accessors(property=organizations);        //maps the the organization primary key to it's object
 
-    CPDictionary m_SchoolTypes       @accessors(property=schoolTypes);     //maps school type to an array of school pks
     CPDictionary m_SchoolToGid       @accessors(property=schoolToGid);     //maps name of school to it's primary key in the db
     CPDictionary m_SchoolGidToSchool @accessors(property=schools);         //maps school pk to it's object
+
+    CPDictionary m_SchoolTypes       @accessors(property=schoolTypes);     //each of these maps a name to an id representing the name server side
+    CPDictionary m_SchoolItcTypes   @accessors(property=schoolItcTypes);
+    CPDictionary m_SchoolOdeTypes   @accessors(property=schoolOdeTypes);
 
     id m_Delegate @accessors(property=delegate);
 }
@@ -60,6 +63,8 @@ var overlayManagerInstance = nil;
         m_SchoolTypes = [CPDictionary dictionary];
         m_SchoolToGid = [CPDictionary dictionary];
         m_SchoolGidToSchool = [CPDictionary dictionary];
+
+        m_SchoolItcTypes = [CPArray array];
     }
 
     return self;
@@ -130,10 +135,26 @@ var overlayManagerInstance = nil;
 
 - (void)loadSchoolTypeList
 {
-    schoolTypeListLoader = [[ListLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_type_list/"];
+    schoolTypeListLoader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_type_list/"];
     [schoolTypeListLoader setAction:@selector(onSchoolTypeListLoaded:)];
     [schoolTypeListLoader setTarget:self];
     [schoolTypeListLoader load];
+}
+
+- (void)loadSchoolItcTypeList
+{
+    loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_itc_list/"];
+    [loader setAction:@selector(onSchoolItcListLoaded:)];
+    [loader setTarget:self];
+    [loader load];
+}
+
+- (void)loadSchoolOdeTypeList
+{
+    loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_ode_list/"];
+    [loader setAction:@selector(onSchoolOdeListLoaded:)];
+    [loader setTarget:self];
+    [loader load];
 }
 
 - (void)onCountyOverlayLoaded:(id)sender
@@ -169,7 +190,7 @@ var overlayManagerInstance = nil;
 - (void)onOrgTypeListLoaded:(id)sender
 {
     orgTypes = [sender list];
-    
+
     for(var i=0; i < [orgTypes count]; i++)
     {
         var curOrgType = [orgTypes objectAtIndex:i];
@@ -188,12 +209,13 @@ var overlayManagerInstance = nil;
 
 - (void)onSchoolTypeListLoaded:(id)sender
 {
-    schoolTypes = [sender list];
+    m_SchoolTypes = [sender dictionary];
 
-    for(var i=0; i < [schoolTypes count]; i++)
+    schoolTypeNames = [m_SchoolTypes allKeys];
+
+    for(var i=0; i < [schoolTypeNames count]; i++)
     {
-        var curSchoolType = [schoolTypes objectAtIndex:i];
-        [m_SchoolTypes setObject:[CPArray array] forKey:[schoolTypes objectAtIndex:i]];
+        var curSchoolType = [schoolTypeNames objectAtIndex:i];
 
         loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_list_by_typename/" + curSchoolType];
         [loader setCategory:curSchoolType];
@@ -206,6 +228,26 @@ var overlayManagerInstance = nil;
         [m_Delegate onSchoolTypeListLoaded];
 
     console.log("Finished Loading School Type List");
+}
+
+- (void)onSchoolItcListLoaded:(id)sender
+{
+    m_SchoolItcTypes = [sender dictionary];
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolItcListLoaded)])
+        [m_Delegate onSchoolItcListLoaded];
+
+    console.log("Finished Loading School ITC List");
+}
+
+- (void)onSchoolOdeListLoaded:(id)sender
+{
+    m_SchoolOdeTypes = [sender dictionary];
+
+    if([m_Delegate respondsToSelector:@selector(onSchoolOdeListLoaded)])
+        [m_Delegate onSchoolOdeListLoaded];
+
+    console.log("Finished Loading School ODE Classification List");
 }
 
 - (void)onOrgListLoaded:(id)sender
@@ -253,7 +295,7 @@ var overlayManagerInstance = nil;
         [curSchool setType:[sender category]];
         [curSchool setDelegate:self];
     }
-    
+
     if([m_Delegate respondsToSelector:@selector(onSchoolListLoaded:)])
         [m_Delegate onSchoolListLoaded:[sender category]];
 }
