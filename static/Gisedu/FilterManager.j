@@ -159,13 +159,13 @@ var g_FilterManagerInstance = nil;
             console.log("curFilterType is " + curFilterType);
 
             if(curFilterType == "county")
-                url = "http://127.0.0.1:8000/filter/county_by_name:" + [curFilter value];
+                url = g_UrlPrefix + "/filter/county_by_name:" + [curFilter value];
             else if(curFilterType == "school_district")
-                url = "http://127.0.0.1:8000/filter/school_district_by_name:" + [curFilter value];
+                url = g_UrlPrefix + "/filter/school_district_by_name:" + [curFilter value];
             else if(curFilterType == "school")
-                url = "http://127.0.0.1:8000/filter/school_by_type:" + [curFilter value];
+                url = g_UrlPrefix + "/filter/school_by_type:" + [curFilter value];
             else if(curFilterType == "organization")
-                url = "http://127.0.0.1:8000/filter/organization_by_type:" + [curFilter value];
+                url = g_UrlPrefix + "/filter/organization_by_type:" + [curFilter value];
 
             if(url)
             {
@@ -206,7 +206,7 @@ var g_FilterManagerInstance = nil;
     console.log("The Key Filter is " + keyFilter);
     console.log("The Rest of the Filters are " + filterChain);
 
-    var requestUrl = "http://127.0.0.1:8000/filter" + keyFilterRequest;
+    var requestUrl = g_UrlPrefix + "/filter" + keyFilterRequest;
 
     for(var i=0; i < [filterChain count]; i++)
     {

@@ -106,7 +106,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadCountyOverlay:(CPInteger)countyId andShowOnLoad:(BOOL)show
 {
-    countyOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:countyId andUrl:"http://127.0.0.1:8000/county/"];
+    countyOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:countyId andUrl:(g_UrlPrefix + "/county/")];
     [countyOverlayLoader setAction:@selector(onCountyOverlayLoaded:)];
     [countyOverlayLoader setTarget:self];
     [countyOverlayLoader loadAndShow:show];
@@ -119,7 +119,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadSchoolDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
 {
-    schoolDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:"http://127.0.0.1:8000/school_district/"];
+    schoolDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/school_district/")];
     [schoolDistrictOverlayLoader setAction:@selector(onSchoolDistrictOverlayLoader:)];
     [schoolDistrictOverlayLoader setTarget:self];
     [schoolDistrictOverlayLoader loadAndShow:show];
@@ -127,7 +127,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadOrganizationTypeList
 {
-    organizationTypeListLoader = [[ListLoader alloc] initWithUrl:"http://127.0.0.1:8000/org_type_list/"];
+    organizationTypeListLoader = [[ListLoader alloc] initWithUrl:(g_UrlPrefix + "/org_type_list/")];
     [organizationTypeListLoader setAction:@selector(onOrgTypeListLoaded:)];
     [organizationTypeListLoader setTarget:self];
     [organizationTypeListLoader load];
@@ -135,7 +135,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadSchoolTypeList
 {
-    schoolTypeListLoader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_type_list/"];
+    schoolTypeListLoader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_type_list/")];
     [schoolTypeListLoader setAction:@selector(onSchoolTypeListLoaded:)];
     [schoolTypeListLoader setTarget:self];
     [schoolTypeListLoader load];
@@ -143,7 +143,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadSchoolItcTypeList
 {
-    loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_itc_list/"];
+    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_itc_list/")];
     [loader setAction:@selector(onSchoolItcListLoaded:)];
     [loader setTarget:self];
     [loader load];
@@ -151,7 +151,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadSchoolOdeTypeList
 {
-    loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_ode_list/"];
+    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_ode_list/")];
     [loader setAction:@selector(onSchoolOdeListLoaded:)];
     [loader setTarget:self];
     [loader load];
@@ -196,7 +196,7 @@ var overlayManagerInstance = nil;
         var curOrgType = [orgTypes objectAtIndex:i];
         [m_OrganizationTypes setObject:[CPArray array] forKey:curOrgType];
 
-        loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/org_list_by_typename/" + curOrgType];
+        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_list_by_typename/" + curOrgType)];
         [loader setCategory:curOrgType];
         [loader setAction:@selector(onOrgListLoaded:)];
         [loader setTarget:self];
@@ -217,7 +217,7 @@ var overlayManagerInstance = nil;
     {
         var curSchoolType = [schoolTypeNames objectAtIndex:i];
 
-        loader = [[DictionaryLoader alloc] initWithUrl:"http://127.0.0.1:8000/school_list_by_typename/" + curSchoolType];
+        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_list_by_typename/" + curSchoolType)];
         [loader setCategory:curSchoolType];
         [loader setAction:@selector(onSchoolListLoaded:)];
         [loader setTarget:self];

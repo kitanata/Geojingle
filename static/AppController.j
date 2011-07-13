@@ -28,6 +28,8 @@ var m_AddFilterToolbarId = 'addFilter';
 var m_DeleteFilterToolbarId = 'deleteFilter';
 var m_UpdateMapToolbarId = 'updateMap';
 
+g_UrlPrefix = 'http://127.0.0.1:8000';
+
 @implementation AppController : CPObject
 {
     MKMapView m_MapView;
@@ -124,10 +126,10 @@ var m_UpdateMapToolbarId = 'updateMap';
 - (void)mapViewIsReady:(MKMapView)mapView
 {
     [m_LoadCountyList cancel];
-    m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/county_list/"] delegate:self];
+    m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:(g_UrlPrefix + "/county_list")] delegate:self];
 
     [m_LoadSchoolDistrictList cancel];
-    m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:"http://127.0.0.1:8000/school_district_list/"] delegate:self];
+    m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:(g_UrlPrefix + "/school_district_list")] delegate:self];
     
     [m_OverlayManager loadOrganizationTypeList];
     [m_OverlayManager loadSchoolTypeList];
@@ -409,7 +411,7 @@ var m_UpdateMapToolbarId = 'updateMap';
 
         if([schoolDistrictOverlays objectForKey:itemPk] == nil)
         {
-            schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemPk andUrl:"http://127.0.0.1:8000/school_district/"];
+            schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemPk andUrl:(g_UrlPrefix + "/school_district")];
             [schoolDistOverlayLoader setAction:@selector(onSchoolDistrictGeometryLoaded:)];
             [schoolDistOverlayLoader setTarget:self];
             [schoolDistOverlayLoader loadAndShow:YES];

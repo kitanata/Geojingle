@@ -44,7 +44,7 @@
 
 - (void)loadPointOverlay:(BOOL)showOnLoad
 {
-    m_PointLoader = [[PointOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:"http://127.0.0.1:8000/school_geom/"];
+    m_PointLoader = [[PointOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:(g_UrlPrefix + "/school_geom/")];
     [m_PointLoader setAction:@selector(onSchoolOverlayLoaded:)];
     [m_PointLoader setTarget:self];
     [m_PointLoader loadAndShow:showOnLoad];
@@ -63,7 +63,7 @@
         [m_Overlay addToMapView:mapView];
     }
 
-    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:"http://127.0.0.1:8000/school_infobox/"];
+    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:(g_UrlPrefix + "/school_infobox/")];
     [m_InfoLoader setTarget:self];
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
 
