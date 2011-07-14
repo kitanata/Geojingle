@@ -125,6 +125,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)mapViewIsReady:(MKMapView)mapView
 {
+    console.log("AppController:-mapViewIsReady() called");
+
     [m_LoadCountyList cancel];
     m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:(g_UrlPrefix + "/county_list")] delegate:self];
 
@@ -139,6 +141,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
     [[m_LeftSideTabView outlineView] setTarget:self];
+
+    console.log("AppController:-mapViewIsReady() finished");
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -242,6 +246,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)initMenu
 {
+    console.log("AppController:-initMenu() called");
+
     var menu = [[CPMenu alloc] initWithTitle:@"dummy"];
 
   	var menuItem1 = [[CPMenuItem alloc] initWithTitle:@"File" action:nil keyEquivalent:@"1"];
@@ -279,6 +285,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 	// Show the application menu
 	[CPMenu setMenuBarVisible:YES];
+
+	console.log("AppController:-initMenu() finished");
 }
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
