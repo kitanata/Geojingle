@@ -4,10 +4,12 @@ class GiseduOrgType(models.Model):
     gid = models.IntegerField(primary_key=True)
     org_type_name = models.CharField(max_length=254)
 
+    def __str__(self):
+        return str(self.org_type_name)
+
     class Meta:
         db_table = u'gisedu_org_type'
         verbose_name_plural = "Educational Organization Types"
-
 
 
 class GiseduOrgAddress(models.Model):
@@ -20,6 +22,9 @@ class GiseduOrgAddress(models.Model):
     city = models.CharField(max_length=254)
     state = models.CharField(max_length=254)
     zip10 = models.CharField(max_length=254)
+
+    def __str__(self):
+        return str(self.address_line_one) + " " + str(self.city) + ", " + str(self.state)
 
     class Meta:
         db_table = u'gisedu_org_address'
@@ -38,9 +43,9 @@ class GiseduOrg(models.Model):
     irn = models.IntegerField()
     objects = models.GeoManager()
 
+    def __str__(self):
+        return str(self.org_nm)
+
     class Meta:
         db_table = u'gisedu_org'
         verbose_name_plural = "Educational Organizations"
-
-    def __str__(self):
-        return str(self.org_nm)
