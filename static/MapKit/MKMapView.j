@@ -17,7 +17,7 @@ MKLoadingMarkupBlackSpinner = @"<div style='position: absolute; top:50%; left:50
         [self _startedLoading];
 
         _ignoreLoadStart = YES;
-        _ignoreLoadEnd = NO;
+        _ignoreLoadEnd = YES;
 
         _url = null;
         _html = aString;
@@ -113,17 +113,12 @@ var g_mapViewInstance = nil;
 {
     console.log("MKMapView::didFinishLoadForFrame() called");
 
-    // this is called twice for some reason
-    if(!hasLoaded)
-    {
-        [self loadGoogleMapsWhenReady];
-    }
-    hasLoaded = YES;
+    [self loadGoogleMapsWhenReady];
 
     console.log("MKMapView::didFinishLoadForFrame() finished");
 }
 
-- (void)loadGoogleMapsWhenReady() 
+- (void)loadGoogleMapsWhenReady()
 {
     console.log("MKMapView::loadGoogleMapsWhenReady() called");
 
@@ -134,8 +129,8 @@ var g_mapViewInstance = nil;
     if(!mapInd || mapInd.innerHTML != "TRUE")
     {
         domWin.window.setTimeout(function() {[self loadGoogleMapsWhenReady];}, 100);
-    } 
-    else 
+    }
+    else
     {
         var googleScriptElement = domWin.document.createElement('script');
         _DOMMapElement = domWin.document.getElementById('MKMapViewDiv');
