@@ -8,6 +8,9 @@ from models import OhioCounties, OhioSchoolDistricts
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
 
+def google_map(request):
+    return render_to_response('map.html', context_instance=RequestContext(request))
+
 def county_list(request):
     counties = OhioCounties.objects.all()
     counties = map(lambda county: {str(county.name) : int(county.gid)}, counties)

@@ -10,7 +10,7 @@ var gmNamespace = nil;
 MKLoadingMarkupWhiteSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-white.gif'/></div>";
 MKLoadingMarkupBlackSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-black.gif'/></div>";
 
-var g_mapViewInstance = nil;
+g_mapViewInstance = nil;
 
 @implementation MKMapView : CPWebView
 {
@@ -104,7 +104,7 @@ var g_mapViewInstance = nil;
 - (void)_load
 {
     // clear the iframe
-    _iframe.src = "";
+    _iframe.src = g_UrlPrefix + "/map";
 
     if (_loadHTMLStringTimer !== nil)
     {
@@ -114,14 +114,6 @@ var g_mapViewInstance = nil;
 
     // need to give the browser a chance to reset iframe, otherwise we'll be document.write()-ing the previous document
     _loadHTMLStringTimer = window.setTimeout(function() {
-            var win = [self DOMWindow];
-
-            if (win)
-            {
-                win.onGoogleMapsLoaded = function() { [self loadGoogleMapsWhenReady]; }
-                win.document.write("<html><head></head><body><div id='MKMapViewDiv' style='left: 0px; top: 0px; width: 100%; height: 100%'></div><script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false&callback=window.onGoogleMapsLoaded\"></script></body></html>");
-            }
-
             window.setTimeout(_loadCallback, 1);
     }, 0);
 }
@@ -130,36 +122,19 @@ var g_mapViewInstance = nil;
 {
     console.log("MKMapView::didFinishLoadForFrame() called");
 
-    _mapReady = YES;
-
-    console.log("MKMapView::didFinishLoadForFrame() finished");
-}
-
-- (void)loadGoogleMapsWhenReady()
-{
-    console.log("MKMapView::loadGoogleMapsWhenReady() called");
-
     var domWin = [self DOMWindow];
+
+    _mapReady = YES;
 
     var googleScriptElement = domWin.document.createElement('script');
     _DOMMapElement = domWin.document.getElementById('MKMapViewDiv');
-    [self createMap];
 
-    console.log("MKMapView::loadGoogleMapsWhenReady() finished");
-}
-
-- (void)createMap
-{
-    console.log("MKMapView::createMap() called");
-
-    var domWin = [self DOMWindow];
-
-    //remember the google maps namespace, but only once because it's a class variable
-    if (!gmNamespace) 
+     //remember the google maps namespace, but only once because it's a class variable
+    if (!gmNamespace)
     {
         gmNamespace = domWin.google.maps;
     }
-    
+
     // for some things the current google namespace needs to be used...
     var localGmNamespace = domWin.google.maps;
 
@@ -172,22 +147,22 @@ var g_mapViewInstance = nil;
         backgroundColor: 'transparent'}
 
     _gMap = new localGmNamespace.Map(_DOMMapElement, mapOptions);
-    
+
     // Hack to get mouse up event to work
     //localGmNamespace.Event.addDomListener(document.body, 'mouseup', function() { try { localGmNamespace.Event.trigger(domWin, 'mouseup'); } catch(e){} });
 
     _mapReady = YES;
-    
+
     if (_loadingView) {
         [_loadingView removeFromSuperview];
     }
-    
-    if (delegate && [delegate respondsToSelector:@selector(mapViewIsReady:)]) 
+
+    if (delegate && [delegate respondsToSelector:@selector(mapViewIsReady:)])
     {
         [delegate mapViewIsReady:self];
     }
 
-    console.log("MKMapView::createMap() finished");
+    console.log("MKMapView::didFinishLoadForFrame() finished");
 }
 
 - (void)setFrameSize:(CGSize)aSize
