@@ -103,11 +103,10 @@
 
     var names = nil;
 
-    if(filterType == "school")
-        names = [[m_OverlayManager schoolTypes] allKeysForObject:[item value]];
     if(filterType == "school_itc")
         names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
     else if(filterType == "ode_class")
+
         names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
 
     if(names)
