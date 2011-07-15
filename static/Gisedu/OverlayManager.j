@@ -165,7 +165,7 @@ var overlayManagerInstance = nil;
 
     if([sender showOnLoad])
     {
-        [overlay addToMapView:m_MapView];
+        [overlay addToMapView];
     }
 
     if([m_Delegate respondsToSelector:@selector(onCountyOverlayLoaded:)])
@@ -180,7 +180,7 @@ var overlayManagerInstance = nil;
 
     if([sender showOnLoad])
     {
-        [overlay addToMapView:m_MapView];
+        [overlay addToMapView];
     }
 
     if([m_Delegate respondsToSelector:@selector(onSchoolDistrictOverlayLoader:)])

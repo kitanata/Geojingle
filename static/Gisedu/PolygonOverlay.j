@@ -88,7 +88,7 @@
     m_Visible = visible;
 }
 
-- (void)addToMapView:(MKMapView)mapView
+- (void)addToMapView
 {
     if(m_GooglePolygon == nil)
     {
@@ -97,7 +97,7 @@
 
     console.log("Adding Polygon to Map");
 
-    m_GooglePolygon.setMap([mapView gMap]);
+    m_GooglePolygon.setMap([[MKMapView getInstance] gMap]);
 }
 
 - (void)removeFromMapView

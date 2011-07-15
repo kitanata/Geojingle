@@ -548,7 +548,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
             if([countyOverlays containsKey:itemId])
             {
                 overlay = [countyOverlays objectForKey:itemId];
-                [overlay addToMapView:m_MapView];
+                [overlay addToMapView];
                 [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
             }
             else
@@ -593,7 +593,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
             if([schoolDistrictOverlays containsKey:itemId])
             {
                 var curOverlay = [schoolDistrictOverlays objectForKey:itemId];
-                [curOverlay addToMapView:m_MapView];
+                [curOverlay addToMapView];
                 [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
             }
             else

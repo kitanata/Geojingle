@@ -10,23 +10,6 @@ var gmNamespace = nil;
 MKLoadingMarkupWhiteSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-white.gif'/></div>";
 MKLoadingMarkupBlackSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-black.gif'/></div>";
 
-@implementation CPWebView(ScrollFixes)
-{
-    - (void)loadHTMLStringWithoutMessingUpScrollbars:(CPString)aString
-    {
-        [self _startedLoading];
-
-        _ignoreLoadStart = YES;
-        _ignoreLoadEnd = YES;
-
-        _url = null;
-        _html = aString;
-
-        [self _load];
-    }
-}
-@end
-
 var g_mapViewInstance = nil;
 
 @implementation MKMapView : CPWebView
@@ -95,7 +78,16 @@ var g_mapViewInstance = nil;
         var bounds = [self bounds];
         
         [self setFrameLoadDelegate:self];
-        [self loadHTMLStringWithoutMessingUpScrollbars:@"<html><head></head><body><div id='MKMapViewDiv' style='left: 0px; top: 0px; width: 100%; height: 100%'></div><div id=\"mapInd\" style=\"visibility:hidden; height:0; width:0\">FALSE</div><script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false&callback=googleMapsLoaded\"></script><script type=\"text/javascript\">function googleMapsLoaded(){mapInd = document.getElementById('mapInd'); mapInd.innerHTML = \"TRUE\"; }</script></body></html>"];
+
+        [self _startedLoading];
+
+        _ignoreLoadStart = YES;
+        _ignoreLoadEnd = YES;
+
+        [self _load];
+
+        var domWin = [self DOMWindow];
+        console.log("domWin is " + domWin);
         
         if (aLoadingView)
         {
@@ -109,11 +101,36 @@ var g_mapViewInstance = nil;
     return self;
 }
 
+- (void)_load
+{
+    // clear the iframe
+    _iframe.src = "";
+
+    if (_loadHTMLStringTimer !== nil)
+    {
+        window.clearTimeout(_loadHTMLStringTimer);
+        _loadHTMLStringTimer = nil;
+    }
+
+    // need to give the browser a chance to reset iframe, otherwise we'll be document.write()-ing the previous document
+    _loadHTMLStringTimer = window.setTimeout(function() {
+            var win = [self DOMWindow];
+
+            if (win)
+            {
+                win.onGoogleMapsLoaded = function() { [self loadGoogleMapsWhenReady]; }
+                win.document.write("<html><head></head><body><div id='MKMapViewDiv' style='left: 0px; top: 0px; width: 100%; height: 100%'></div><script type=\"text/javascript\" src=\"http://maps.google.com/maps/api/js?sensor=false&callback=window.onGoogleMapsLoaded\"></script></body></html>");
+            }
+
+            window.setTimeout(_loadCallback, 1);
+    }, 0);
+}
+
 - (void)webView:(CPWebView)aWebView didFinishLoadForFrame:(id)aFrame
 {
     console.log("MKMapView::didFinishLoadForFrame() called");
 
-    [self loadGoogleMapsWhenReady];
+    _mapReady = YES;
 
     console.log("MKMapView::didFinishLoadForFrame() finished");
 }
@@ -124,18 +141,9 @@ var g_mapViewInstance = nil;
 
     var domWin = [self DOMWindow];
 
-    var mapInd = domWin.document.getElementById('mapInd');
-
-    if(!mapInd || mapInd.innerHTML != "TRUE")
-    {
-        domWin.window.setTimeout(function() {[self loadGoogleMapsWhenReady];}, 100);
-    }
-    else
-    {
-        var googleScriptElement = domWin.document.createElement('script');
-        _DOMMapElement = domWin.document.getElementById('MKMapViewDiv');
-        [self createMap];
-    }
+    var googleScriptElement = domWin.document.createElement('script');
+    _DOMMapElement = domWin.document.getElementById('MKMapViewDiv');
+    [self createMap];
 
     console.log("MKMapView::loadGoogleMapsWhenReady() finished");
 }
@@ -145,6 +153,7 @@ var g_mapViewInstance = nil;
     console.log("MKMapView::createMap() called");
 
     var domWin = [self DOMWindow];
+
     //remember the google maps namespace, but only once because it's a class variable
     if (!gmNamespace) 
     {
@@ -153,9 +162,9 @@ var g_mapViewInstance = nil;
     
     // for some things the current google namespace needs to be used...
     var localGmNamespace = domWin.google.maps;
-    
+
     var centerLatLng = new localGmNamespace.LatLng([_center latitude], [_center longitude]);
-    
+
     var mapOptions = {
         zoom: 8,
         center: centerLatLng,
@@ -180,6 +189,7 @@ var g_mapViewInstance = nil;
 
     console.log("MKMapView::createMap() finished");
 }
+
 - (void)setFrameSize:(CGSize)aSize
 {
     console.log("MKMapView::setFrameSize() called");

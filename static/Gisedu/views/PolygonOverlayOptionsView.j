@@ -142,7 +142,7 @@
 
     if([m_OverlayPolygon visible])
     {
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
 }
 
@@ -153,7 +153,7 @@
 
     if([m_OverlayPolygon visible])
     {
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
 }
 
@@ -164,7 +164,7 @@
 
     if([m_OverlayPolygon visible])
     {
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
 }
 
@@ -175,7 +175,7 @@
 
     if([m_OverlayPolygon visible])
     {
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
 }
 
@@ -186,7 +186,7 @@
 
     if([m_OverlayPolygon visible])
     {
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
 }
 
@@ -195,7 +195,7 @@
     if([m_ShowButton state] == CPOnState)
     {
         [m_OverlayPolygon setVisible:YES];
-        [m_OverlayPolygon addToMapView:m_MapView];
+        [m_OverlayPolygon addToMapView];
     }
     //the else is nessecary CPMixedState is possible
     else if([m_ShowButton state] == CPOffState)
