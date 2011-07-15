@@ -24,6 +24,7 @@
         [m_ShowButton setTarget:self];
         [m_ShowButton setAction:@selector(onShowButton:)];
 
+        [self setBackgroundColor:[CPColor colorWithHexString:"EDEDED"]];
         [self addSubview:m_ShowButton];
     }
 

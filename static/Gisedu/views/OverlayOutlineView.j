@@ -34,6 +34,8 @@
 
         m_Items = [CPDictionary dictionary];
         [m_OutlineView setDataSource:self];
+
+        [self setBackgroundColor:[CPColor colorWithHexString:"EDEDED"]];
     }
 
     return self;

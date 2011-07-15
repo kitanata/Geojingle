@@ -62,6 +62,7 @@
         [m_SplitView addSubview:m_PropertiesView];
         [m_SplitView addSubview:m_ScrollView];
 
+        [self setBackgroundColor:[CPColor colorWithHexString:"EDEDED"]];
         [self addSubview:m_SplitView];
     }
 
