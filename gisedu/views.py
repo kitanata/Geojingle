@@ -5,6 +5,9 @@ from django.template.context import RequestContext
 import json
 from models import OhioCounties, OhioSchoolDistricts
 
+def browser_test(request):
+    return render_to_response('browser_test.html', context_instance=RequestContext(request))
+
 def index(request):
     return render_to_response('index.html', context_instance=RequestContext(request))
 

@@ -1,17 +1,6 @@
-<!DOCTYPE html
-    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<!--
- index.html
- NewApplication
-
- Created by You on February 22, 2011.
- Copyright 2011, Your Company All rights reserved.
--->
+<!doctype html>
+<html>
     <head>
-        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7, chrome=1" />
-
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
 
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -20,12 +9,80 @@
         <link rel="apple-touch-icon" href="static/Resources/icon.png" />
         <link rel="apple-touch-startup-image" href="static/Resources/default.png" />
 
-        <title>NewApplication</title>
+        <title>Project Gisedu (GIS:Ed:You)</title>
 
         <script type="text/javascript">
+            OBJJ_AUTO_BOOTSTRAP = false;
             OBJJ_MAIN_FILE = "static/main.j";
+
+            function getInternetExplorerVersion() {
+                var rv = -1; // Return value assumes failure.
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    var ua = navigator.userAgent;
+                    var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+                    if (re.exec(ua) != null)
+                        rv = parseFloat(RegExp.$1);
+                }
+                return rv;
+            }
+
+            function testBrowser() {
+                var msg = null;
+                var ver = getInternetExplorerVersion();
+
+                var winXp = false;
+
+                if(navigator.userAgent.indexOf("Windows NT 5.1") != -1)
+                    winXp = true;
+
+                if(ver > -1)
+                {
+                    if(ver < 6.0 && winXp)
+                    {
+                        msg = "Your browser is too old to run Project Gisedu and IE9 is unavailable on Windows XP. To use"
+                                + " Project Gisedu efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                                + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                    else if(ver == 7.0 || ver == 8.0 && winXp)
+                    {
+                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                                + " slow or fail to load at all depending on the speed of your computer. To use"
+                                + " Project Gisedu efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                                + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                    else if(ver == 7.0 || ver == 8.0)
+                    {
+                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                                + " slow or fail to load at all depending on the speed of your computer. To use"
+                                + " Project Gisedu efficiently please upgrade to Internet Explorer 9+ or download an alternative modern"
+                                + " browser from <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                }
+
+                if(msg)
+                {
+                    var messageId = document.getElementById('message');
+
+                    msg += "<p /> <a href=\"/gisedu\" onclick=\"load_gisedu()\">Click Here to continue to Project Gisedu anyway.<a>";
+                    messageId.innerHTML = msg;
+                }
+                else
+                {
+                    load_gisedu();
+                }
+            }
+
+            function load_gisedu() {
+                console.log("Load Gisedu Called");
+                var gis_loader = document.getElementById('loadingcontainer');
+                gis_loader.innerHTML = "<div id='container'><p id='content'>" +
+                       "<img id='loadgraphic' width='16' height='16' src='static/Resources/spinner.gif' /> " +
+                       "Loading Gisedu (GIS:ed:you)...</p></div>";
+                
+                ObjectiveJ.bootstrap();
+            }
         </script>
-        
+
         <script type="text/javascript" src="static/Frameworks/Objective-J/Objective-J.js" charset="UTF-8"></script>
 
         <style type="text/css">
@@ -45,31 +102,9 @@
 
     </head>
 
-    <body style="">
+    <body onload="testBrowser()" style="">
         <div id="cappuccino-body">
             <div id="loadingcontainer" style="background-color: #eeeeee; overflow:hidden; width:100%; height:100%; position: absolute; top: 0; left: 0;">
-                <script type="text/javascript">
-                    document.write("<div id='container'><p id='content'>" +
-                                   "<img id='loadgraphic' width='16' height='16' src='static/Resources/spinner.gif' /> " +
-                                   "Loading Gisedu (GIS:ed:you)...</p></div>");
-                </script>
-        
-                <noscript>
-                    <div id="container">
-                        <div style="width: 440px; padding: 10px 25px 20px 25px; font-family: sans-serif; background-color: #ffffff; position: relative; left: -245px; top: -120px; text-align: center; -moz-border-radius: 20px; -webkit-border-radius: 20px; color: #555555">
-                            <p style="line-height: 1.4em;">JavaScript is required for this site to work correctly but is either disabled or not supported by your browser.</p>
-                            <p style="font-size:120%; padding:10px;"><a href="http://cappuccino.org/noscript">Show me how to enable JavaScript</a></p>
-                            <p style="font-size:80%;">You may want to upgrade to a newer browser while you're at it:</p>
-                            <ul style="margin:0;padding:0; text-align: center; font-size:80%;" >
-                                <li style="display: inline;"><a href="http://www.apple.com/safari/download/">Safari</a></li>
-                                <li style="display: inline;"><a href="http://www.mozilla.com/en-US/firefox/">Firefox</a></li>
-                                <li style="display: inline;"><a href="http://www.google.com/chrome/">Chrome</a></li>
-                                <li style="display: inline;"><a href="http://www.opera.com/download/">Opera</a></li>
-                                <li style="display: inline;"><a href="http://www.microsoft.com/windows/downloads/ie/getitnow.mspx">Internet Explorer</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </noscript>
             </div>
         </div>
     </body>

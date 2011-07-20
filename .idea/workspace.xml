@@ -23,46 +23,37 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="MKMapView.j" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="MKMapView.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="24" selection-start="2189" selection-end="2189" vertical-scroll-proportion="0.026132405">
+            <state line="70" column="24" selection-start="2189" selection-end="2189" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="map.html" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/templates/map.html">
+      <file leaf-file-name="browser_test.html" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/templates/browser_test.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="40" selection-start="398" selection-end="398" vertical-scroll-proportion="0.0">
+            <state line="19" column="25" selection-start="559" selection-end="3512" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LeftSideTabView.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/LeftSideTabView.j">
+      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="0" selection-start="689" selection-end="689" vertical-scroll-proportion="0.0">
+            <state line="23" column="49" selection-start="917" selection-end="917" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OverlayFiltersView.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
+      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/templates/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="8" selection-start="2247" selection-end="2311" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PolygonOverlayOptionsView.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/PolygonOverlayOptionsView.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="106" column="72" selection-start="4955" selection-end="4955" vertical-scroll-proportion="0.0">
+            <state line="15" column="45" selection-start="597" selection-end="597" vertical-scroll-proportion="0.4090909">
               <folding />
             </state>
           </provider>
@@ -89,7 +80,7 @@
       <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="12" column="0" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0">
+            <state line="17" column="42" selection-start="653" selection-end="653" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -127,14 +118,10 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/schools/models.py" />
-        <option value="$PROJECT_DIR$/gisedu/admin.py" />
         <option value="$PROJECT_DIR$/schools/admin.py" />
         <option value="$PROJECT_DIR$/organizations/admin.py" />
         <option value="$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/OverlayManager.j" />
-        <option value="$PROJECT_DIR$/gisedu/views.py" />
-        <option value="$PROJECT_DIR$/urls.py" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/LeftSideTabView.j" />
         <option value="$PROJECT_DIR$/static/AppController.j" />
         <option value="$PROJECT_DIR$/templates/map.html" />
@@ -143,6 +130,10 @@
         <option value="$PROJECT_DIR$/static/Gisedu/views/PointOverlayOptionsView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayOutlineView.j" />
         <option value="$PROJECT_DIR$/static/MapKit/MKMapView.j" />
+        <option value="$PROJECT_DIR$/templates/browser_test.html" />
+        <option value="$PROJECT_DIR$/gisedu/views.py" />
+        <option value="$PROJECT_DIR$/urls.py" />
+        <option value="$PROJECT_DIR$/templates/index.html" />
       </list>
     </option>
   </component>
@@ -552,21 +543,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/templates/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="0" selection-start="828" selection-end="828" vertical-scroll-proportion="15.625" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="0" selection-start="2439" selection-end="2439" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/Organization.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="68" column="19" selection-start="1541" selection-end="1541" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="182" column="29" selection-start="6940" selection-end="6940" vertical-scroll-proportion="-6.214286" />
@@ -575,11 +551,6 @@
     <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="64" column="8" selection-start="1209" selection-end="1209" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="14" selection-start="303" selection-end="313" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/map.html">
@@ -607,11 +578,6 @@
         <state line="26" column="8" selection-start="807" selection-end="871" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="0" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/School.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="62" column="41" selection-start="1548" selection-end="1548" vertical-scroll-proportion="0.0" />
@@ -631,7 +597,42 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="24" selection-start="2189" selection-end="2189" vertical-scroll-proportion="0.026132405">
+        <state line="70" column="24" selection-start="2189" selection-end="2189" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="23" column="49" selection-start="917" selection-end="917" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="17" column="42" selection-start="653" selection-end="653" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/browser_test.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="25" selection-start="559" selection-end="3512" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/main.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="0" selection-start="229" selection-end="229" vertical-scroll-proportion="0.33972126">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/templates/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="45" selection-start="597" selection-end="597" vertical-scroll-proportion="0.4090909">
           <folding />
         </state>
       </provider>
