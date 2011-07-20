@@ -65,26 +65,36 @@ g_mapViewInstance = nil;
     {
         _center = [MKLocation locationWithLatitude:52 andLongitude:-1];
     }
+
+    console.log("MKMapView:initWithFrame() Problem Area 1");
     
     if (!someLoadingMarkup)
     {
         someLoadingMarkup = @"";
     }
-    
-    if (self = [super initWithFrame:aFrame]) 
+
+    console.log("MKMapView:initWithFrame() Problem Area 2");
+
+    if (self = [super initWithFrame:aFrame])
     {
         _iframe.allowTransparency = true;
 
         var bounds = [self bounds];
-        
+
         [self setFrameLoadDelegate:self];
+
+        console.log("MKMapView:initWithFrame() Problem Area 3");
 
         [self _startedLoading];
 
         _ignoreLoadStart = YES;
         _ignoreLoadEnd = YES;
 
+        console.log("MKMapView:initWithFrame() Problem Area 4");
+
         [self _load];
+
+        console.log("MKMapView:initWithFrame() Problem Area 5");
 
         var domWin = [self DOMWindow];
         console.log("domWin is " + domWin);
