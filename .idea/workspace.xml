@@ -26,7 +26,7 @@
       <file leaf-file-name="MKMapView.j" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="110" column="16" selection-start="3095" selection-end="3095" vertical-scroll-proportion="0.42383292">
+            <state line="123" column="50" selection-start="3462" selection-end="3462" vertical-scroll-proportion="0.55282557">
               <folding />
             </state>
           </provider>
@@ -631,7 +631,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="110" column="16" selection-start="3095" selection-end="3095" vertical-scroll-proportion="0.42383292">
+        <state line="123" column="50" selection-start="3462" selection-end="3462" vertical-scroll-proportion="0.55282557">
           <folding />
         </state>
       </provider>

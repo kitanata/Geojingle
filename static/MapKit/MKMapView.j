@@ -95,9 +95,6 @@ g_mapViewInstance = nil;
         [self _load];
 
         console.log("MKMapView:initWithFrame() Problem Area 5");
-
-        var domWin = [self DOMWindow];
-        console.log("domWin is " + domWin);
         
         if (aLoadingView)
         {
@@ -124,7 +121,7 @@ g_mapViewInstance = nil;
 
     // need to give the browser a chance to reset iframe, otherwise we'll be document.write()-ing the previous document
     _loadHTMLStringTimer = window.setTimeout(function() {
-            window.setTimeout(_loadCallback, 1);
+            window.setTimeout(_loadCallback, 500);
     }, 0);
 }
 
