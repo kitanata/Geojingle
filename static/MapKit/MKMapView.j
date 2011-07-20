@@ -95,12 +95,6 @@ g_mapViewInstance = nil;
         [self _load];
 
         console.log("MKMapView:initWithFrame() Problem Area 5");
-        
-        if (aLoadingView)
-        {
-            _loadingView = aLoadingView;
-            [self addSubview:_loadingView];
-        }
     }
 
     console.log("MKMapView::initWithFrame() finished");
@@ -121,7 +115,7 @@ g_mapViewInstance = nil;
 
     // need to give the browser a chance to reset iframe, otherwise we'll be document.write()-ing the previous document
     _loadHTMLStringTimer = window.setTimeout(function() {
-            window.setTimeout(_loadCallback, 500);
+            window.setTimeout(_loadCallback, 1);
     }, 0);
 }
 
