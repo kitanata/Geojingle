@@ -46,11 +46,19 @@
             [m_FilterType addItemWithTitle:"School District"];
             [m_FilterType addItemWithTitle:"Public School"];
             [m_FilterType addItemWithTitle:"Organization"];
+            [m_FilterType addItemWithTitle:"School ITC"];
+            [m_FilterType addItemWithTitle:"ODE Income Classification"];
         }
-        else if(parentType == 'county' || parentType == 'school_district') //can be combined with County or School District
+        else if(parentType == 'county' || parentType == 'school_district')
         {
             [m_FilterType addItemWithTitle:"Public School"];
             [m_FilterType addItemWithTitle:"Organization"];
+            [m_FilterType addItemWithTitle:"School ITC"];
+            [m_FilterType addItemWithTitle:"ODE Income Classification"];
+        }
+        else if(parentType == 'school_itc' || parentType == 'ode_class')
+        {
+            [m_FilterType addItemWithTitle:"Public School"];
         }
         else if(parentType == 'school') // Can be combined with Schools
         {
@@ -59,10 +67,17 @@
             [m_FilterType addItemWithTitle:"School ITC"];
             [m_FilterType addItemWithTitle:"ODE Income Classification"];
         }
-        else //can be combined with anything
+        else if(parentType == organization)
         {
-            [m_FilterType addItemWithTitle:"Connectivity Less Than"];
-            [m_FilterType addItemWithTitle:"Connectivity Greater Than"];
+            [m_FilterType addItemWithTitle:"County"];
+            [m_FilterType addItemWithTitle:"School District"];
+        }
+        else
+        {
+            [m_FilterType addItemWithTitle:"County"];
+            [m_FilterType addItemWithTitle:"School District"];
+            [m_FilterType addItemWithTitle:"Public School"];
+            [m_FilterType addItemWithTitle:"Organization"];
             [m_FilterType addItemWithTitle:"School ITC"];
             [m_FilterType addItemWithTitle:"ODE Income Classification"];
         }

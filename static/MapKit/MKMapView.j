@@ -73,8 +73,6 @@ g_mapViewInstance = nil;
         someLoadingMarkup = @"";
     }
 
-    console.log("MKMapView:initWithFrame() Problem Area 2");
-
     if (self = [super initWithFrame:aFrame])
     {
         _iframe.allowTransparency = true;
@@ -83,18 +81,12 @@ g_mapViewInstance = nil;
 
         [self setFrameLoadDelegate:self];
 
-        console.log("MKMapView:initWithFrame() Problem Area 3");
-
         [self _startedLoading];
 
         _ignoreLoadStart = YES;
         _ignoreLoadEnd = YES;
 
-        console.log("MKMapView:initWithFrame() Problem Area 4");
-
         [self _load];
-
-        console.log("MKMapView:initWithFrame() Problem Area 5");
     }
 
     console.log("MKMapView::initWithFrame() finished");
@@ -269,46 +261,32 @@ g_mapViewInstance = nil;
 
 - (JSObject)gmNamespace 
 {
-    console.log("MKMapView::-gmNamespace() called");
-
     var domWin = [self DOMWindow];
     
     if (domWin && _mapReady) 
     {
-        console.log("MKMapView::-gmNamespace() finished without nil");
-
         return domWin.google.maps;
     }
-
-    console.log("MKMapView::-gmNamespace() finished with nil");
     
     return nil;
 }
 
 + (JSObject)gmNamespace 
 {
-    console.log("MKMapView::+gmNamespace() called");
-
     if (!gmNamespace)
     {
         console.log("Error: MKMapView must be instantiated before this is valid");
     }
-
-    console.log("MKMapView::+gmNamespace() finished");
 
     return gmNamespace;
 }
 
 + (id)getInstance
 {
-    console.log("MKMapView::+getInstance() called");
-
     if(!g_mapViewInstance)
     {
         g_mapViewInstance = [MKMapView alloc];
     }
-
-    console.log("MKMapView::+getInstance() finished");
 
     return g_mapViewInstance;
 }

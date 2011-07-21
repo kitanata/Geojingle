@@ -574,8 +574,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         else if(itemType == "school")
         {
             var curSchool = [m_OverlayManager getSchool:itemId];
-
-            console.log("Current School is " + curSchool);
             
             if([curSchool overlay])
             {
