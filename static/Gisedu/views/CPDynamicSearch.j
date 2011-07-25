@@ -18,7 +18,7 @@
         m_SearchItems = [CPArray array];
         m_DefaultSearch = "Type To Search";
         m_SearchSensitivity = 4;
-        
+       
         [self setAction:@selector(onSearchFieldTextChanged:)];
         [self setTarget:self];
     }
@@ -67,7 +67,6 @@
         if([menuItems count] > 0)
         {
             [self setSearchMenuTemplate:m_SearchMenu];
-            [self _showMenu];
         }
     }
     else
