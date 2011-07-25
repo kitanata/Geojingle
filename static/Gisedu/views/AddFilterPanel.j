@@ -1,7 +1,6 @@
 @import <Foundation/CPObject.j>
 
 @import "../FilterManager.j"
-@import "../filters/GiseduFilter.j"
 
 @implementation AddFilterPanel : CPPanel
 {
@@ -10,7 +9,7 @@
 
     CPPopUpButton m_FilterType;
 
-    GiseduFilter m_ParentFilter;
+    CPTreeNode m_ParentFilter;
     id m_Delegate   @accessors(property=delegate);
 }
 
@@ -67,7 +66,7 @@
             [m_FilterType addItemWithTitle:"School ITC"];
             [m_FilterType addItemWithTitle:"ODE Income Classification"];
         }
-        else if(parentType == organization)
+        else if(parentType == 'organization')
         {
             [m_FilterType addItemWithTitle:"County"];
             [m_FilterType addItemWithTitle:"School District"];

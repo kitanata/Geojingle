@@ -22,7 +22,6 @@
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
-var m_ShowTablesToolbarId = 'showTables';
 var m_OverlayOptionsToolbarId = 'overlayOptions';
 var m_AddFilterToolbarId = 'addFilter';
 var m_DeleteFilterToolbarId = 'deleteFilter';
@@ -85,7 +84,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     m_MinMapWidth = CGRectGetWidth([m_ContentView bounds]) - 580;
     m_MaxMapWidth = CGRectGetWidth([m_ContentView bounds]) - 300;
-    m_MapWidth = m_MinMapWidth;
+    m_MapWidth = m_MaxMapWidth;
 
     var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
 
@@ -102,7 +101,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_ContentView addSubview:m_LeftSideTabView];
 
     m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
-    [m_ContentView addSubview:m_OverlayOptionsView];
+    //Not added to mapview because default is minimized
 
     m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
     [m_TableScrollView setAutoresizingMask:CPViewMinYMargin | CPViewWidthSizable];
@@ -148,13 +147,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
+   return [m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_ShowTablesToolbarId, m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
+   return [m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -165,22 +164,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     var mainBundle = [CPBundle mainBundle];
 
-    if(m_ShowTablesToolbarId == anItemIdentifier)
-    {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"view_table_highlighted.png"] size:CPSizeMake(48, 48)];
-
-        [toolbarItem setImage:image];
-        [toolbarItem setAlternateImage:highlighted];
-
-        [toolbarItem setTarget:self];
-        [toolbarItem setAction:@selector(onDataTables:)];
-        [toolbarItem setLabel:"Data Tables"];
-
-        [toolbarItem setMinSize:CGSizeMake(32, 32)];
-        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
-    }
-    else if(m_OverlayOptionsToolbarId == anItemIdentifier)
+    if(m_OverlayOptionsToolbarId == anItemIdentifier)
     {
         var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options.png"] size:CPSizeMake(48, 48)];
         var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options_highlighted.png"] size:CPSizeMake(48, 48)];
@@ -348,23 +332,20 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onCountyOverlayLoaded:(id)overlay
 {
-    [overlay setOnClickAction:@selector(OnPolygonGeometrySelected:)];
-    [overlay setEventTarget:self];
-
+    [overlay setDelegate:self];
     [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
 }
 
 - (void)onSchoolDistrictOverlayLoader:(id)overlay
 {
-    [overlay setOnClickAction:@selector(OnPolygonGeometrySelected:)];
-    [overlay setEventTarget:self];
-
+    [overlay setDelegate:self];
     [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
 }
 
-- (void)OnPolygonGeometrySelected:(id)sender
+- (void)onPolygonOverlaySelected:(id)sender
 {
     [m_OverlayOptionsView setPolygonOverlayTarget:sender];
+    [self showOverlayOptionsView];
 }
 
 - (void)onOrgOverlaySelected:(id)organization
@@ -477,29 +458,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 - (void)updateMapViewFrame
 {
     [m_MapView setFrame:CGRectMake(300, 0, m_MapWidth, m_MapHeight)];
-}
-
-//TOOLBAR EVENTS
-
-- (void)onDataTables:(id)sender
-{
-    if([m_TableScrollView superview] != nil)
-    {
-        [m_TableScrollView removeFromSuperview];
-        [self updateMapTheory];
-        m_MapHeight = m_MaxMapHeight;
-        [self updateMapViewFrame];
-    }
-    else
-    {
-        var bottomHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3, 200);
-        [m_TableScrollView setFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
-
-        [self updateMapTheory];
-        m_MapHeight = m_MinMapHeight;
-        [self updateMapViewFrame];
-        [m_ContentView addSubview:m_TableScrollView];
-    }
 }
 
 - (void)onOverlayOptions:(id)sender

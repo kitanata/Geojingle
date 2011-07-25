@@ -1,9 +1,8 @@
 @import <Foundation/CPObject.j>
 
-@import "filters/StringFilter.j"
-@import "filters/IntegerFilter.j"
+@import "GiseduFilter.j"
 
-@import "filters/GiseduFilterRequest.j"
+@import "GiseduFilterRequest.j"
 
 var g_FilterManagerInstance = nil;
 
@@ -36,7 +35,7 @@ var g_FilterManagerInstance = nil;
     return self;
 }
 
-- (BOOL)containsFilter:(GiseduFilter)filter
+- (BOOL)containsFilter:(CPTreeNode)filter
 {
     if(!filter)
         return NO;
@@ -44,7 +43,7 @@ var g_FilterManagerInstance = nil;
     return [self containsFilter:filter withNodes:m_UserFilters];
 }
 
-- (BOOL)containsFilter:(GiseduFilter)filter withNodes:(CPArray)nodes
+- (BOOL)containsFilter:(CPTreeNode)filter withNodes:(CPArray)nodes
 {
     if([nodes indexOfObject:filter] != CPNotFound)
         return YES;
@@ -60,26 +59,15 @@ var g_FilterManagerInstance = nil;
     return NO;
 }
 
-- (GiseduFilter)createFilter:(CPString)type
+- (CPTreeNode)createFilter:(CPString)type
  {
     var newFilter = nil;
 
-    if(type == 'county')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
-    else if(type == 'school_district')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
-    else if(type == 'organization')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
-    else if(type == 'school')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
-    else if(type == 'connectivity_less')
-        newFilter = [[IntegerFilter alloc] initWithValue:100];
-    else if(type == 'connectivity_greater')
-        newFilter = [[IntegerFilter alloc] initWithValue:100];
-    else if(type == 'school_itc')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
-    else if(type == 'ode_class')
-        newFilter = [[StringFilter alloc] initWithValue:'All'];
+    if(type == 'county' || type == 'school_district' || type == 'organization'
+        || type == 'school' || type == 'school_itc' || type == 'ode_class')
+        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
+    else if(type == 'connectivity_less' || type == 'connectivity_greater')
+        newFilter = [[GiseduFilter alloc] initWithValue:100];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
     [m_FilterMap setObject:type forKey:newFilter];
@@ -87,12 +75,12 @@ var g_FilterManagerInstance = nil;
     return newFilter;
  }
 
- - (CPString)typeFromFilter:(GiseduFilter)filter
+ - (CPString)typeFromFilter:(CPTreeNode)filter
  {
     return [m_FilterMap objectForKey:filter];
  }
 
-- (void)addFilter:(GiseduFilter)filter parent:(GiseduFilter)parent
+- (void)addFilter:(CPTreeNode)filter parent:(CPTreeNode)parent
 {
     if(!parent)
     {
@@ -104,7 +92,7 @@ var g_FilterManagerInstance = nil;
     }
 }
 
-- (void)deleteFilter:(GiseduFilter)filter
+- (void)deleteFilter:(CPTreeNode)filter
 {
     if([self containsFilter:filter])
     {

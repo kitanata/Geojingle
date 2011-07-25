@@ -1,9 +1,7 @@
 @import <Foundation/CPObject.j>
 
-@import "../../filters/StringFilter.j"
-
-@import "../../OverlayManager.j"
-@import "../CPDynamicSearch.j"
+@import "../OverlayManager.j"
+@import "CPDynamicSearch.j"
 
 //A Little Note: This filter view uses a dictionary of accepted key value pairs of type <String:Integer>
 //This allows us to provide a nice view to the user(the strings) and a nice view to the server(the Integer)
@@ -18,11 +16,11 @@
 
     CPButton m_UpdateButton;
 
-    StringFilter m_Filter            @accessors(property=filter);
+    GiseduFilter m_Filter            @accessors(property=filter);
     CPDictionary m_AcceptedValues    @accessors(property=acceptedValues);
 }
 
-- (id)initWithFrame:(CGRect)aFrame andFilter:(StringFilter)filter andAcceptedValues:(CPDictionary)acceptedValues
+- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPDictionary)acceptedValues
 {
     self = [super initWithFrame:aFrame];
 
@@ -41,7 +39,7 @@
             [m_SelectionControl addItemsWithTitles:[m_AcceptedValues allKeys]];
 
             [m_SelectionControl sizeToFit];
-            [m_SelectionControl setFrameOrigin:CGPointMake(20, 40)];
+            [m_SelectionControl setFrameOrigin:CGPointMake(20, 20)];
             [m_SelectionControl setFrameSize:CGSizeMake(260, CGRectGetHeight([m_SelectionControl bounds]))];
 
             var curKeysForFilterValue = [m_AcceptedValues allKeysForObject:[m_Filter value]];
@@ -50,7 +48,7 @@
         }
         else
         {
-            m_SelectionControl = [[CPDynamicSearch alloc] initWithFrame:CGRectMake(20, 40, 260, 30)];
+            m_SelectionControl = [[CPDynamicSearch alloc] initWithFrame:CGRectMake(20, 20, 260, 30)];
             [m_SelectionControl setSearchStrings:m_AcceptedValues];
             [m_SelectionControl addSearchString:"All"];
             [m_SelectionControl setDefaultSearch:"All"];
@@ -63,17 +61,12 @@
             [m_SelectionControl sizeToFit];
         }
 
-        selectionLabel = [CPTextField labelWithTitle:"TODO Selection"];
-        [selectionLabel sizeToFit];
-        [selectionLabel setFrameOrigin:CGPointMake(20, 20)];
-
         m_UpdateButton = [CPButton buttonWithTitle:"Update Filter"];
         [m_UpdateButton sizeToFit];
-        [m_UpdateButton setFrameOrigin:CGPointMake(20, 85)];
+        [m_UpdateButton setFrameOrigin:CGPointMake(20, 65)];
         [m_UpdateButton setAction:@selector(onFilterUpdateButton:)];
         [m_UpdateButton setTarget:self];
 
-        [self addSubview:selectionLabel];
         [self addSubview:m_SelectionControl];
 
         [self addSubview:m_UpdateButton];

@@ -22,8 +22,7 @@
     BOOL m_Visible @accessors(property=visible);
     BOOL m_bActive @accessors(property=active); //Is this polygon currently being edited?
 
-    SEL m_OnClickAction         @accessors(property=onClickAction);
-    id m_EventTarget            @accessors(property=eventTarget);
+    id m_Delegate               @accessors(property=delegate);
 }
 
 - (id)init 
@@ -200,10 +199,8 @@
 
 - (void)onClick
 {
-    if(m_EventTarget && m_OnClickAction)
-    {
-        [self sendAction:m_OnClickAction to:m_EventTarget];
-    }
+    if([m_Delegate respondsToSelector:@selector(onPolygonOverlaySelected:)])
+        [m_Delegate onPolygonOverlaySelected:self];
 }
 
 @end

@@ -1,0 +1,85 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!--
+ index.html
+ NewApplication
+
+ Created by You on February 22, 2011.
+ Copyright 2011, Your Company All rights reserved.
+-->
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE8, chrome=1" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+        <title>Project GisEdu Browser Compatibility Check</title>
+
+        <script type="text/javascript">
+            function getInternetExplorerVersion() {
+                var rv = -1; // Return value assumes failure.
+                if (navigator.appName == 'Microsoft Internet Explorer') {
+                    var ua = navigator.userAgent;
+                    var re = new RegExp("MSIE ([0-9]{1,}[\.0-9]{0,})");
+                    if (re.exec(ua) != null)
+                        rv = parseFloat(RegExp.$1);
+                }
+                return rv;
+            }
+            
+            function checkVersion() {
+                var msg = null;
+                var ver = getInternetExplorerVersion();
+
+                var winXp = false;
+
+                if(navigator.userAgent.indexOf("Windows NT 5.1") != -1)
+                    winXp = true;
+                
+                if(ver > -1)
+                {
+                    if(ver < 6.0 && winXp)
+                    {
+                        msg = "Your browser is too old to run Project Gisedu and IE9 is unavailable on Windows XP. To use"
+                                + " Project Gisedu efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                                + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                    else if(ver == 7.0 || ver == 8.0 && winXp)
+                    {
+                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                                + " slow or fail to load at all depending on the speed of your computer. To use"
+                                + " Project Gisedu efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                                + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                    else if(ver == 7.0 || ver == 8.0)
+                    {
+                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                                + " slow or fail to load at all depending on the speed of your computer. To use"
+                                + " Project Gisedu efficiently please upgrade to Internet Explorer 9+ or download an alternative modern"
+                                + " browser from <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
+                    }
+                }
+
+                if(msg)
+                {
+                    var messageId = document.getElementById('message');
+
+                    msg += "<p /> <a href=\"/gisedu\">Click Here to continue to Project Gisedu anyway.<a>";
+                    messageId.innerHTML = msg;
+                }
+                else
+                {
+                    window.location = "/gisedu";
+                }
+            }
+        </script>
+    </head>
+
+    <body onload="checkVersion()">
+        <div id="message">
+            Redirecting to Project Gisedu
+        </div>
+    </body>
+
+</html>
+

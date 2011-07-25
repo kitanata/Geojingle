@@ -1,8 +1,8 @@
 @import <Foundation/CPObject.j>
 
-@import "filters/StringFilterView.j"
-@import "filters/IntegerFilterView.j"
-@import "filters/StringIdMapFilterView.j"
+@import "StringFilterView.j"
+@import "IntegerFilterView.j"
+@import "StringIdMapFilterView.j"
 
 @import "../FilterManager.j"
 @import "../OverlayManager.j"
@@ -107,22 +107,26 @@
     if(filterType == "school_itc")
         names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
     else if(filterType == "ode_class")
-
         names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
+    else if(filterType == "school")
+        names = [[m_OverlayManager schoolTypes] allKeysForObject:[item value]];
+
+    var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
+    var filterLabel = "Generic Filter";
 
     if(names)
     {
         if([names count] > 0)
-            return [names objectAtIndex:0] + " " + filterType + " Filter";
+            filterLabel = [names objectAtIndex:0] + " " + filterTypeName + " Filter";
         else
-            return "Generic " + filterType + " Filter";
+            filterLabel = "All " + filterTypeName + " Filter";
     }
     else
     {
-        return [item value] + " " + filterType + " Filter";
+        filterLabel = [item value] + " " + filterTypeName + " Filter";
     }
 
-    return "Generic Filter";
+    return [filterLabel capitalizedString];
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -232,6 +236,12 @@
                 }
 
                 [m_OutlineView reloadItem:curSelItemParent reloadChildren:YES];
+            }
+
+            if(m_CurrentFilterView)
+            {
+                [m_CurrentFilterView removeFromSuperview];
+                m_CurrentFilterView = nil;
             }
         }
     }
