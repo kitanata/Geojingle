@@ -44,25 +44,25 @@
       <file leaf-file-name="OverlayFiltersView.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="30" selection-start="363" selection-end="363" vertical-scroll-proportion="0.0">
+            <state line="172" column="42" selection-start="5775" selection-end="5775" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="StringIdMapFilterView.j" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="StringIdMapFilterView.j" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringIdMapFilterView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="73" selection-start="796" selection-end="796" vertical-scroll-proportion="0.0">
+            <state line="46" column="30" selection-start="1787" selection-end="1787" vertical-scroll-proportion="0.5749129">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="CPDynamicSearch.j" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="CPDynamicSearch.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="33" selection-start="1777" selection-end="1777" vertical-scroll-proportion="0.6080139">
+            <state line="54" column="13" selection-start="1369" selection-end="1369" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -89,7 +89,7 @@
       <file leaf-file-name="StringFilterView.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringFilterView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="9" selection-start="72" selection-end="72" vertical-scroll-proportion="-1.6071428">
+            <state line="26" column="8" selection-start="746" selection-end="827" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -98,7 +98,7 @@
       <file leaf-file-name="IntegerFilterView.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/views/IntegerFilterView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="3" column="9" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0">
+            <state line="24" column="89" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -129,11 +129,11 @@
         <option value="$PROJECT_DIR$/static/Gisedu/views/filters/IntegerFilterView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/filters/StringIdMapFilterView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/FilterManager.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/views/IntegerFilterView.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/StringFilterView.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/StringIdMapFilterView.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/IntegerFilterView.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j" />
       </list>
     </option>
   </component>
@@ -163,8 +163,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Favorites" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -295,15 +293,17 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Favorites" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.HTML" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="recentsLimit" value="5" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -470,16 +470,16 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="26" width="1680" height="1024" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19188862" sideWeight="0.7231834" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3979239" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2768166" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2768166" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -543,107 +543,96 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="272" column="0" selection-start="6591" selection-end="6591" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="42" selection-start="653" selection-end="653" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="17" column="42" selection-start="653" selection-end="653" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="54" selection-start="973" selection-end="973" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="24" column="54" selection-start="973" selection-end="973" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="30" selection-start="2723" selection-end="2736" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="38" column="30" selection-start="2723" selection-end="2736" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/LeftSideTabView.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/AppController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="204" column="61" selection-start="8040" selection-end="8051" vertical-scroll-proportion="-8.642858">
-          <folding />
-        </state>
+        <state line="204" column="61" selection-start="8040" selection-end="8051" vertical-scroll-proportion="-8.642858" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="14" selection-start="215" selection-end="215" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterRequest.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="11" column="14" selection-start="215" selection-end="215" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="4" selection-start="424" selection-end="424" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="20" column="4" selection-start="424" selection-end="424" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterRequest.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="24" selection-start="674" selection-end="674" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
+    <entry file="file://$PROJECT_DIR$/gisedu/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="30" selection-start="363" selection-end="363" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/IntegerFilterView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="9" selection-start="72" selection-end="72" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringFilterView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="9" selection-start="72" selection-end="72" vertical-scroll-proportion="-1.6071428">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringIdMapFilterView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="73" selection-start="796" selection-end="796" vertical-scroll-proportion="0.0">
+        <state line="16" column="25" selection-start="555" selection-end="555" vertical-scroll-proportion="0.22113022">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/CPDynamicSearch.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="66" column="33" selection-start="1777" selection-end="1777" vertical-scroll-proportion="0.6080139">
+        <state line="54" column="13" selection-start="1369" selection-end="1369" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="24" selection-start="674" selection-end="674" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayOutlineView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="89" column="44" selection-start="2654" selection-end="2729" vertical-scroll-proportion="0.42231077">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/IntegerFilterView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="89" selection-start="669" selection-end="669" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringFilterView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="8" selection-start="746" selection-end="827" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="172" column="42" selection-start="5775" selection-end="5775" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/StringIdMapFilterView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="46" column="30" selection-start="1787" selection-end="1787" vertical-scroll-proportion="0.5749129">
           <folding />
         </state>
       </provider>

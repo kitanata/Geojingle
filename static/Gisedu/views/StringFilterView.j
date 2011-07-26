@@ -24,7 +24,7 @@
     if(self)
     {
         m_Filter = filter;
-        m_AcceptedValues = acceptedValues;
+        m_AcceptedValues = [acceptedValues sortedArrayUsingSelector:@selector(compare:)];
         m_OverlayManager = [OverlayManager getInstance];
 
         m_bPopUp = ([m_AcceptedValues count] <= 100);

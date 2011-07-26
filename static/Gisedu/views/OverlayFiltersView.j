@@ -178,8 +178,6 @@
         else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
         {
             var acceptedValues = [CPArray arrayWithObjects:"1", "10", "100", "1000"];
-
-            console.log("Accepted Values are " + acceptedValues);
             
             m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:acceptedValues];

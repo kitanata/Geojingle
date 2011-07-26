@@ -36,7 +36,9 @@
         {
             m_SelectionControl = [[CPPopUpButton alloc] initWithFrame:CGRectMakeZero()];
             [m_SelectionControl addItemWithTitle:"All"];
-            [m_SelectionControl addItemsWithTitles:[m_AcceptedValues allKeys]];
+            
+            acceptedValuesSorted = [[m_AcceptedValues allKeys] sortedArrayUsingSelector:@selector(compare:)];
+            [m_SelectionControl addItemsWithTitles:acceptedValuesSorted];
 
             [m_SelectionControl sizeToFit];
             [m_SelectionControl setFrameOrigin:CGPointMake(20, 20)];
