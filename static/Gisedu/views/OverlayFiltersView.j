@@ -155,6 +155,16 @@
             m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[[m_OverlayManager schoolDistricts] allKeys]];
         }
+        else if(filterType == "senate_district")
+        {
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager senateDistricts]];
+        }
+        else if(filterType == "house_district")
+        {
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager houseDistricts]];
+        }
         else if(filterType == "organization")
         {
             m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
@@ -182,6 +192,11 @@
             m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:acceptedValues];
         }
+        else if(filterType == "comcast_coverage")
+        {
+            m_CurrentFilterView = [[BooleanFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter];
+        }
 
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
         [m_CurrentFilterView setTarget:self];
@@ -195,8 +210,18 @@
     parentFilter = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
 
     m_AddFilterPanel = [[AddFilterPanel alloc] initWithParentFilter:parentFilter];
-    [m_AddFilterPanel setDelegate:self];
-    [m_AddFilterPanel orderFront:self];
+
+    if(m_AddFilterPanel)
+    {
+        [m_AddFilterPanel setDelegate:self];
+        [m_AddFilterPanel orderFront:self];
+    }
+    else
+    {
+        theAlert = [CPAlert alertWithError:"No more filters can legally be added to this filter."];
+        [theAlert addButtonWithTitle:"Ok"];
+        [theAlert runModal];
+    }
 }
 
 - (void) onDeleteFilter:(id)sender

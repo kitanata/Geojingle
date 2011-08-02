@@ -11,9 +11,13 @@
 
     CPTreeNode m_ParentFilter;
     id m_Delegate   @accessors(property=delegate);
+
+    var m_ExclusionFilterMap;
+    var m_FilterNameToTypeMap;
+    var m_FilterTypeToNameMap;
 }
 
-- (id)initWithParentFilter:(id)parentFilter
+- (id)initWithParentFilter:(GiseduFilter)parentFilter
 {
     self = [super initWithContentRect:CGRectMake(150,150,300,150) styleMask:CPClosableWindowMask];
 
@@ -39,46 +43,78 @@
         filterManager = [FilterManager getInstance];
         parentType = [filterManager typeFromFilter:parentFilter]
 
-        if(!parentFilter || !parentType) //can be root filter
+        m_ExclusionFilterMap = {
+                               'county': ['county', 'school_district', 'house_district', 'senate_district'],
+                               'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
+                               'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                               'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                               'comcast_coverage' : ['county', 'house_district', 'senate_district'],
+                               'school_itc' : ['school_itc', 'organization'],
+                               'ode_class' : ['ode_class', 'organization'],
+                               'school' : ['school', 'organization'],
+                               'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                               'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                               'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater']
+                               }
+
+        m_FilterNameToTypeMap = {
+                                'County' : 'county',
+                                'School District' : 'school_district',
+                                'House District' : 'house_district',
+                                'Senate District' : 'senate_district',
+                                'School ITC' : 'school_itc',
+                                'ODE Income Classification' : 'ode_class',
+                                'Public School' : 'school',
+                                'Organization' : 'organization',
+                                'Connectivity Greater Than' : 'connectivity_greater',
+                                'Connectivity Less Than' : 'connectivity_less',
+                                'Comcast Coverage' : 'comcast_coverage'
+                                }
+
+        m_FilterTypeToNameMap = {}
+
+        for(var key in m_FilterNameToTypeMap)
+            m_FilterTypeToNameMap[m_FilterNameToTypeMap[key]] = key;
+
+        var itemList = ['county', 'school_district', 'house_district', 'senate_district', 'organization', 'school_itc',
+                        'ode_class', 'school', 'connectivity_greater', 'connectivity_less', 'comcast_coverage'];
+
+        if(parentFilter && parentType)
         {
-            [m_FilterType addItemWithTitle:"County"];
-            [m_FilterType addItemWithTitle:"School District"];
-            [m_FilterType addItemWithTitle:"Public School"];
-            [m_FilterType addItemWithTitle:"Organization"];
-            [m_FilterType addItemWithTitle:"School ITC"];
-            [m_FilterType addItemWithTitle:"ODE Income Classification"];
+            parentTypes = [];
+            parentIter = parentFilter;
+
+            while(parentIter != nil)
+            {
+               parentType = [filterManager typeFromFilter:parentIter];
+
+               var itemsExcluded = m_ExclusionFilterMap[parentType];
+
+               console.log("Item List is " + itemList);
+               console.log("Items excluded from parent type " + parentType + " items: " + itemsExcluded);
+
+               for(var i=0; i < itemsExcluded.length; i++)
+               {
+                    itemListIndex = itemList.indexOf(itemsExcluded[i]);
+
+                    if(itemListIndex != -1)
+                        itemList.splice(itemListIndex, 1);
+               }
+
+               console.log("New Item List is " + itemList);
+
+               parentIter = [parentIter parentNode];
+            }
         }
-        else if(parentType == 'county' || parentType == 'school_district')
+
+        console.log("Final Item List is " + itemList);
+
+        if(itemList.length == 0)
+            return null;
+
+        for(var i=0; i < itemList.length; i++)
         {
-            [m_FilterType addItemWithTitle:"Public School"];
-            [m_FilterType addItemWithTitle:"Organization"];
-            [m_FilterType addItemWithTitle:"School ITC"];
-            [m_FilterType addItemWithTitle:"ODE Income Classification"];
-        }
-        else if(parentType == 'school_itc' || parentType == 'ode_class')
-        {
-            [m_FilterType addItemWithTitle:"Public School"];
-        }
-        else if(parentType == 'school') // Can be combined with Schools
-        {
-            [m_FilterType addItemWithTitle:"Connectivity Less Than"];
-            [m_FilterType addItemWithTitle:"Connectivity Greater Than"];
-            [m_FilterType addItemWithTitle:"School ITC"];
-            [m_FilterType addItemWithTitle:"ODE Income Classification"];
-        }
-        else if(parentType == 'organization')
-        {
-            [m_FilterType addItemWithTitle:"County"];
-            [m_FilterType addItemWithTitle:"School District"];
-        }
-        else
-        {
-            [m_FilterType addItemWithTitle:"County"];
-            [m_FilterType addItemWithTitle:"School District"];
-            [m_FilterType addItemWithTitle:"Public School"];
-            [m_FilterType addItemWithTitle:"Organization"];
-            [m_FilterType addItemWithTitle:"School ITC"];
-            [m_FilterType addItemWithTitle:"ODE Income Classification"];
+            [m_FilterType addItemWithTitle:m_FilterTypeToNameMap[itemList[i]]];
         }
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
@@ -100,24 +136,12 @@
 {
     var curSelFilterName = [[m_FilterType selectedItem] title];
 
-    var newFilterType = nil;
+    var newFilterType = m_FilterNameToTypeMap[curSelFilterName];
 
-    if(curSelFilterName == "County")
-        newFilterType = 'county';
-    else if(curSelFilterName == "School District")
-        newFilterType = 'school_district';
-    else if(curSelFilterName == "Organization")
-        newFilterType = 'organization';
-    else if(curSelFilterName == "Public School")
-        newFilterType = 'school';
-    else if(curSelFilterName == "Connectivity Less Than")
-        newFilterType = 'connectivity_less';
-    else if(curSelFilterName == "Connectivity Greater Than")
-        newFilterType = 'connectivity_greater';
-    else if(curSelFilterName == "School ITC")
-        newFilterType = 'school_itc';
-    else if(curSelFilterName == "ODE Income Classification")
-        newFilterType = 'ode_class';
+    console.log("CurSelFilterName is " + curSelFilterName);
+    console.log("New Filter Type is " + newFilterType);
+
+    console.log("FilterNameToTypeMap is " + m_FilterNameToTypeMap);
 
     if(newFilterType && [m_Delegate respondsToSelector:@selector(onAddFilterConfirm:)])
         [m_Delegate onAddFilterConfirm:newFilterType];

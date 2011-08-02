@@ -12,13 +12,16 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'gis_demo',                      # Or path to database file if using sqlite3.
-        'USER': 'gis_demo',                      # Not used with sqlite3.
-        'PASSWORD': 'gis_demo',                  # Not used with sqlite3.
+        'NAME': 'gisedu',                      # Or path to database file if using sqlite3.
+        'USER': 'gisedu',                      # Not used with sqlite3.
+        'PASSWORD': 'gisedu',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+#Make sure that the default behavior for user sessions is that the session expires when the client browser is closed
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -98,5 +101,6 @@ INSTALLED_APPS = (
     'gisedu',
     'filter',
     'organizations',
-    'schools'
+    'schools',
+    'session',
 )

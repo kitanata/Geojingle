@@ -16,6 +16,9 @@ var g_FilterManagerInstance = nil;
     id m_Delegate         @accessors(property=delegate);
 
     CPDictionary m_FilterMap    @accessors(property=filterMap);   //Maps Filter to Filter Type Name (ListFilter -> 'org', IntegerFilter -> 'mbit_less')
+
+    var m_FilterRequestModifierMap;
+    var m_FilterRequestBaseMap;
 }
 
 - (void)init
@@ -30,6 +33,29 @@ var g_FilterManagerInstance = nil;
         m_FilterMap = [CPDictionary dictionary];
 
         [self addFilter:[self createFilter:'county'] parent:nil];
+
+        m_FilterRequestModifierMap = {
+                                        'county' : "/in_county:",
+                                        'house_district' : "/in_house_district:",
+                                        'senate_district' : "/in_senate_district:",
+                                        'school_district' : "/in_school_district:",
+                                        'connectivity_less' : "/with_broadband_less:",
+                                        'connectivity_greater' : "/with_broadband_greater:",
+                                        'school_itc' : "/with_itc:",
+                                        'ode_class' : "/with_ode_class:",
+                                        'organization' : "/organization_by_type:",
+                                        'school' : "/school_by_type:",
+                                        'comcast_coverage' : "/with_comcast:",
+                                    }
+
+        m_FilterRequestBaseMap = {
+                                    'county' : "/filter/county_by_name:",
+                                    'house_district' : "/filter/house_district:",
+                                    'senate_district' : "/filter/senate_district:",
+                                    'school_district' : "/filter/school_district_by_name:",
+                                    'school' : "/filter/school_by_type:",
+                                    'organization' : "/filter/organization_by_type:"
+                                }
     }
 
     return self;
@@ -64,10 +90,13 @@ var g_FilterManagerInstance = nil;
     var newFilter = nil;
 
     if(type == 'county' || type == 'school_district' || type == 'organization'
-        || type == 'school' || type == 'school_itc' || type == 'ode_class')
+        || type == 'school' || type == 'school_itc' || type == 'ode_class'
+        || type == 'house_district' || type == 'senate_district')
         newFilter = [[GiseduFilter alloc] initWithValue:'All'];
     else if(type == 'connectivity_less' || type == 'connectivity_greater')
         newFilter = [[GiseduFilter alloc] initWithValue:100];
+    else if(type == 'comcast_coverage')
+        newFilter = [[GiseduFilter alloc] initWithValue:YES];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
     [m_FilterMap setObject:type forKey:newFilter];
@@ -146,14 +175,9 @@ var g_FilterManagerInstance = nil;
             var curFilterType = [m_FilterMap objectForKey:curFilter];
             console.log("curFilterType is " + curFilterType);
 
-            if(curFilterType == "county")
-                url = g_UrlPrefix + "/filter/county_by_name:" + [curFilter value];
-            else if(curFilterType == "school_district")
-                url = g_UrlPrefix + "/filter/school_district_by_name:" + [curFilter value];
-            else if(curFilterType == "school")
-                url = g_UrlPrefix + "/filter/school_by_type:" + [curFilter value];
-            else if(curFilterType == "organization")
-                url = g_UrlPrefix + "/filter/organization_by_type:" + [curFilter value];
+            url = g_UrlPrefix + m_FilterRequestBaseMap[curFilterType] + [curFilter value];
+
+            console.log("Basic Filter Request URL is: " + url);
 
             if(url)
             {
@@ -189,7 +213,7 @@ var g_FilterManagerInstance = nil;
 
     //Find the "key" filter (org or school)
     var keyFilter = [self _extractKeyFilter:filterChain];
-    var keyFilterRequest = [self _buildKeyFilterRequest:keyFilter];
+    var keyFilterRequest = [self _buildFilterRequestModifier:keyFilter];
 
     console.log("The Key Filter is " + keyFilter);
     console.log("The Rest of the Filters are " + filterChain);
@@ -231,32 +255,11 @@ var g_FilterManagerInstance = nil;
     }
 }
 
-- (CPString)_buildKeyFilterRequest:(id)keyFilter
-{
-    var filterType = [self typeFromFilter:keyFilter];
-
-    if(filterType == "organization")
-        return "/organization_by_type:" + [keyFilter value];
-    else if(filterType == "school")
-        return "/school_by_type:" + [keyFilter value];
-}
-
 - (CPString)_buildFilterRequestModifier:(id)filter
 {
     var filterType = [self typeFromFilter:filter];
 
-    if(filterType == "county")
-        return "/in_county:" + [filter value];
-    else if(filterType == "school_district")
-        return "/in_school_district:" + [filter value];
-    else if(filterType == "connectivity_less")
-        return "/with_broadband_less:" + [filter value];
-    else if(filterType == "connectivity_greater")
-        return "/with_broadband_greater:" + [filter value];
-    else if(filterType == "school_itc")
-        return "/with_itc:" + [filter value];
-    else if(filterType == "ode_class")
-        return "/with_ode_class:" + [filter value];
+    return m_FilterRequestModifierMap[filterType] + [filter value];
 }
 
 - (void)onFilterLoaded:(id)filter

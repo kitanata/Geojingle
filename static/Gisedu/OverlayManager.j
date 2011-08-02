@@ -21,24 +21,30 @@ var overlayManagerInstance = nil;
 
 @implementation OverlayManager : CPObject
 {
-    MKMapView m_MapView @accessors(property=mapView);
+    MKMapView m_MapView                 @accessors(property=mapView);
 
-    CPDictionary m_Counties @accessors(property=counties);                                //Maps a County Name to it's PK
-    CPDictionary m_CountyOverlays @accessors(property=countyOverlays);                    //Maps a County PK to it's Overlay
+    CPDictionary m_Counties             @accessors(property=counties);                    //Maps a County Name to it's PK
+    CPDictionary m_CountyOverlays       @accessors(property=countyOverlays);              //Maps a County PK to it's Overlay
 
-    CPDictionary m_SchoolDistricts @accessors(property=schoolDistricts);                  //Maps a School District Name with the PK
+    CPDictionary m_SchoolDistricts      @accessors(property=schoolDistricts);             //Maps a School District Name with the PK
     CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
 
-    CPDictionary m_OrganizationTypes @accessors(property=orgTypes);       //maps organization type to an array of organization pks
-    CPDictionary m_OrgToGid @accessors(property=orgNames);                //maps name of organization to it's primary key in the db
-    CPDictionary m_OrgGidToOrg @accessors(property=organizations);        //maps the the organization primary key to it's object
+    CPDictionary m_SenateDistricts      @accessors(property=senateDistricts);             //Maps a Senate District ID with the PK
+    CPDictionary m_SenateDistrictOverlays @accessors(property=senateDistrictOverlays);    //Maps a Senate District PK to it's overlay
 
-    CPDictionary m_SchoolToGid       @accessors(property=schoolToGid);     //maps name of school to it's primary key in the db
-    CPDictionary m_SchoolGidToSchool @accessors(property=schools);         //maps school pk to it's object
+    CPDictionary m_HouseDistricts       @accessors(property=houseDistricts);              //Maps a House District ID with the PK
+    CPDictionary m_HouseDistrictOverlays @accessors(property=houseDistrictOverlays);      //Maps a Senate District PK to it's overlay
 
-    CPDictionary m_SchoolTypes       @accessors(property=schoolTypes);     //each of these maps a name to an id representing the name server side
-    CPDictionary m_SchoolItcTypes   @accessors(property=schoolItcTypes);
-    CPDictionary m_SchoolOdeTypes   @accessors(property=schoolOdeTypes);
+    CPDictionary m_OrganizationTypes    @accessors(property=orgTypes);       //maps organization type to an array of organization pks
+    CPDictionary m_OrgToGid             @accessors(property=orgNames);                //maps name of organization to it's primary key in the db
+    CPDictionary m_OrgGidToOrg          @accessors(property=organizations);        //maps the the organization primary key to it's object
+
+    CPDictionary m_SchoolToGid          @accessors(property=schoolToGid);     //maps name of school to it's primary key in the db
+    CPDictionary m_SchoolGidToSchool    @accessors(property=schools);         //maps school pk to it's object
+
+    CPDictionary m_SchoolTypes          @accessors(property=schoolTypes);     //each of these maps a name to an id representing the name server side
+    CPDictionary m_SchoolItcTypes       @accessors(property=schoolItcTypes);
+    CPDictionary m_SchoolOdeTypes       @accessors(property=schoolOdeTypes);
 
     id m_Delegate @accessors(property=delegate);
 }
@@ -54,6 +60,12 @@ var overlayManagerInstance = nil;
 
         m_SchoolDistricts = [CPDictionary dictionary];
         m_SchoolDistrictOverlays = [CPDictionary dictionary];
+
+        m_SenateDistricts = [CPDictionary dictionary];
+        m_SenateDistrictOverlays = [CPDictionary dictionary];
+
+        m_HouseDistricts = [CPDictionary dictionary];
+        m_HouseDistrictOverlays = [CPDictionary dictionary];
 
         m_OrganizationTypes = [CPDictionary dictionary];
 
@@ -120,9 +132,35 @@ var overlayManagerInstance = nil;
 - (void)loadSchoolDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
 {
     schoolDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/school_district/")];
-    [schoolDistrictOverlayLoader setAction:@selector(onSchoolDistrictOverlayLoader:)];
+    [schoolDistrictOverlayLoader setAction:@selector(onSchoolDistrictOverlayLoaded:)];
     [schoolDistrictOverlayLoader setTarget:self];
     [schoolDistrictOverlayLoader loadAndShow:show];
+}
+
+- (void)loadHouseDistrictOverlay:(CPInteger)itemId
+{
+    [self loadHouseDistrictOverlay:itemId andShowOnLoad:NO];
+}
+
+- (void)loadHouseDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
+{
+    houseDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/house_district/")];
+    [houseDistrictOverlayLoader setAction:@selector(onHouseDistrictOverlayLoaded:)];
+    [houseDistrictOverlayLoader setTarget:self];
+    [houseDistrictOverlayLoader loadAndShow:show];
+}
+
+- (void)loadSenateDistrictOverlay:(CPInteger)itemId
+{
+    [self loadSenateDistrictOverlay:itemId andShowOnLoad:NO];
+}
+
+- (void)loadSenateDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
+{
+    senateDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/senate_district/")];
+    [senateDistrictOverlayLoader setAction:@selector(onSenateDistrictOverlayLoaded:)];
+    [senateDistrictOverlayLoader setTarget:self];
+    [senateDistrictOverlayLoader loadAndShow:show];
 }
 
 - (void)loadOrganizationTypeList
@@ -157,6 +195,22 @@ var overlayManagerInstance = nil;
     [loader load];
 }
 
+- (void)loadHouseDistrictList
+{
+    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/house_district_list/")];
+    [loader setAction:@selector(onHouseDistrictListLoaded:)];
+    [loader setTarget:self];
+    [loader load];
+}
+
+- (void)loadSenateDistrictList
+{
+    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/senate_district_list/")];
+    [loader setAction:@selector(onSenateDistrictListLoaded:)];
+    [loader setTarget:self];
+    [loader load];
+}
+
 - (void)onCountyOverlayLoaded:(id)sender
 {
     overlay = [sender overlay];
@@ -172,7 +226,7 @@ var overlayManagerInstance = nil;
         [m_Delegate onCountyOverlayLoaded:overlay];
 }
 
-- (void)onSchoolDistrictOverlayLoader:(id)sender
+- (void)onSchoolDistrictOverlayLoaded:(id)sender
 {
     overlay = [sender overlay];
 
@@ -183,8 +237,38 @@ var overlayManagerInstance = nil;
         [overlay addToMapView];
     }
 
-    if([m_Delegate respondsToSelector:@selector(onSchoolDistrictOverlayLoader:)])
-        [m_Delegate onSchoolDistrictOverlayLoader:overlay];
+    if([m_Delegate respondsToSelector:@selector(onSchoolDistrictOverlayLoaded:)])
+        [m_Delegate onSchoolDistrictOverlayLoaded:overlay];
+}
+
+- (void)onHouseDistrictOverlayLoaded:(id)sender
+{
+    overlay = [sender overlay];
+
+    [m_HouseDistrictOverlays setObject:overlay forKey:[overlay pk]];
+
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView];
+    }
+
+    if([m_Delegate respondsToSelector:@selector(onHouseDistrictOverlayLoaded:)])
+        [m_Delegate onHouseDistrictOverlayLoaded:overlay];
+}
+
+- (void)onSenateDistrictOverlayLoaded:(id)sender
+{
+    overlay = [sender overlay];
+
+    [m_SenateDistrictOverlays setObject:overlay forKey:[overlay pk]];
+
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView];
+    }
+
+    if([m_Delegate respondsToSelector:@selector(onSenateDistrictOverlayLoaded:)])
+        [m_Delegate onSenateDistrictOverlayLoaded:overlay];
 }
 
 - (void)onOrgTypeListLoaded:(id)sender
@@ -248,6 +332,26 @@ var overlayManagerInstance = nil;
         [m_Delegate onSchoolOdeListLoaded];
 
     console.log("Finished Loading School ODE Classification List");
+}
+
+- (void)onHouseDistrictListLoaded:(id)sender
+{
+    m_HouseDistricts = [sender dictionary];
+
+    if([m_Delegate respondsToSelector:@selector(onHouseDistrictListLoaded)])
+        [m_Delegate onHouseDistrictListLoaded];
+
+    console.log("Finished Loading House Districts List");
+}
+
+- (void)onSenateDistrictListLoaded:(id)sender
+{
+    m_SenateDistricts = [sender dictionary];
+
+    if([m_Delegate respondsToSelector:@selector(onSenateDistrictListLoaded)])
+        [m_Delegate onSenateDistrictListLoaded];
+
+    console.log("Finished Loading Senate Districts List");
 }
 
 - (void)onOrgListLoaded:(id)sender
@@ -334,25 +438,18 @@ var overlayManagerInstance = nil;
 
 - (void)removeAllOverlaysFromMapView
 {
-    [self removeAllCountyOverlaysFromMapView];
-    [self removeAllSchoolDistrictOverlaysFromMapView];
-    [self removeAllOrgOverlaysFromMapView];
-    [self removeAllSchoolOverlaysFromMapView];
+    [self removePolygonOverlaysFromMapView:m_CountyOverlays];
+    [self removePolygonOverlaysFromMapView:m_SchoolDistrictOverlays];
+    [self removePolygonOverlaysFromMapView:m_SenateDistrictOverlays];
+    [self removePolygonOverlaysFromMapView:m_HouseDistrictOverlays];
+
+    [self removePointOverlaysFromMapView:m_OrgGidToOrg];
+    [self removePointOverlaysFromMapView:m_SchoolGidToSchool];
 }
 
-- (void)removeAllCountyOverlaysFromMapView
+- (void)removePolygonOverlaysFromMapView:(CPDictionary)overlayDict
 {
-    var countyOverlays = [m_CountyOverlays allValues];
-
-    for(var i=0; i < [countyOverlays count]; i++)
-    {
-        [[countyOverlays objectAtIndex:i] removeFromMapView];
-    }
-}
-
-- (void)removeAllSchoolDistrictOverlaysFromMapView
-{
-    var overlays = [m_SchoolDistrictOverlays allValues];
+    var overlays = [overlayDict allValues];
 
     for(var i=0; i < [overlays count]; i++)
     {
@@ -360,19 +457,9 @@ var overlayManagerInstance = nil;
     }
 }
 
-- (void)removeAllOrgOverlaysFromMapView
+- (void)removePointOverlaysFromMapView:(CPDictionary)overlayDict
 {
-    var orgOverlays = [m_OrgGidToOrg allValues];
-
-    for(var i=0; i < [orgOverlays count]; i++)
-    {
-        [[[orgOverlays objectAtIndex:i] overlay] removeFromMapView];
-    }
-}
-
-- (void)removeAllSchoolOverlaysFromMapView
-{
-    var overlays = [m_SchoolGidToSchool allValues];
+    var overlays = [overlayDict allValues];
 
     for(var i=0; i < [overlays count]; i++)
     {

@@ -56,8 +56,6 @@ g_mapViewInstance = nil;
       loadingMarkup:(CPString)someLoadingMarkup
         loadingView:(CPString)aLoadingView
 {
-    console.log("MKMapView::initWithFrame() called");
-
     _center = aLocation;
     _zoomLevel = 6;
     
@@ -65,8 +63,6 @@ g_mapViewInstance = nil;
     {
         _center = [MKLocation locationWithLatitude:52 andLongitude:-1];
     }
-
-    console.log("MKMapView:initWithFrame() Problem Area 1");
     
     if (!someLoadingMarkup)
     {
@@ -88,8 +84,6 @@ g_mapViewInstance = nil;
 
         [self _load];
     }
-
-    console.log("MKMapView::initWithFrame() finished");
 
     return self;
 }
@@ -113,8 +107,6 @@ g_mapViewInstance = nil;
 
 - (void)webView:(CPWebView)aWebView didFinishLoadForFrame:(id)aFrame
 {
-    console.log("MKMapView::didFinishLoadForFrame() called");
-
     var domWin = [self DOMWindow];
 
     _mapReady = YES;
@@ -154,14 +146,10 @@ g_mapViewInstance = nil;
     {
         [delegate mapViewIsReady:self];
     }
-
-    console.log("MKMapView::didFinishLoadForFrame() finished");
 }
 
 - (void)setFrameSize:(CGSize)aSize
 {
-    console.log("MKMapView::setFrameSize() called");
-
     [super setFrameSize:aSize];
     var bounds = [self bounds];
 
@@ -170,15 +158,11 @@ g_mapViewInstance = nil;
         var domWin = [self DOMWindow];
         domWin.google.maps.event.trigger(_gMap, 'resize');
     }
-
-    console.log("MKMapView::setFrameSize() finished");
 }
 
 /* Overriding CPWebView's implementation */
 - (BOOL)_resizeWebFrame 
 {
-    console.log("MKMapView::_resizeWebFrame() called");
-
     var width = [self bounds].size.width,
         height = [self bounds].size.height;
 
@@ -186,21 +170,15 @@ g_mapViewInstance = nil;
     _iframe.setAttribute("height", height);
 
     [_frameView setFrameSize:CGSizeMake(width, height)];
-
-    console.log("MKMapView::_resizeWebFrame() finished");
 }
 
 - (void)viewDidMoveToSuperview
 {
-    console.log("MKMapView::viewDidMoveToSuperview() called");
-
-    if (!_mapReady && _googleAjaxLoaded) 
+    if (!_mapReady && _googleAjaxLoaded)
     {
         [self createMap];
     }
     [super viewDidMoveToSuperview];
-
-    console.log("MKMapView::viewDidMoveToSuperview() finished");
 }
 
 - (void)setCenter:(MKLocation)aLocation 

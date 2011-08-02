@@ -17,8 +17,12 @@ urlpatterns = patterns('',
     (r'^$', 'gisedu.views.index'),
     (r'^map/', 'gisedu.views.google_map'),
     (r'^admin/', include(admin.site.urls)),
+    (r'^session/', 'session.views.session_request'),
+    
     (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
     (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),
+    (r'^house_district/(?P<district_id>\d+)/', 'gisedu.views.house_district'),
+    (r'^senate_district/(?P<district_id>\d+)/', 'gisedu.views.senate_district'),
 
     #Point Data
     (r'^org_geom/(?P<org_id>\d+)/', 'organizations.views.org_geom'),
@@ -31,6 +35,8 @@ urlpatterns = patterns('',
 
     (r'^county_list/', 'gisedu.views.county_list'),
     (r'^school_district_list/', 'gisedu.views.school_district_list'),
+    (r'^house_district_list/', 'gisedu.views.house_district_list'),
+    (r'^senate_district_list/', 'gisedu.views.senate_district_list'),
     
     (r'^org_type_list/', 'organizations.views.org_type_list'),
     (r'^school_type_list/', 'schools.views.school_type_list'),
