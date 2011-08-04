@@ -3,39 +3,28 @@ import json
 import string
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from gisedu.models import OhioCounties, OhioSchoolDistricts, OhioHouseDistricts, OhioSenateDistricts, OhioSchoolDistrictsComcastCoverage
+from gisedu.models import OhioCounties, OhioSchoolDistricts, OhioHouseDistricts, OhioSenateDistricts
 from organizations.models import GiseduOrg
 from schools.models import GiseduSchool
 
 def parse_filter(request, filter_chain):
-    print filter_chain
     queries = string.split(filter_chain, '/')
 
     query_results = []
 
-    filter_key = queries[0]
-    filter_key, filter_key_arg = string.split(filter_key, ':')
+    key_filter = queries[0]
     queries = queries[1:]
 
-    get_all = (filter_key_arg == "All")
+    key_filter_options = {k : v for k, v in [string.split(x, '=') for x in string.split(key_filter, ':')]}
 
-    if filter_key == "county_by_name":
-        query_results.extend(get_query_results(OhioCounties.objects, get_all, name=filter_key_arg))
+    for filter_name, function in filter_function_mapping.iteritems():
+        if filter_name in key_filter_options:
+            function(key_filter_options, query_results)
 
-    elif filter_key == "house_district":
-        query_results.extend(get_query_results(OhioHouseDistricts.objects, get_all, pk=filter_key_arg))
-
-    elif filter_key == "senate_district":
-        query_results.extend(get_query_results(OhioSenateDistricts.objects, get_all, pk=filter_key_arg))
-
-    elif filter_key == "school_district_by_name":
-        query_results.extend(get_query_results(OhioSchoolDistricts.objects, get_all, name=filter_key_arg))
-
-    elif filter_key == "school_by_type":
-        query_results.extend(filter_school_by_type(filter_key_arg, queries))
-
-    elif filter_key == "organization_by_type":
-        query_results.extend(filter_organization_by_type(filter_key_arg, queries))
+    if 'school_by_type' in key_filter_options:
+        query_results.extend(filter_school_by_type(key_filter_options, queries))
+    elif 'organization_by_type' in key_filter_options:
+        query_results.extend(filter_organization_by_type(key_filter_options, queries))
 
     print "Query Results " + str(query_results)
 
@@ -63,99 +52,141 @@ def get_query_results(object_manager, all=True, **kwargs):
     else:
         return [object_manager.get(**kwargs)]
 
-def process_school_in_filter(key_objects, object_manager, all=False, **kwargs):
-    if all is False:
-        object = object_manager.get(**kwargs)
-        key_objects = key_objects.filter(org__the_geom__within=object.the_geom)
 
-    return key_objects
+def process_school_in_filter(key_objects, object):
+    return key_objects.filter(org__the_geom__within=object.the_geom)
 
-def process_org_in_filter(key_objects, object_manager, all=False, **kwargs):
-    if all is False:
-        object = object_manager.get(**kwargs)
-        key_objects = key_objects.filter(the_geom__within=object.the_geom)
 
-    return key_objects
+def process_org_in_filter(key_objects, object):
+    return key_objects.filter(the_geom__within=object.the_geom)
 
-def filter_school_by_type(key_arg, queries):
+
+def filter_county(options, query_results, key_objects=None, object_filter=None):
+    option_argument = options['county']
+    get_all = (option_argument == "All")
+    query_results.extend(get_query_results(OhioCounties.objects, get_all, name=option_argument))
+
+    if key_objects is not None and object_filter is not None:
+        if not get_all:
+            test_object = OhioCounties.objects.get(name=option_argument)
+            return object_filter(key_objects, test_object)
+    else:
+        return query_results
+
+
+def filter_school_district(options, query_results, key_objects=None, object_filter=None):
+    option_argument = options['school_district']
+
+    if option_argument != "All":
+        sd_objects = OhioSchoolDistricts.objects.filter(name=key_argument)
+    else:
+        sd_objects = OhioSchoolDistricts.objects.all()
+
+    if 'comcast' in options:
+        comcast_argument = (options['comcast'].upper() == "TRUE" or options['comcast'].upper() == "T")
+        sd_objects = sd_objects.filter(comcast_coverage=comcast_argument)
+        query_results.extend(sd_objects)
+
+        if key_objects is not None and object_filter is not None:
+            key_objects_results = []
+
+            for dist in list(sd_objects):
+                key_objects_results.append(object_filter(key_objects, dist))
+
+            return reduce(lambda x, y: x | y, key_objects_results)
+    else:
+        query_results.extend(sd_objects)
+
+    return query_results
+
+
+def filter_house_district(options, query_results, key_objects=None, object_filter=None):
+    option_argument = options['house_district']
+    get_all = (option_argument == "All")
+    query_results.extend(get_query_results(OhioHouseDistricts.objects, get_all, pk=option_argument))
+
+    if key_objects is not None and object_filter is not None:
+        if not get_all:
+            test_object = OhioHouseDistricts.objects.get(pk=option_argument)
+            return object_filter(key_objects, test_object)
+    else:
+        return query_results
+
+
+def filter_senate_district(options, query_results, key_objects=None, object_filter=None):
+    option_argument = options['senate_district']
+    get_all = (option_argument == "All")
+    query_results.extend(get_query_results(OhioSenateDistricts.objects, get_all, pk=option_argument))
+
+    if key_objects is not None and object_filter is not None:
+        if not get_all:
+            test_object = OhioSenateDistricts.objects.get(pk=option_argument)
+            return object_filter(key_objects, test_object)
+    else:
+        return query_results
+
+
+def filter_school_by_type(key_options, queries):
     query_results = []
 
-    if key_arg == "All":
+    key_argument = key_options['school_by_type']
+
+    if key_argument == "All":
         key_objects = GiseduSchool.objects.all()
     else:
-        key_objects = GiseduSchool.objects.filter(school_type__gid=key_arg)
+        key_objects = GiseduSchool.objects.filter(school_type__gid=key_argument)
 
-    for query in queries:
-        key, arg = string.split(query, ':')
+    if 'broadband_greater' in key_options:
+        key_objects = key_objects.filter(building_info__mbit__gte=key_options['broadband_greater'])
+    elif 'broadband_less' in key_options:
+        key_objects = key_objects.filter(building_info__mbit__lte=key_options['broadband_less'])
 
-        get_all = (arg == "All")
+    if 'itc' in key_options:
+        option_arg = key_options['itc']
+        if option_arg != "All":
+            key_objects = key_objects.filter(building_info__itc__gid=option_arg)
 
-        if key == "in_county":
-            query_results.extend(get_query_results(OhioCounties.objects, get_all, name=arg))
-            key_objects = process_school_in_filter(key_objects, OhioCounties.objects, get_all, name=arg)
+    if 'ode_class' in key_options:
+        option_arg = key_options['ode_class']
+        if option_arg != "All":
+            key_objects = key_objects.filter(building_info__area_class__gid=option_arg)
 
-        elif key == "in_school_district":
-            query_results.extend(get_query_results(OhioSchoolDistricts.objects, get_all, name=arg))
-            key_objects = process_school_in_filter(key_objects, OhioSchoolDistricts.objects, get_all, name=arg)
-                
-        elif key == "in_house_district":
-            query_results.extend(get_query_results(OhioHouseDistricts.objects, get_all, pk=arg))
-            key_objects = process_school_in_filter(key_objects, OhioHouseDistricts.objects, get_all, pk=arg)
-
-        elif key == "in_senate_district":
-            query_results.extend(get_query_results(OhioSenateDistricts.objects, get_all, pk=arg))
-            key_objects = process_school_in_filter(key_objects, OhioSenateDistricts.objects, get_all, pk=arg)
-
-        elif key == "with_broadband_greater":
-            key_objects = key_objects.filter(building_info__mbit__gte=arg)
-
-        elif key == "with_broadband_less":
-            key_objects = key_objects.filter(building_info__mbit__lte=arg)
-
-        elif key == "with_itc":
-            if arg != "All":
-                key_objects = key_objects.filter(building_info__itc__gid=arg)
-
-        elif key == "with_ode_class":
-            if arg != "All":
-                key_objects = key_objects.filter(building_info__area_class__gid=arg)
-
-        elif key == "with_comcast":
-            query_results.extend(get_query_results(OhioSchoolDistrictsComcastCoverage.school_district.objects))
-            key_objects = process_school_in_filter(key_objects, OhioSchoolDistrictsComcastCoverage.school_district.objects, get_all, name=arg)
-
+    key_objects = process_spatial_filters(key_objects, query_results, queries, process_school_in_filter)
     query_results.extend(key_objects)
+    
     return query_results
 
 
-def filter_organization_by_type(key_arg, queries):
+def filter_organization_by_type(key_options, queries):
     query_results = []
-    
-    if key_arg == "All":
+
+    key_argument = key_options['organization_by_type']
+
+    if key_argument == "All":
         key_objects = GiseduOrg.objects.all()
     else:
-        key_objects = GiseduOrg.objects.filter(org_type__org_type_name=key_arg)
+        key_objects = GiseduOrg.objects.filter(org_type__org_type_name=key_argument)
 
-    for query in queries:
-        key, arg = string.split(query, ':')
-
-        get_all = (arg == "All")
-
-        if key == "in_county":
-            query_results.extend(get_query_results(OhioCounties.objects, get_all, name=arg))
-            key_objects = process_org_in_filter(key_objects, OhioCounties.objects, get_all, name=arg)
-
-        elif key =="in_school_district":
-            query_results.extend(get_query_results(OhioSchoolDistricts.objects, get_all, name=arg))
-            key_objects = process_org_in_filter(key_objects, OhioSchoolDistricts.objects, get_all, name=arg)
-
-        elif key == "in_house_district":
-            query_results.extend(get_query_results(OhioHouseDistricts.objects, get_all, pk=arg))
-            key_objects = process_org_in_filter(key_objects, OhioHouseDistricts.objects, get_all, pk=arg)
-
-        elif key == "in_senate_district":
-            query_results.extend(get_query_results(OhioSenateDistricts.objects, get_all, pk=arg))
-            key_objects = process_org_in_filter(key_objects, OhioSenateDistricts.objects, get_all, pk=arg)
-
+    key_objects = process_spatial_filters(key_objects, query_results, queries, process_org_in_filter)
     query_results.extend(key_objects)
+
     return query_results
+
+
+def process_spatial_filters(key_objects, query_results, queries, object_filter):
+    for query in queries:
+        query_options = {k : v for k, v in [string.split(x, '=') for x in string.split(query, ':')]}
+
+        for filter_name, function in filter_function_mapping.iteritems():
+            if filter_name in query_options:
+                key_objects = function(query_options, query_results, key_objects, object_filter)
+
+    return key_objects
+
+
+filter_function_mapping = {
+    'county' : filter_county,
+    'house_district' : filter_house_district,
+    'senate_district' : filter_senate_district,
+    'school_district' : filter_school_district,
+}

@@ -48,7 +48,7 @@
                                'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
                                'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
                                'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                               'comcast_coverage' : ['county', 'house_district', 'senate_district'],
+                               'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
                                'school_itc' : ['school_itc', 'organization'],
                                'ode_class' : ['ode_class', 'organization'],
                                'school' : ['school', 'organization'],

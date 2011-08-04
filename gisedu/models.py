@@ -49,6 +49,7 @@ class OhioSchoolDistricts(models.Model):
     shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
     the_geom = models.MultiPolygonField()
     district_irn = models.IntegerField()
+    comcast_coverage = models.BooleanField()
     objects = models.GeoManager()
 
     class Meta:
@@ -70,17 +71,6 @@ class OhioHouseDistricts(models.Model):
 
     def __str__(self):
         return "House District " + str(self.district)
-
-class OhioSchoolDistrictsComcastCoverage(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    school_district = models.ForeignKey(OhioSchoolDistricts)
-
-    class Meta:
-        db_table = u'ohio_school_districts_comcast_coverage'
-        verbose_name_plural = "Ohio School Districts with Comcast Coverage"
-
-    def __str__(self):
-        return str(self.school_district.name)
 
 class OhioSenateDistricts(models.Model):
     gid = models.IntegerField(primary_key=True)

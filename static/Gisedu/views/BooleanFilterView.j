@@ -22,11 +22,11 @@
     if(self)
     {
         m_Filter = filter;
-        m_AcceptedValues = [acceptedValues sortedArrayUsingSelector:@selector(compare:)];
+        m_AcceptedValues = ['Yes', 'No'];
         m_OverlayManager = [OverlayManager getInstance];
 
         m_SelectionControl = [[CPPopUpButton alloc] initWithFrame:CGRectMakeZero()];
-        [m_SelectionControl addItemsWithTitles:['Yes', 'No']];
+        [m_SelectionControl addItemsWithTitles:m_AcceptedValues];
 
         [m_SelectionControl sizeToFit];
         [m_SelectionControl setFrameOrigin:CGPointMake(20, 20)];

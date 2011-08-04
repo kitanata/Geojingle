@@ -35,26 +35,31 @@ var g_FilterManagerInstance = nil;
         [self addFilter:[self createFilter:'county'] parent:nil];
 
         m_FilterRequestModifierMap = {
-                                        'county' : "/in_county:",
-                                        'house_district' : "/in_house_district:",
-                                        'senate_district' : "/in_senate_district:",
-                                        'school_district' : "/in_school_district:",
-                                        'connectivity_less' : "/with_broadband_less:",
-                                        'connectivity_greater' : "/with_broadband_greater:",
-                                        'school_itc' : "/with_itc:",
-                                        'ode_class' : "/with_ode_class:",
-                                        'organization' : "/organization_by_type:",
-                                        'school' : "/school_by_type:",
-                                        'comcast_coverage' : "/with_comcast:",
+                                        'county' : "county",
+                                        'house_district' : "house_district",
+                                        'senate_district' : "senate_district",
+                                        'school_district' : "school_district",
+                                        'connectivity_less' : "broadband_less",
+                                        'connectivity_greater' : "broadband_greater",
+                                        'school_itc' : "itc",
+                                        'ode_class' : "ode_class",
+                                        'organization' : "organization_by_type",
+                                        'school' : "school_by_type",
+                                        'comcast_coverage' : "comcast",
                                     }
 
+        m_FilterOptionsMap = {
+                                'school' : ['school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater'],
+                                'school_district' : ['comcast_coverage']
+                             }
+
         m_FilterRequestBaseMap = {
-                                    'county' : "/filter/county_by_name:",
-                                    'house_district' : "/filter/house_district:",
-                                    'senate_district' : "/filter/senate_district:",
-                                    'school_district' : "/filter/school_district_by_name:",
-                                    'school' : "/filter/school_by_type:",
-                                    'organization' : "/filter/organization_by_type:"
+                                    'county' : "/filter/county_by_name=",
+                                    'house_district' : "/filter/house_district=",
+                                    'senate_district' : "/filter/senate_district=",
+                                    'school_district' : "/filter/school_district=",
+                                    'school' : "/filter/school_by_type=",
+                                    'organization' : "/filter/organization_by_type="
                                 }
     }
 
@@ -168,24 +173,6 @@ var g_FilterManagerInstance = nil;
             console.log("curFilter is not a leaf");
             [self _triggerFilters:[curFilter childNodes]];
         }
-        else if(![curFilter parentNode])
-        {
-            console.log("curFilter is a root filter without children");
-
-            var curFilterType = [m_FilterMap objectForKey:curFilter];
-            console.log("curFilterType is " + curFilterType);
-
-            url = g_UrlPrefix + m_FilterRequestBaseMap[curFilterType] + [curFilter value];
-
-            console.log("Basic Filter Request URL is: " + url);
-
-            if(url)
-            {
-                var newFilterRequest = [GiseduFilterRequest requestWithUrl:url];
-                [m_ProcessedFilters addObject:newFilterRequest];
-                [newFilterRequest trigger];
-            }
-        }
         else//leaf and has a parent
         {
             console.log("Current Filter is leaf and has parent");
@@ -211,19 +198,100 @@ var g_FilterManagerInstance = nil;
 
     console.log(filterChain);
 
-    //Find the "key" filter (org or school)
-    var keyFilter = [self _extractKeyFilter:filterChain];
-    var keyFilterRequest = [self _buildFilterRequestModifier:keyFilter];
+    var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization'];
+    var keyFilterItemList = ['school', 'organization'];
 
-    console.log("The Key Filter is " + keyFilter);
-    console.log("The Rest of the Filters are " + filterChain);
+    var keyFilterType = nil;
+    var filterChainBuffer = [CPArray array];
+    var filterRequestStrings = {}
 
-    var requestUrl = g_UrlPrefix + "/filter" + keyFilterRequest;
-
-    for(var i=0; i < [filterChain count]; i++)
+    //Pop Item off FilterChain
+    //Is the item a filter base?
+        //Is the item the "key" filter (org or school)?
+            //If so remember it in keyFilter variable
+        //if so build the filter base
+        //add to a list of filter base request strings
+    //else: Is the item an option of a current filter base?
+        //if so add to the filter base request string for that filter base
+    //else:
+        //Push back onto FilterChain
+    //Remove the keyFilter from the filterBase list
+    //Start with the keyFilter add the other filterbases onto it (concatenate them together)
+    while(true)
     {
-        var curFilter = [filterChain objectAtIndex:i];
-        requestUrl += [self _buildFilterRequestModifier:curFilter];
+        var curFilter = [filterChain lastObject];
+        [filterChain removeLastObject];
+
+        console.log("Current Filter is " + curFilter);
+
+        if(!curFilter)
+            break;
+
+        var curFilterType = [self typeFromFilter:curFilter];
+
+        console.log("Current Filter Type is " + curFilterType);
+
+        if(baseFilterItemList.indexOf(curFilterType) != -1)
+        {
+            //curFilter is a base for a filter query
+
+            if(keyFilterItemList.indexOf(curFilterType) != -1)
+            {
+                //curFilter is a key base filter
+                keyFilterType = curFilterType;
+                filterRequestStrings[curFilterType] = "/" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
+
+                console.log("Built KeyFilter Request String: " + filterRequestStrings[curFilterType]);
+            }
+            else
+            {
+                filterRequestStrings[curFilterType] = "/" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
+
+                console.log("Built BaseFilter Request String: " + filterRequestStrings[curFilterType]);
+            }
+
+            [filterChain addObjectsFromArray:filterChainBuffer];
+            [filterChainBuffer removeAllObjects];
+        }
+        else
+        {
+            var bNoBase = true;
+
+            for(baseFilterType in filterRequestStrings)
+            {
+                if(baseFilterType in m_FilterOptionsMap)
+                {
+                    var filterOptions = m_FilterOptionsMap[baseFilterType];
+                
+                    console.log("filterOptions = " + filterOptions);
+
+                    if(filterOptions.indexOf(curFilterType) != -1)
+                    {
+                        //add to the base filter
+                        filterRequestStrings[baseFilterType] += ":" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
+
+                        console.log("Updated BaseFilter Request String To: " + filterRequestStrings[curFilterType]);
+                        bNoBase = false;
+                    }
+                }
+            }
+
+            if(bNoBase)
+            {
+                [filterChainBuffer addObject:curFilter];
+            }
+        }
+    }
+
+    var requestUrl = g_UrlPrefix + "/filter";
+
+    if(keyFilterType in filterRequestStrings)
+        requestUrl += filterRequestStrings[keyFilterType]
+
+    for(filterString in filterRequestStrings)
+    {
+        if(filterRequestStrings[filterString] != filterRequestStrings[keyFilterType])
+            requestUrl += filterRequestStrings[filterString];
     }
 
     console.log("Resulting Request URL is: " + requestUrl);

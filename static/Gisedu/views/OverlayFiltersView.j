@@ -3,6 +3,7 @@
 @import "StringFilterView.j"
 @import "IntegerFilterView.j"
 @import "StringIdMapFilterView.j"
+@import "BooleanFilterView.j"
 
 @import "../FilterManager.j"
 @import "../OverlayManager.j"
