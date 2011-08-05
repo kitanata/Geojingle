@@ -8,7 +8,9 @@
 ##################################################
 from datetime import timedelta
 import json
+from telepathy._generated.errors import DoesNotExist
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 
 from django.http import HttpResponseNotAllowed, HttpResponseNotFound, HttpResponse, HttpResponseForbidden
 from django.utils import simplejson
@@ -27,6 +29,34 @@ def session_request(request):
     else:
         return HttpResponseNotAllowed(['POST', 'GET', 'DELETE'])
 
+
+@csrf_exempt
+def register_request(request):
+    print("Register Request Called")
+    if request.method == 'POST':
+        return register_user(request)
+    else:
+        return HttpResponseNotAllowed(['POST', 'GET', 'DELETE'])
+
+
+
+def handle_user_login(request, username, password, remember):
+    user = authenticate(username=username, password=password)
+
+    if user is not None and user.is_active:
+        login(request, user)
+
+        if remember:
+            sessionLength = timedelta(days=10)
+            request.session.set_expiry(sessionLength)
+
+        response = {'csrf_token': str(csrf(request)['csrf_token']), 'username' : username}
+        return HttpResponse(json.dumps(response), mimetype='application/json')
+
+    return HttpResponseForbidden(mimetype = 'application/json')
+
+
+
 @csrf_exempt
 def login_user(request):
     jsonObj = simplejson.loads(request.raw_post_data)
@@ -34,20 +64,38 @@ def login_user(request):
     password = jsonObj['password']
     remember = jsonObj['remember']
 
-    user = authenticate(username=username, password=password)
+    return handle_user_login(request, username, password, remember)
 
-    if user is not None:
-        if user.is_active:
-            login(request, user)
 
-            if remember:
-                sessionLength = timedelta(days=10)
-                request.session.set_expiry(sessionLength)
+@csrf_exempt
+def register_user(request):
+    jsonObj = simplejson.loads(request.raw_post_data)
 
-            response = {'csrf_token': str(csrf(request)['csrf_token']), 'username' : username}
-            return HttpResponse(json.dumps(response), mimetype='application/json')
+    username = jsonObj['username']
+    password = jsonObj['password']
+    email = jsonObj['email']
+    remember = jsonObj['remember']
 
-    return HttpResponseForbidden(mimetype = 'application/json')
+    try:
+        newUser = User.objects.create_user(username, email, password)
+
+        if newUser is not None:
+            return handle_user_login(request, username, password, remember)
+        else:
+            return HttpResponseForbidden(mimetype = 'application/json')
+
+    except Exception as e:
+        return HttpResponseForbidden(mimetype = 'application/json')
+
+    
+@csrf_exempt
+def check_user(request, username):
+    try:
+        User.objects.get(username=username)
+        return HttpResponseForbidden(mimetype = 'application/json')
+    except User.DoesNotExist:
+        return HttpResponse(mimetype='application/json')
+
 
 @csrf_exempt
 def is_logged_in(request):
@@ -57,6 +105,7 @@ def is_logged_in(request):
         return HttpResponse(json.dumps(response), mimetype='application/json')
 
     return HttpResponseNotFound(mimetype = 'application/json')
+
 
 def logout_user(request):
     logout(request)

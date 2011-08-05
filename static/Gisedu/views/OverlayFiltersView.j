@@ -105,12 +105,22 @@
 
     var names = nil;
 
-    if(filterType == "school_itc")
+    if(filterType == "county")
+        names = [[m_OverlayManager counties] allKeysForObject:[item value]];
+    else if(filterType == "school_district")
+        names = [[m_OverlayManager schoolDistricts] allKeysForObject:[item value]];
+    else if(filterType == "house_district")
+        names = [[m_OverlayManager houseDistricts] allKeysForObject:[item value]];
+    else if(filterType == "senate_district")
+        names = [[m_OverlayManager senateDistricts] allKeysForObject:[item value]];
+    else if(filterType == "school_itc")
         names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
     else if(filterType == "ode_class")
         names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
     else if(filterType == "school")
         names = [[m_OverlayManager schoolTypes] allKeysForObject:[item value]];
+    else if(filterType == "organization")
+        names = [[m_OverlayManager orgTypes] allKeysForObject:[item value]];
 
     var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
     var filterLabel = "Generic Filter";
@@ -148,13 +158,13 @@
 
         if(filterType == "county")
         {
-            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[[m_OverlayManager counties] allKeys]];
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager counties]];
         }
         else if(filterType == "school_district")
         {
-            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[[m_OverlayManager schoolDistricts] allKeys]];
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager schoolDistricts]];
         }
         else if(filterType == "senate_district")
         {
@@ -168,8 +178,8 @@
         }
         else if(filterType == "organization")
         {
-            m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[[m_OverlayManager orgTypes] allKeys]];
+            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager orgTypes]];
         }
         else if(filterType == "school")
         {

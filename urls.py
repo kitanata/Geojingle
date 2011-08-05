@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     (r'^map/', 'gisedu.views.google_map'),
     (r'^admin/', include(admin.site.urls)),
     (r'^session/', 'session.views.session_request'),
+    (r'^register/', 'session.views.register_request'),
+    (r'^check_username/(?P<username>\w+)', 'session.views.check_user'),
     
     (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
     (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),

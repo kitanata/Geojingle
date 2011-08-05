@@ -666,9 +666,15 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [CPMenu setMenuBarTitle:[[sender userIdentifier] capitalizedString] + "'s Untitled Project"];
 }
 
-- (void)onLoginFailed:(id)sender
+- (void)onRegisterSuccessful:(id)sender
 {
+    //Change Menu To Show Log-Out
+    [m_AccountLoginMenuItem setHidden:YES];
+    [m_AccountRegisterMenuItem setHidden:YES];
+    [m_AccountLogOutMenuItem setHidden:NO];
 
+    //Change the Project Title
+    [CPMenu setMenuBarTitle:[[sender userIdentifier] capitalizedString] + "'s Untitled Project"];
 }
 
 - (void)onLogoutSuccessful:(id)sender

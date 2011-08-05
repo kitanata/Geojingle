@@ -22,9 +22,9 @@ def parse_filter(request, filter_chain):
             function(key_filter_options, query_results)
 
     if 'school_by_type' in key_filter_options:
-        query_results.extend(filter_school_by_type(key_filter_options, queries))
+        filter_school_by_type(key_filter_options, queries, query_results)
     elif 'organization_by_type' in key_filter_options:
-        query_results.extend(filter_organization_by_type(key_filter_options, queries))
+        filter_organization_by_type(key_filter_options, queries, query_results)
 
     print "Query Results " + str(query_results)
 
@@ -64,11 +64,11 @@ def process_org_in_filter(key_objects, object):
 def filter_county(options, query_results, key_objects=None, object_filter=None):
     option_argument = options['county']
     get_all = (option_argument == "All")
-    query_results.extend(get_query_results(OhioCounties.objects, get_all, name=option_argument))
+    query_results.extend(get_query_results(OhioCounties.objects, get_all, pk=option_argument))
 
     if key_objects is not None and object_filter is not None:
         if not get_all:
-            test_object = OhioCounties.objects.get(name=option_argument)
+            test_object = OhioCounties.objects.get(pk=option_argument)
             return object_filter(key_objects, test_object)
     else:
         return query_results
@@ -76,9 +76,10 @@ def filter_county(options, query_results, key_objects=None, object_filter=None):
 
 def filter_school_district(options, query_results, key_objects=None, object_filter=None):
     option_argument = options['school_district']
+    get_all = (option_argument == "All")
 
-    if option_argument != "All":
-        sd_objects = OhioSchoolDistricts.objects.filter(name=key_argument)
+    if not get_all:
+        sd_objects = OhioSchoolDistricts.objects.get(pk=option_argument)
     else:
         sd_objects = OhioSchoolDistricts.objects.all()
 
@@ -88,16 +89,16 @@ def filter_school_district(options, query_results, key_objects=None, object_filt
         query_results.extend(sd_objects)
 
         if key_objects is not None and object_filter is not None:
-            key_objects_results = []
-
-            for dist in list(sd_objects):
-                key_objects_results.append(object_filter(key_objects, dist))
-
+            key_objects_results = [object_filter(key_objects, dist) for dist in list(sd_objects)]
             return reduce(lambda x, y: x | y, key_objects_results)
+        
+    elif key_objects is not None and object_filter is not None and not get_all:
+        query_results.extend([sd_objects])
+        key_objects = object_filter(key_objects, sd_objects)
     else:
         query_results.extend(sd_objects)
 
-    return query_results
+    return key_objects
 
 
 def filter_house_district(options, query_results, key_objects=None, object_filter=None):
@@ -126,9 +127,7 @@ def filter_senate_district(options, query_results, key_objects=None, object_filt
         return query_results
 
 
-def filter_school_by_type(key_options, queries):
-    query_results = []
-
+def filter_school_by_type(key_options, queries, query_results):
     key_argument = key_options['school_by_type']
 
     if key_argument == "All":
@@ -157,15 +156,13 @@ def filter_school_by_type(key_options, queries):
     return query_results
 
 
-def filter_organization_by_type(key_options, queries):
-    query_results = []
-
+def filter_organization_by_type(key_options, queries, query_results):
     key_argument = key_options['organization_by_type']
 
     if key_argument == "All":
         key_objects = GiseduOrg.objects.all()
     else:
-        key_objects = GiseduOrg.objects.filter(org_type__org_type_name=key_argument)
+        key_objects = GiseduOrg.objects.filter(org_type__pk=key_argument)
 
     key_objects = process_spatial_filters(key_objects, query_results, queries, process_org_in_filter)
     query_results.extend(key_objects)
@@ -174,6 +171,7 @@ def filter_organization_by_type(key_options, queries):
 
 
 def process_spatial_filters(key_objects, query_results, queries, object_filter):
+    print("Process Spatial Filters Query Results = " + str(query_results))
     for query in queries:
         query_options = {k : v for k, v in [string.split(x, '=') for x in string.split(query, ':')]}
 
@@ -181,6 +179,7 @@ def process_spatial_filters(key_objects, query_results, queries, object_filter):
             if filter_name in query_options:
                 key_objects = function(query_options, query_results, key_objects, object_filter)
 
+    print("Process Spatial Filters Query Results Done = " + str(query_results))
     return key_objects
 
 

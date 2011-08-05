@@ -51,7 +51,7 @@
         else
         {
             m_SelectionControl = [[CPDynamicSearch alloc] initWithFrame:CGRectMake(20, 20, 260, 30)];
-            [m_SelectionControl setSearchStrings:m_AcceptedValues];
+            [m_SelectionControl setSearchStrings:[[m_AcceptedValues allKeys] sortedArrayUsingSelector:@selector(compare:)]];
             [m_SelectionControl addSearchString:"All"];
             [m_SelectionControl setDefaultSearch:"All"];
             [m_SelectionControl setSearchSensitivity:1];
