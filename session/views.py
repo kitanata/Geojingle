@@ -8,7 +8,6 @@
 ##################################################
 from datetime import timedelta
 import json
-from telepathy._generated.errors import DoesNotExist
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
