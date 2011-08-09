@@ -1,0 +1,100 @@
+ALTER TABLE ohio_school_districts ADD COLUMN has_atomic_learning boolean default False;
+
+ALTER TABLE ohio_school_districts DROP COLUMN objectid;
+ALTER TABLE ohio_school_districts DROP COLUMN shape_leng;
+ALTER TABLE ohio_school_districts DROP COLUMN area;
+ALTER TABLE ohio_school_districts DROP COLUMN len;
+ALTER TABLE ohio_school_districts DROP COLUMN pct_chg;
+ALTER TABLE ohio_school_districts DROP COLUMN shape_area;
+ALTER TABLE ohio_school_districts DROP COLUMN shape_len;
+
+ALTER TABLE gisedu_school ADD COLUMN school_name character varying(254); 
+ALTER TABLE gisedu_school ADD COLUMN irn integer;
+ALTER TABLE gisedu_school ADD COLUMN building_irn integer;
+ALTER TABLE gisedu_school ADD COLUMN address_id integer;
+ALTER TABLE gisedu_school ADD COLUMN the_geom geometry;
+
+ALTER TABLE gisedu_school ADD CONSTRAINT enforce_dims_the_geom CHECK (st_ndims(the_geom) = 2);
+ALTER TABLE gisedu_school ADD CONSTRAINT enforce_geotype_the_geom CHECK (geometrytype(the_geom) = 'POINT'::text OR the_geom IS NULL);
+ALTER TABLE gisedu_school ADD CONSTRAINT enforce_srid_the_geom CHECK (srid(the_geom) = 4326);
+
+UPDATE gisedu_school SET school_name = gisedu_org.org_nm FROM gisedu_org WHERE gisedu_school.org_id = gisedu_org.gid;
+UPDATE gisedu_school SET irn = gisedu_org.irn FROM gisedu_org WHERE gisedu_school.org_id = gisedu_org.gid;
+UPDATE gisedu_school SET building_irn = gisedu_org.building_irn FROM gisedu_org WHERE gisedu_school.org_id = gisedu_org.gid;
+UPDATE gisedu_school SET address_id = gisedu_org.address_id FROM gisedu_org WHERE gisedu_school.org_id = gisedu_org.gid;
+UPDATE gisedu_school SET the_geom = gisedu_org.the_geom FROM gisedu_org WHERE gisedu_school.org_id = gisedu_org.gid;
+
+ALTER TABLE gisedu_school ADD CONSTRAINT gisedu_school_school_type_fkey FOREIGN KEY (school_type_id)
+	REFERENCES gisedu_school_type (gid) MATCH SIMPLE
+	ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE gisedu_school ADD CONSTRAINT gisedu_school_address_fkey FOREIGN KEY (address_id)
+	REFERENCES gisedu_org_address (gid) MATCH SIMPLE
+	ON UPDATE NO ACTION ON DELETE NO ACTION;
+ALTER TABLE gisedu_school ADD CONSTRAINT gisedu_school_building_info_fkey FOREIGN KEY (building_info_id)
+	REFERENCES gisedu_school_info (gid) MATCH SIMPLE
+	ON UPDATE NO ACTION ON DELETE NO ACTION;
+	
+DELETE FROM gisedu_org WHERE gid IN (SELECT org_id FROM gisedu_school);
+
+ALTER TABLE gisedu_school DROP COLUMN org_id;
+
+-- DROP INDEX gisedu_school_the_geom_gist;
+
+CREATE INDEX gisedu_school_the_geom_gist
+  ON gisedu_school USING gist (the_geom);
+
+DELETE FROM gisedu_org_type WHERE org_type_name = "High School";
+DELETE FROM gisedu_org_type WHERE org_type_name = "Middle School";
+DELETE FROM gisedu_org_type WHERE org_type_name = "Elementary School";
+DELETE FROM gisedu_org_type WHERE org_type_name = "Vocational School";
+
+CREATE TABLE gisedu_joint_vocational_school_district
+(
+  gid serial NOT NULL,
+  org_key integer,
+  org_nm character varying(254),
+  the_geom geometry,
+  address_id integer,
+  building_irn integer,
+  irn integer,
+  CONSTRAINT gisedu_joint_vocational_school_district_pkey PRIMARY KEY (gid),
+  CONSTRAINT gisedu_joint_vocational_school_district_address_fkey FOREIGN KEY (address_id)
+      REFERENCES gisedu_org_address (gid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT enforce_dims_the_geom CHECK (st_ndims(the_geom) = 2),
+  CONSTRAINT enforce_geotype_the_geom CHECK (geometrytype(the_geom) = 'POINT'::text OR the_geom IS NULL),
+  CONSTRAINT enforce_srid_the_geom CHECK (srid(the_geom) = 4326)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE gisedu_joint_vocational_school_district OWNER TO postgres;
+GRANT ALL ON TABLE gisedu_joint_vocational_school_district TO postgres;
+GRANT SELECT, UPDATE, INSERT, DELETE ON TABLE gisedu_joint_vocational_school_district TO "gisedu group";
+
+CREATE INDEX gisedu_joint_vocational_school_district_the_geom_gist
+  ON gisedu_joint_vocational_school_district
+  USING gist
+  (the_geom);
+
+INSERT INTO gisedu_joint_vocational_school_district
+(org_key, org_nm, the_geom, address_id, building_irn, irn)
+SELECT org_key, org_nm, the_geom, address_id, building_irn, irn 
+FROM gisedu_org WHERE org_type_id = 16;
+
+DELETE FROM gisedu_org WHERE org_type_id = 16;
+
+DELETE FROM gisedu_org_type WHERE org_type_name = "Joint Vocational School District";
+
+ALTER TABLE gisedu_joint_vocational_school_district ADD COLUMN has_atomic_learning boolean default False;
+ALTER TABLE gisedu_joint_vocational_school_district RENAME COLUMN org_nm TO jvsd_name;
+
+INSERT INTO geometry_columns 
+(f_table_catalog, f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type)
+VALUES
+('', 'public', 'gisedu_school', 'the_geom', 2, 4326, 'POINT');
+
+INSERT INTO geometry_columns 
+(f_table_catalog, f_table_schema, f_table_name, f_geometry_column, coord_dimension, srid, type)
+VALUES
+('', 'public', 'gisedu_joint_vocational_school_district', 'the_geom', 2, 4326, 'POINT');

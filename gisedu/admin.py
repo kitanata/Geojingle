@@ -8,9 +8,11 @@ class OhioCountiesAdmin(admin.GeoModelAdmin):
     exclude = ['gid', 'objectid', 'shape_area', 'shape_len']
 
 class OhioSchoolDistrictsAdmin(admin.GeoModelAdmin):
-    list_display = ('name', 'lea_id', 'beg_grade', 'end_grade', 'taxid', 'district_irn', 'comcast_coverage')
+    list_display = ('name', 'lea_id', 'beg_grade', 'end_grade', 'taxid', 'district_irn', 'comcast_coverage', 'has_atomic_learning')
     search_fields = ['name', 'district_irn']
-    exclude = ['gid', 'objectid', 'id', 'shape_leng', 'area', 'len', 'pct_chg', 'shape_area', 'shape_len']
+    exclude = ['gid', 'id']
+
+    list_filter = ('comcast_coverage', 'has_atomic_learning')
 
 class OhioHouseDistrictsAdmin(admin.GeoModelAdmin):
     exclude = ['gid']

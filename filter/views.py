@@ -54,7 +54,7 @@ def get_query_results(object_manager, all=True, **kwargs):
 
 
 def process_school_in_filter(key_objects, object):
-    return key_objects.filter(org__the_geom__within=object.the_geom)
+    return key_objects.filter(the_geom__within=object.the_geom)
 
 
 def process_org_in_filter(key_objects, object):

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.gis import admin as geo_admin
 from django.db import models
 from django.forms.widgets import CheckboxSelectMultiple
 
@@ -26,15 +27,15 @@ class GiseduSchoolTypeAdmin(admin.ModelAdmin):
     exclude = ['gid']
 
 class GiseduSchoolInfoAdmin(admin.ModelAdmin):
-    list_display = ('org', 'dirn', 'mbit', 'area_class', 'itc')
-    search_fields = ['org__org_nm', 'dirn']
+    list_display = ('dirn', 'mbit', 'area_class', 'itc')
+    search_fields = ['dirn']
     exclude = ['gid', 'fte', 'adm']
 
     list_filter = ('mbit', 'area_class', 'itc')
 
-class GiseduSchoolAdmin(admin.ModelAdmin):
-    list_display = ('org', 'building_info', 'school_type')
-    search_fields = ['org__org_nm', 'building_info__dirn']
+class GiseduSchoolAdmin(geo_admin.GeoModelAdmin):
+    list_display = ('school_name', 'building_info', 'school_type')
+    search_fields = ['school_name', 'building_info__dirn']
     exclude = ['gid']
 
     formfield_overrides = {

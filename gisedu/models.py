@@ -34,22 +34,16 @@ class OhioCounties(models.Model):
 
 class OhioSchoolDistricts(models.Model):
     gid = models.IntegerField(primary_key=True)
-    objectid = models.IntegerField()
-    shape_leng = models.DecimalField(max_digits=1000, decimal_places=999)
     name = models.CharField(max_length=51)
     lea_id = models.CharField(max_length=5)
     beg_grade = models.CharField(max_length=2)
     end_grade = models.CharField(max_length=2)
     taxid = models.CharField(max_length=4)
     id = models.CharField(max_length=6)
-    area = models.DecimalField(max_digits=1000, decimal_places=999)
-    len = models.DecimalField(max_digits=1000, decimal_places=999)
-    pct_chg = models.DecimalField(max_digits=1000, decimal_places=999)
-    shape_area = models.DecimalField(max_digits=1000, decimal_places=999)
-    shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
     the_geom = models.MultiPolygonField()
     district_irn = models.IntegerField()
     comcast_coverage = models.BooleanField()
+    has_atomic_learning = models.BooleanField()
     objects = models.GeoManager()
 
     class Meta:

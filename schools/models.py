@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from gisedu.models import OhioSchoolDistricts
-from organizations.models import GiseduOrg
+from organizations.models import GiseduOrg, GiseduOrgAddress
 
 class SchoolAreaClassification(models.Model):
     gid = models.IntegerField(primary_key=True)
@@ -59,11 +59,10 @@ class GiseduSchoolInfo(models.Model):
     mbit = models.IntegerField()
     area_class = models.ForeignKey(SchoolAreaClassification)
     itc = models.ForeignKey(SchoolItc)
-    org = models.ForeignKey(GiseduOrg)
     school_district = models.ForeignKey(OhioSchoolDistricts)
 
     def __str__(self):
-        return str(self.org.org_nm)
+        return str(self.dirn)
 
     class Meta:
         db_table = u'gisedu_school_info'
@@ -72,14 +71,18 @@ class GiseduSchoolInfo(models.Model):
 
 class GiseduSchool(models.Model):
     gid = models.IntegerField(primary_key=True)
-    org = models.ForeignKey(GiseduOrg)
     building_info = models.ForeignKey(GiseduSchoolInfo)
     school_type = models.ForeignKey(GiseduSchoolType)
+    school_name = models.CharField(max_length=254)
+    irn = models.IntegerField()
+    building_irn = models.IntegerField()
+    address = models.ForeignKey(GiseduOrgAddress)
     grades = models.ManyToManyField(Grade)
+    the_geom = models.PointField()
     objects = models.GeoManager()
 
     def __str__(self):
-        return str(self.org.org_nm)
+        return str(self.school_name)
 
     class Meta:
         db_table = u'gisedu_school'

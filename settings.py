@@ -103,4 +103,5 @@ INSTALLED_APPS = (
     'organizations',
     'schools',
     'session',
+    'jvsd'
 )
