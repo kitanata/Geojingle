@@ -106,13 +106,13 @@
     var names = nil;
 
     if(filterType == "county")
-        names = [[m_OverlayManager counties] allKeysForObject:[item value]];
+        names = [[m_OverlayManager polygonalDataList:"county"] allKeysForObject:[item value]];
     else if(filterType == "school_district")
-        names = [[m_OverlayManager schoolDistricts] allKeysForObject:[item value]];
+        names = [[m_OverlayManager polygonalDataList:"school_district"] allKeysForObject:[item value]];
     else if(filterType == "house_district")
-        names = [[m_OverlayManager houseDistricts] allKeysForObject:[item value]];
+        names = [[m_OverlayManager polygonalDataList:"house_district"] allKeysForObject:[item value]];
     else if(filterType == "senate_district")
-        names = [[m_OverlayManager senateDistricts] allKeysForObject:[item value]];
+        names = [[m_OverlayManager polygonalDataList:"senate_district"] allKeysForObject:[item value]];
     else if(filterType == "school_itc")
         names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
     else if(filterType == "ode_class")
@@ -159,22 +159,22 @@
         if(filterType == "county")
         {
             m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager counties]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"county"]];
         }
         else if(filterType == "school_district")
         {
             m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager schoolDistricts]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"school_district"]];
         }
         else if(filterType == "senate_district")
         {
             m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager senateDistricts]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"senate_district"]];
         }
         else if(filterType == "house_district")
         {
             m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager houseDistricts]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"house_district"]];
         }
         else if(filterType == "organization")
         {

@@ -7,13 +7,13 @@ from organizations.models import GiseduOrgType, GiseduOrg
 
 def org_type_list(request):
     types = GiseduOrgType.objects.all()
-    types = map(lambda type: str(type.org_type_name), types)
-    types.sort()
-    type_list = json.dumps(types)
-    return render_to_response('json/base.json', {'json' : type_list}, context_instance=RequestContext(request))
+    type_names = map(lambda type: str(type.org_type_name), types)
+    type_ids = map(lambda type: int(type.gid), types)
+    types = dict(zip(type_names, type_ids))
+    return render_to_response('json/base.json', {'json' : json.dumps(types)}, context_instance=RequestContext(request))
 
-def org_list_by_typename(request, type_name):
-    orgs = GiseduOrg.objects.filter(org_type__org_type_name=type_name)
+def org_list_by_type(request, type):
+    orgs = GiseduOrg.objects.filter(org_type=type)
     org_names = map(lambda org: str(org.org_nm), orgs)
     org_ids = map(lambda org: org.gid, orgs)
     orgs = dict(zip(org_ids, org_names))

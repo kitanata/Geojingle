@@ -196,7 +196,7 @@ var g_FilterManagerInstance = nil;
     var filterChain = [CPArray array];
     [self _buildFilterChain:leaf withArray:filterChain];
 
-    console.log(filterChain);
+    console.log("Final Filter Chain = " + filterChain);
 
     var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization'];
     var keyFilterItemList = ['school', 'organization'];
@@ -305,6 +305,8 @@ var g_FilterManagerInstance = nil;
         [self _buildFilterChain:[filter parentNode] withArray:filterChain];
 
     [filterChain addObject:filter];
+
+    console.log("Filter Chain = " + filterChain);
 }
 
 - (id)_extractKeyFilter:(CPArray)filterChain

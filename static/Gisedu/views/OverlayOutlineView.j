@@ -96,7 +96,7 @@
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
 {
-    CPLog("outlineView:%@ child:%@ ofItem:%@", outlineView, index, item);
+    //CPLog("outlineView:%@ child:%@ ofItem:%@", outlineView, index, item);
 
     if (item === nil)
     {
@@ -112,7 +112,7 @@
 
 - (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
 {
-    CPLog("outlineView:%@ isItemExpandable:%@", outlineView, item);
+    //CPLog("outlineView:%@ isItemExpandable:%@", outlineView, item);
 
     var values = [m_Items objectForKey:item];
     return ([values count] > 0);
@@ -120,7 +120,7 @@
 
 - (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
 {
-    CPLog("outlineView:%@ numberOfChildrenOfItem:%@", outlineView, item);
+    //CPLog("outlineView:%@ numberOfChildrenOfItem:%@", outlineView, item);
 
     if (item === nil)
     {
@@ -135,7 +135,7 @@
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
-    CPLog("outlineView:%@ objectValueForTableColumn:%@ byItem:%@", outlineView, tableColumn, item);
+    //CPLog("outlineView:%@ objectValueForTableColumn:%@ byItem:%@", outlineView, tableColumn, item);
 
     return item;
 }

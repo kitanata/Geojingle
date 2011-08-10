@@ -70,6 +70,8 @@ def filter_county(options, query_results, key_objects=None, object_filter=None):
         if not get_all:
             test_object = OhioCounties.objects.get(pk=option_argument)
             return object_filter(key_objects, test_object)
+        else:
+            return key_objects
     else:
         return query_results
 
@@ -110,6 +112,8 @@ def filter_house_district(options, query_results, key_objects=None, object_filte
         if not get_all:
             test_object = OhioHouseDistricts.objects.get(pk=option_argument)
             return object_filter(key_objects, test_object)
+        else:
+            return key_objects
     else:
         return query_results
 
@@ -123,6 +127,8 @@ def filter_senate_district(options, query_results, key_objects=None, object_filt
         if not get_all:
             test_object = OhioSenateDistricts.objects.get(pk=option_argument)
             return object_filter(key_objects, test_object)
+        else:
+            return key_objects
     else:
         return query_results
 
@@ -171,15 +177,20 @@ def filter_organization_by_type(key_options, queries, query_results):
 
 
 def process_spatial_filters(key_objects, query_results, queries, object_filter):
+    print("Process Spatial Filters Key Objects = " + str(key_objects))
     print("Process Spatial Filters Query Results = " + str(query_results))
     for query in queries:
         query_options = {k : v for k, v in [string.split(x, '=') for x in string.split(query, ':')]}
 
+        print("Query Options = " + str(query_options))
+        
         for filter_name, function in filter_function_mapping.iteritems():
             if filter_name in query_options:
+                print("Filter Name: " + filter_name + " Function:" + str(function))
                 key_objects = function(query_options, query_results, key_objects, object_filter)
 
     print("Process Spatial Filters Query Results Done = " + str(query_results))
+    print("Process Spatial Filters Key Objects Done = " + str(key_objects))
     return key_objects
 
 

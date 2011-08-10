@@ -48,9 +48,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     OverlayManager m_OverlayManager;
 
-    CPURLConnection m_LoadCountyList;
-    CPURLConnection m_LoadSchoolDistrictList;
-
     TablesController m_TablesController;
 
     CPScrollView m_TableScrollView;
@@ -69,6 +66,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPMenuItem m_AccountLoginMenuItem;
     CPMenuItem m_AccountRegisterMenuItem;
     CPMenuItem m_AccountLogOutMenuItem;
+    CPMenuItem m_AccountManageMenuItem;
+    CPMenuItem m_AccountAdminMenuItem;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -142,24 +141,23 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     console.log("AppController:-mapViewIsReady() called");
 
-    [m_LoadCountyList cancel];
-    m_LoadCountyList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:(g_UrlPrefix + "/county_list")] delegate:self];
-
-    [m_LoadSchoolDistrictList cancel];
-    m_LoadSchoolDistrictList = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:(g_UrlPrefix + "/school_district_list")] delegate:self];
-    
     [m_OverlayManager loadOrganizationTypeList];
     [m_OverlayManager loadSchoolTypeList];
     [m_OverlayManager loadSchoolItcTypeList];
     [m_OverlayManager loadSchoolOdeTypeList];
-    [m_OverlayManager loadHouseDistrictList];
-    [m_OverlayManager loadSenateDistrictList];
+    [m_OverlayManager loadPolygonalDataLists];
 
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
     [[m_LeftSideTabView outlineView] setTarget:self];
 
     console.log("AppController:-mapViewIsReady() finished");
+}
+
+- (void)onPolygonalDataListLoaded:(CPString)dataType
+{
+    if(dataType == "county")
+        [self onUpdateMapFilters:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -293,92 +291,37 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     m_AccountMenu = [[CPMenu alloc] initWithTitle:@"Account Menu"];
 	    m_AccountLoginMenuItem = [[CPMenuItem alloc] initWithTitle:"Login" action:@selector(onLoginUser:) keyEquivalent:"L"];
 	    m_AccountRegisterMenuItem = [[CPMenuItem alloc] initWithTitle:"Sign-Up" action:@selector(onRegisterUser:) keyEquivalent:"S"];
-	    m_AccountLogOutMenuItem = [[CPMenuItem alloc] initWithTitle:"Logout" action:@selector(onLogoutUser:) keyEquivalent:"S"];
+	    m_AccountLogOutMenuItem = [[CPMenuItem alloc] initWithTitle:"Logout" action:@selector(onLogoutUser:) keyEquivalent:"L"];
+	    m_AccountManageMenuItem = [[CPMenuItem alloc] initWithTitle:"Manage" action:@selector(onManageUser:) keyEquivalent:"M"];
+        m_AccountAdminMenuItem = [[CPMenuItem alloc] initWithTitle:"Admin" action:@selector(onAdminUser:) keyEquivalent:"A"];
+
 	    [m_AccountLogOutMenuItem setHidden:YES];
+	    [m_AccountManageMenuItem setHidden:YES];
+	    [m_AccountAdminMenuItem setHidden:YES];
+
 	    [m_AccountMenu addItem:m_AccountLoginMenuItem];
 	    [m_AccountMenu addItem:m_AccountRegisterMenuItem];
+	    [m_AccountMenu addItem:m_AccountManageMenuItem];
+	    [m_AccountMenu addItem:m_AccountAdminMenuItem];
 	    [m_AccountMenu addItem:m_AccountLogOutMenuItem];
+
     [accountMenuItem setSubmenu:m_AccountMenu];
 	[menu addItem:accountMenuItem];
 
 	console.log("AppController:-initMenu() finished");
 }
 
-- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
+- (void)onPolygonOverlayLoaded:(id)overlay dataType:(CPString)dataType
 {
-    if (aConnection == m_LoadCountyList)
-    {
-        alert('Could not load county information! ' + anError);
-        m_LoadCountyList = nil;
+    var dataTypeNameMap = {
+                            'county' : "Counties",
+                            'school_district' : "School District",
+                            'house_district' : "House Districts",
+                            'senate_district' : "Senate Districts"
     }
-    else if(aConnection == m_LoadSchoolDistrictList)
-    {
-        alert('Could not load school district information! ' + anError);
-        m_LoadSchoolDistrictList = nil;
-    }
-    else if(aConnection == m_AuthConnection)
-    {
-        [self failureAlertWithMessage:@"You failed to do something that required authentication!"];
-    }
-    else
-    {
-        alert('Save failed! ' + anError);
-    }
-}
 
-- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)aData
-{
-    var aData = aData.replace('while(1);', '');
-    var listData = JSON.parse(aData);
-        
-    if (aConnection == m_LoadCountyList)
-    {
-        counties = [[OverlayManager getInstance] counties];
-                        
-        for(var i=0; i < listData.length; i++)
-        {
-            for(var key in listData[i])
-            {
-                m_CountyItems[i] = key;
-                [counties setObject:listData[i][key] forKey:key];
-            }
-        }
-
-        console.log("Finished Loading Counties");
-        [self onUpdateMapFilters:self];
-    }
-    else if(aConnection == m_LoadSchoolDistrictList)
-    {
-        schoolDistricts = [m_OverlayManager schoolDistricts];
-
-        for(var i=0; i < listData.length; i++)
-        {
-            for(var key in listData[i])
-            {
-                m_SchoolDistrictItems[i] = key;
-
-                [schoolDistricts setObject:listData[i][key] forKey:key];
-            }
-        }
-
-        console.log("Finished Loading School Districts");
-    }
-    else if(aConnection == m_AuthConnection && [aResponse statusCode] === 200)
-    {
-        [self successfulAlertWithMessage:@"You did something that required authentication successfully!"];
-    }
-}
-
-- (void)onCountyOverlayLoaded:(id)overlay
-{
     [overlay setDelegate:self];
-    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"Counties"];
-}
-
-- (void)onSchoolDistrictOverlayLoader:(id)overlay
-{
-    [overlay setDelegate:self];
-    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:"School Districts"];
+    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:dataTypeNameMap[dataType]];
 }
 
 - (void)onPolygonOverlaySelected:(id)sender
@@ -414,8 +357,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
             
     if([sender parentForItem:item] == "Counties")
     {
-        counties = [m_OverlayManager counties];
-        countyOverlays = [m_OverlayManager countyOverlays];
+        counties = [m_OverlayManager polygonalDataList:"county"];
+        countyOverlays = [m_OverlayManager polygonalDataOverlays:"county"];
 
         itemPk = [counties objectForKey:item];
 
@@ -427,8 +370,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     }
     else if([sender parentForItem:item] == "School Districts")
     {
-        schoolDistrictOverlays = [m_OverlayManager schoolDistrictOverlays];
-        schoolDistricts = [m_OverlayManager schoolDistricts];
+        schoolDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"school_district"];
+        schoolDistricts = [m_OverlayManager polygonalDataList:"school_district"];
 
         itemPk = [schoolDistricts objectForKey:item];
 
@@ -446,16 +389,22 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
         [self showOverlayOptionsView];
     }//Organizations
-    else if([[m_OverlayManager orgTypes] containsKey:[sender parentForItem:item]])
+    else
     {
-        orgNames = [m_OverlayManager orgNames];
-        var orgId = [orgNames objectForKey:item];
-        var curOrg = [[m_OverlayManager organizations] objectForKey:orgId];
+        var parentValue = [sender parentForItem:item];
+        var orgTypeList = [[m_OverlayManager orgTypes] allValues]
 
-        [[curOrg overlay] toggleInfoWindow];
-        [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];
+        if([orgTypeList indexOfObject:parentValue] != CPNotFound)
+        {
+            orgNames = [m_OverlayManager orgNames];
+            var orgId = [orgNames objectForKey:item];
+            var curOrg = [[m_OverlayManager organizations] objectForKey:orgId];
 
-        [self showOverlayOptionsView];
+            [[curOrg overlay] toggleInfoWindow];
+            [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];
+
+            [self showOverlayOptionsView];
+        }
     }
 
     m_CurSelectedItem = item;
@@ -521,10 +470,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     [[m_LeftSideTabView outlineView] clearItems];
 
-    countyOverlays = [m_OverlayManager countyOverlays];
-    houseDistrictOverlays = [m_OverlayManager houseDistrictOverlays];
-    senateDistrictOverlays = [m_OverlayManager senateDistrictOverlays];
-    schoolDistrictOverlays = [m_OverlayManager schoolDistrictOverlays];
+    countyOverlays = [m_OverlayManager polygonalDataOverlays:"county"];
+    houseDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"house_district"];
+    senateDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"senate_district"];
+    schoolDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"school_district"];
     var organizations = [m_OverlayManager organizations];
     var schools = [m_OverlayManager schools];
 
@@ -538,19 +487,19 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
         if(itemType == "county")
         {
-            [self handlePolygonFilterResult:countyOverlays loadSelector:@selector(loadCountyOverlay:andShowOnLoad:) category:"Counties"];
+            [self handlePolygonFilterResult:countyOverlays dataType:"county" category:"Counties"];
         }
         else if(itemType == "house_district")
         {
-            [self handlePolygonFilterResult:houseDistrictOverlays loadSelector:@selector(loadHouseDistrictOverlay:andShowOnLoad:) category:"House Districts"];
+            [self handlePolygonFilterResult:houseDistrictOverlays dataType:"house_district" category:"House Districts"];
         }
         else if(itemType == "senate_district")
         {
-            [self handlePolygonFilterResult:senateDistrictOverlays loadSelector:@selector(loadSenateDistrictOverlay:andShowOnLoad:) category:"Senate Districts"];
+            [self handlePolygonFilterResult:senateDistrictOverlays dataType:"senate_district" category:"Senate Districts"];
         }
         else if(itemType == "school_district")
         {
-            [self handlePolygonFilterResult:schoolDistrictOverlays loadSelector:@selector(loadSchoolDistrictOverlay:andShowOnLoad:) category:"School Districts"];
+            [self handlePolygonFilterResult:schoolDistrictOverlays dataType:"school_district" category:"School Districts"];
         }
         else if(itemType == "org")
         {
@@ -587,7 +536,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [[m_LeftSideTabView outlineView] sortItems];
 }
 
-- (void)handlePolygonFilterResult:(CPDictionary)overlayDict loadSelector:(SEL)action category:(CPString)category
+- (void)handlePolygonFilterResult:(CPDictionary)overlayDict dataType:(CPString)dataType category:(CPString)category
 {
     if([overlayDict containsKey:itemId])
     {
@@ -597,8 +546,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     }
     else
     {
-        if([m_OverlayManager respondsToSelector:action])
-            [m_OverlayManager performSelector:action withObject:itemId withObject:YES];
+        [m_OverlayManager loadPolygonOverlay:dataType withId:itemId andShowOnLoad:YES];
     }
 }
 
@@ -639,11 +587,22 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [[SCUserSessionManager defaultManager] triggerLogout];
 }
 
+- (void)onManageUser:(id)sender
+{
+
+}
+
+- (void)onAdminUser:(id)sender
+{
+    window.open(g_UrlPrefix + "/admin");
+}
+
 - (void)onSessionSyncSuccessful:(id)sender
 {
     //Change Menu To Show Log-Out
     [m_AccountLoginMenuItem setHidden:YES];
     [m_AccountRegisterMenuItem setHidden:YES];
+    [m_AccountAdminMenuItem setHidden:NO];
     [m_AccountLogOutMenuItem setHidden:NO];
     
     //Change the Project Title
@@ -660,6 +619,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     //Change Menu To Show Log-Out
     [m_AccountLoginMenuItem setHidden:YES];
     [m_AccountRegisterMenuItem setHidden:YES];
+    [m_AccountAdminMenuItem setHidden:NO];
     [m_AccountLogOutMenuItem setHidden:NO];
 
     //Change the Project Title
@@ -671,6 +631,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     //Change Menu To Show Log-Out
     [m_AccountLoginMenuItem setHidden:YES];
     [m_AccountRegisterMenuItem setHidden:YES];
+    [m_AccountAdminMenuItem setHidden:NO];
     [m_AccountLogOutMenuItem setHidden:NO];
 
     //Change the Project Title
@@ -681,6 +642,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     [m_AccountLoginMenuItem setHidden:NO];
     [m_AccountRegisterMenuItem setHidden:NO];
+    [m_AccountAdminMenuItem setHidden:YES];
     [m_AccountLogOutMenuItem setHidden:YES];
 
     [CPMenu setMenuBarTitle:"Untitled Project"];

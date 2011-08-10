@@ -26,8 +26,8 @@ def school_ode_list(request):
     classes = dict(zip(ode_names, ode_ids))
     return render_to_response('json/base.json', {'json' : json.dumps(classes)}, context_instance=RequestContext(request))
 
-def school_list_by_typename(request, type_name):
-    schools = GiseduSchool.objects.filter(school_type__school_type=type_name)
+def school_list_by_type(request, type):
+    schools = GiseduSchool.objects.filter(school_type=type)
     school_names = map(lambda school: str(school.school_name), schools)
     school_ids = map(lambda school: school.gid, schools)
     schools = dict(zip(school_ids, school_names))

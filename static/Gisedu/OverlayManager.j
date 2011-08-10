@@ -23,25 +23,29 @@ var overlayManagerInstance = nil;
 {
     MKMapView m_MapView                 @accessors(property=mapView);
 
-    CPDictionary m_Counties             @accessors(property=counties);                    //Maps a County Name to it's PK
-    CPDictionary m_CountyOverlays       @accessors(property=countyOverlays);              //Maps a County PK to it's Overlay
+    CPDictionary m_PolygonalDataLists;                                                    //Maps a gisedu datatype to a
+                                                                                          //dictionary mapping the datatype's name to it's PK
+                                                                                          //in the database
+                                                                                          //{'county':['Franklin':25, 'Allen' 15], 'school_district' : []...}
 
-    CPDictionary m_SchoolDistricts      @accessors(property=schoolDistricts);             //Maps a School District Name with the PK
-    CPDictionary m_SchoolDistrictOverlays @accessors(property=schoolDistrictOverlays);    //Maps a School District PK to the Overlay
+    CPDictionary m_PolygonalDataOverlayMaps;                                              //Maps a gisedu datatype to a
+                                                                                          //dictionary mapping the datatype's name to it's Overlay
 
-    CPDictionary m_SenateDistricts      @accessors(property=senateDistricts);             //Maps a Senate District ID with the PK
-    CPDictionary m_SenateDistrictOverlays @accessors(property=senateDistrictOverlays);    //Maps a Senate District PK to it's overlay
+    CPDictionary m_PointDataLists;                                                        //Maps a gisedu datatype to a
+                                                                                          //dictionary mapping the datatype's name to it's PK
+                                                                                          //in the database
 
-    CPDictionary m_HouseDistricts       @accessors(property=houseDistricts);              //Maps a House District ID with the PK
-    CPDictionary m_HouseDistrictOverlays @accessors(property=houseDistrictOverlays);      //Maps a Senate District PK to it's overlay
+    CPDictionary m_PointDataOverlayMaps;                                                  //Maps a gisedu datatype to a
+                                                                                          //dictionary mapping the datatype's name to it's Overlay
 
-    CPDictionary m_OrganizationTypes    @accessors(property=orgTypes);       //maps organization type to an array of organization pks
-    CPDictionary m_OrgToGid             @accessors(property=orgNames);                //maps name of organization to it's primary key in the db
-    CPDictionary m_OrgGidToOrg          @accessors(property=organizations);        //maps the the organization primary key to it's object
 
-    CPDictionary m_SchoolToGid          @accessors(property=schoolToGid);     //maps name of school to it's primary key in the db
-    CPDictionary m_SchoolGidToSchool    @accessors(property=schools);         //maps school pk to it's object
+    CPDictionary m_OrgPkToName          @accessors(property=orgPkToName);                 //maps an organization PK to it's name
+    CPDictionary m_OrgGidToOrg          @accessors(property=organizations);               //maps the the organization primary key to it's object
 
+    CPDictionary m_SchoolPkToName       @accessors(property=schoolPkToName);              //maps the school's PK to it's name
+    CPDictionary m_SchoolGidToSchool    @accessors(property=schools);                     //maps school pk to it's object
+
+    CPDictionary m_OrganizationTypes    @accessors(property=orgTypes);                    //maps organization type to it's PK
     CPDictionary m_SchoolTypes          @accessors(property=schoolTypes);     //each of these maps a name to an id representing the name server side
     CPDictionary m_SchoolItcTypes       @accessors(property=schoolItcTypes);
     CPDictionary m_SchoolOdeTypes       @accessors(property=schoolOdeTypes);
@@ -55,25 +59,15 @@ var overlayManagerInstance = nil;
 
     if(self)
     {
-        m_Counties = [CPDictionary dictionary];
-        m_CountyOverlays = [CPDictionary dictionary];
-
-        m_SchoolDistricts = [CPDictionary dictionary];
-        m_SchoolDistrictOverlays = [CPDictionary dictionary];
-
-        m_SenateDistricts = [CPDictionary dictionary];
-        m_SenateDistrictOverlays = [CPDictionary dictionary];
-
-        m_HouseDistricts = [CPDictionary dictionary];
-        m_HouseDistrictOverlays = [CPDictionary dictionary];
+        m_PolygonalDataLists = [CPDictionary dictionary];
+        m_PolygonalDataOverlayMaps = [CPDictionary dictionary];
 
         m_OrganizationTypes = [CPDictionary dictionary];
-
-        m_OrgToGid = [CPDictionary dictionary];
+        m_OrgPkToName = [CPDictionary dictionary];
         m_OrgGidToOrg = [CPDictionary dictionary];
 
         m_SchoolTypes = [CPDictionary dictionary];
-        m_SchoolToGid = [CPDictionary dictionary];
+        m_SchoolPkToName = [CPDictionary dictionary];
         m_SchoolGidToSchool = [CPDictionary dictionary];
 
         m_SchoolItcTypes = [CPArray array];
@@ -82,9 +76,14 @@ var overlayManagerInstance = nil;
     return self;
 }
 
-- (CPArray)getOrganizationsOfType:(CPString)type
+- (CPDictionary)polygonalDataList:(CPString)dataType
 {
-    return [m_OrganizationTypes objectForKey:type];
+    return [m_PolygonalDataLists objectForKey:dataType];
+}
+
+- (CPDictionary)polygonalDataOverlays:(CPString)dataType
+{
+    return [m_PolygonalDataOverlayMaps objectForKey:dataType];
 }
 
 - (id)getOrganization:(CPInteger)gid
@@ -111,61 +110,38 @@ var overlayManagerInstance = nil;
     return newSchool;
 }
 
-- (void)loadCountyOverlay:(CPInteger)countyId
+- (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId
 {
-    [self loadCountyOverlay:countyId andShowOnLoad:NO];
+    [self loadOverlay:dataType withId:dataId andShowOnLoad:NO];
 }
 
-- (void)loadCountyOverlay:(CPInteger)countyId andShowOnLoad:(BOOL)show
+- (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId andShowOnLoad:(BOOL)show
 {
-    countyOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:countyId andUrl:(g_UrlPrefix + "/county/")];
-    [countyOverlayLoader setAction:@selector(onCountyOverlayLoaded:)];
-    [countyOverlayLoader setTarget:self];
-    [countyOverlayLoader loadAndShow:show];
+    overlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:dataId andUrl:(g_UrlPrefix + "/" + dataType + "/")];
+    [overlayLoader setAction:@selector(onPolygonOverlayLoaded:)];
+    [overlayLoader setCategory:dataType];
+    [overlayLoader setTarget:self];
+    [overlayLoader loadAndShow:show];
 }
 
-- (void)loadSchoolDistrictOverlay:(CPInteger)itemId
+- (void)onPolygonOverlayLoaded:(id)sender
 {
-    [self loadSchoolDistrictOverlay:itemId andShowOnLoad:NO];
-}
+    overlay = [sender overlay];
 
-- (void)loadSchoolDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
-{
-    schoolDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/school_district/")];
-    [schoolDistrictOverlayLoader setAction:@selector(onSchoolDistrictOverlayLoaded:)];
-    [schoolDistrictOverlayLoader setTarget:self];
-    [schoolDistrictOverlayLoader loadAndShow:show];
-}
+    [[self polygonalDataOverlays:[sender category]] setObject:overlay forKey:[overlay pk]];
 
-- (void)loadHouseDistrictOverlay:(CPInteger)itemId
-{
-    [self loadHouseDistrictOverlay:itemId andShowOnLoad:NO];
-}
+    if([sender showOnLoad])
+    {
+        [overlay addToMapView];
+    }
 
-- (void)loadHouseDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
-{
-    houseDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/house_district/")];
-    [houseDistrictOverlayLoader setAction:@selector(onHouseDistrictOverlayLoaded:)];
-    [houseDistrictOverlayLoader setTarget:self];
-    [houseDistrictOverlayLoader loadAndShow:show];
-}
-
-- (void)loadSenateDistrictOverlay:(CPInteger)itemId
-{
-    [self loadSenateDistrictOverlay:itemId andShowOnLoad:NO];
-}
-
-- (void)loadSenateDistrictOverlay:(CPInteger)itemId andShowOnLoad:(BOOL)show
-{
-    senateDistrictOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemId andUrl:(g_UrlPrefix + "/senate_district/")];
-    [senateDistrictOverlayLoader setAction:@selector(onSenateDistrictOverlayLoaded:)];
-    [senateDistrictOverlayLoader setTarget:self];
-    [senateDistrictOverlayLoader loadAndShow:show];
+    if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
+        [m_Delegate onPolygonOverlayLoaded:overlay dataType:[sender category]];
 }
 
 - (void)loadOrganizationTypeList
 {
-    organizationTypeListLoader = [[ListLoader alloc] initWithUrl:(g_UrlPrefix + "/org_type_list/")];
+    organizationTypeListLoader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_type_list/")];
     [organizationTypeListLoader setAction:@selector(onOrgTypeListLoaded:)];
     [organizationTypeListLoader setTarget:self];
     [organizationTypeListLoader load];
@@ -195,27 +171,40 @@ var overlayManagerInstance = nil;
     [loader load];
 }
 
-- (void)loadHouseDistrictList
+- (void)loadPolygonalDataLists
 {
-    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/house_district_list/")];
-    [loader setAction:@selector(onHouseDistrictListLoaded:)];
-    [loader setTarget:self];
-    [loader load];
+    var dataTypes = ['county', 'school_district', 'house_district', 'senate_district'];
+
+    for(var i=0; i < dataTypes.length; i++)
+    {
+        var curDataType = dataTypes[i];
+
+        var loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/list/" + curDataType)];
+        [loader setCategory:curDataType];
+        [loader setAction:@selector(onPolygonalDataListLoaded:)];
+        [loader setTarget:self];
+        [loader load];
+    }
 }
 
-- (void)loadSenateDistrictList
+- (void)onPolygonalDataListLoaded:(id)sender
 {
-    loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/senate_district_list/")];
-    [loader setAction:@selector(onSenateDistrictListLoaded:)];
-    [loader setTarget:self];
-    [loader load];
+    var dataType = [sender category];
+
+    [m_PolygonalDataLists setObject:[sender dictionary] forKey:dataType];
+    [m_PolygonalDataOverlayMaps setObject:[CPDictionary dictionary] forKey:dataType];
+
+    if([m_Delegate respondsToSelector:@selector(onPolygonalDataListLoaded:)])
+        [m_Delegate onPolygonalDataListLoaded:dataType];
+
+    console.log("Finished Loading Polygonal Data List of Type = " + dataType + ".");
 }
 
 - (void)onCountyOverlayLoaded:(id)sender
 {
     overlay = [sender overlay];
 
-    [m_CountyOverlays setObject:overlay forKey:[overlay pk]];
+    [[self polygonalDataOverlays:"county"] setObject:overlay forKey:[overlay pk]];
 
     if([sender showOnLoad])
     {
@@ -230,7 +219,7 @@ var overlayManagerInstance = nil;
 {
     overlay = [sender overlay];
 
-    [m_SchoolDistrictOverlays setObject:overlay forKey:[overlay pk]];
+    [[self polygonalDataOverlays:"school_district"] setObject:overlay forKey:[overlay pk]];
 
     if([sender showOnLoad])
     {
@@ -245,7 +234,7 @@ var overlayManagerInstance = nil;
 {
     overlay = [sender overlay];
 
-    [m_HouseDistrictOverlays setObject:overlay forKey:[overlay pk]];
+    [[self polygonalDataOverlays:"house_district"] setObject:overlay forKey:[overlay pk]];
 
     if([sender showOnLoad])
     {
@@ -260,7 +249,7 @@ var overlayManagerInstance = nil;
 {
     overlay = [sender overlay];
 
-    [m_SenateDistrictOverlays setObject:overlay forKey:[overlay pk]];
+    [[self polygonalDataOverlays:"senate_district"] setObject:overlay forKey:[overlay pk]];
 
     if([sender showOnLoad])
     {
@@ -273,15 +262,14 @@ var overlayManagerInstance = nil;
 
 - (void)onOrgTypeListLoaded:(id)sender
 {
-    orgTypes = [sender list];
+    m_OrganizationTypes = [sender dictionary];
+    var orgTypeIds = [m_OrganizationTypes allValues];
 
-    for(var i=0; i < [orgTypes count]; i++)
+    for(var i=0; i < [orgTypeIds count]; i++)
     {
-        var curOrgType = [orgTypes objectAtIndex:i];
-        [m_OrganizationTypes setObject:[CPArray array] forKey:curOrgType];
-
-        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_list_by_typename/" + curOrgType)];
-        [loader setCategory:curOrgType];
+        var curOrgTypeId = [orgTypeIds objectAtIndex:i];
+        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_list_by_type/" + curOrgTypeId)];
+        [loader setCategory:curOrgTypeId];
         [loader setAction:@selector(onOrgListLoaded:)];
         [loader setTarget:self];
         [loader load];
@@ -294,15 +282,13 @@ var overlayManagerInstance = nil;
 - (void)onSchoolTypeListLoaded:(id)sender
 {
     m_SchoolTypes = [sender dictionary];
+    schoolTypeIds = [m_SchoolTypes allValues];
 
-    schoolTypeNames = [m_SchoolTypes allKeys];
-
-    for(var i=0; i < [schoolTypeNames count]; i++)
+    for(var i=0; i < [schoolTypeIds count]; i++)
     {
-        var curSchoolType = [schoolTypeNames objectAtIndex:i];
-
-        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_list_by_typename/" + curSchoolType)];
-        [loader setCategory:curSchoolType];
+        var curSchoolTypeId = [schoolTypeIds objectAtIndex:i];
+        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_list_by_type/" + curSchoolTypeId)];
+        [loader setCategory:curSchoolTypeId];
         [loader setAction:@selector(onSchoolListLoaded:)];
         [loader setTarget:self];
         [loader load];
@@ -334,40 +320,15 @@ var overlayManagerInstance = nil;
     console.log("Finished Loading School ODE Classification List");
 }
 
-- (void)onHouseDistrictListLoaded:(id)sender
-{
-    m_HouseDistricts = [sender dictionary];
-
-    if([m_Delegate respondsToSelector:@selector(onHouseDistrictListLoaded)])
-        [m_Delegate onHouseDistrictListLoaded];
-
-    console.log("Finished Loading House Districts List");
-}
-
-- (void)onSenateDistrictListLoaded:(id)sender
-{
-    m_SenateDistricts = [sender dictionary];
-
-    if([m_Delegate respondsToSelector:@selector(onSenateDistrictListLoaded)])
-        [m_Delegate onSenateDistrictListLoaded];
-
-    console.log("Finished Loading Senate Districts List");
-}
-
 - (void)onOrgListLoaded:(id)sender
 {
-    var orgIds = [CPArray array];
+    m_OrgPkToName = [sender dictionary];
+    var orgIds = [m_OrgPkToName allKeys];
 
-    var orgDict = [sender dictionary];
-    var keys = [orgDict allKeys];
-
-    for(var i=0; i < [keys count]; i++)
+    for(var i=0; i < [orgIds count]; i++)
     {
-        var curOrgId = [keys objectAtIndex:i];
-        var curOrgName = [orgDict objectForKey:curOrgId];
-
-        [orgIds addObject:curOrgId];
-        [m_OrgToGid setObject:curOrgId forKey:curOrgName];
+        var curOrgId = [orgIds objectAtIndex:i];
+        var curOrgName = [m_OrgPkToName objectForKey:curOrgId];
 
         var curOrg = [self createOrganization:curOrgId];
         [curOrg setName:curOrgName];
@@ -381,18 +342,13 @@ var overlayManagerInstance = nil;
 
 - (void)onSchoolListLoaded:(id)sender
 {
-    var schoolIds = [CPArray array];
+    m_SchoolPkToName = [sender dictionary];
+    var schoolIds = [m_SchoolPkToName allKeys];
 
-    var schoolDict = [sender dictionary];
-    var keys = [schoolDict allKeys];
-
-    for(var i=0; i < [keys count]; i++)
+    for(var i=0; i < [schoolIds count]; i++)
     {
-        var curSchoolId = [keys objectAtIndex:i];
-        var curSchoolName = [schoolDict objectForKey:curSchoolId];
-
-        [schoolIds addObject:curSchoolId];
-        [m_SchoolToGid setObject:curSchoolId forKey:curSchoolName];
+        var curSchoolId = [schoolIds objectAtIndex:i];
+        var curSchoolName = [m_SchoolPkToName objectForKey:curSchoolId];
 
         var curSchool = [self createSchool:curSchoolId];
         [curSchool setName:curSchoolName];
@@ -438,10 +394,14 @@ var overlayManagerInstance = nil;
 
 - (void)removeAllOverlaysFromMapView
 {
-    [self removePolygonOverlaysFromMapView:m_CountyOverlays];
-    [self removePolygonOverlaysFromMapView:m_SchoolDistrictOverlays];
-    [self removePolygonOverlaysFromMapView:m_SenateDistrictOverlays];
-    [self removePolygonOverlaysFromMapView:m_HouseDistrictOverlays];
+    var polygonOverlayDicts = [m_PolygonalDataOverlayMaps allValues];
+
+    for(var i=0; i < [polygonOverlayDicts count]; i++)
+    {
+        var curDict = [polygonOverlayDicts objectAtIndex:i];
+
+        [self removePolygonOverlaysFromMapView:curDict];
+    }
 
     [self removePointOverlaysFromMapView:m_OrgGidToOrg];
     [self removePointOverlaysFromMapView:m_SchoolGidToSchool];

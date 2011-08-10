@@ -54,7 +54,11 @@
                                'school' : ['school', 'organization'],
                                'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
                                'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                               'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater']
+                               'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
+                                                'atomic_learning', 'joint_voc_sd'],
+                               'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
+                                                'connectivity_greater', 'organization'],
+                               'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
                                }
 
         m_FilterNameToTypeMap = {
@@ -68,7 +72,9 @@
                                 'Organization' : 'organization',
                                 'Connectivity Greater Than' : 'connectivity_greater',
                                 'Connectivity Less Than' : 'connectivity_less',
-                                'Comcast Coverage' : 'comcast_coverage'
+                                'Comcast Coverage' : 'comcast_coverage',
+                                'Atomic Learning Participant' : 'atomic_learning',
+                                'Joint Vocational School District' : 'joint_voc_sd'
                                 }
 
         m_FilterTypeToNameMap = {}
@@ -77,7 +83,8 @@
             m_FilterTypeToNameMap[m_FilterNameToTypeMap[key]] = key;
 
         var itemList = ['county', 'school_district', 'house_district', 'senate_district', 'organization', 'school_itc',
-                        'ode_class', 'school', 'connectivity_greater', 'connectivity_less', 'comcast_coverage'];
+                        'ode_class', 'school', 'connectivity_greater', 'connectivity_less', 'comcast_coverage',
+                        'atomic_learning', 'joint_voc_sd'];
 
         if(parentFilter && parentType)
         {

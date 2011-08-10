@@ -35,20 +35,15 @@ urlpatterns = patterns('',
     (r'^org_infobox/(?P<org_id>\d+)/', 'organizations.views.org_infobox'),
     (r'^school_infobox/(?P<school_id>\d+)/', 'schools.views.school_infobox'),
 
-    (r'^county_list/', 'gisedu.views.county_list'),
-    (r'^school_district_list/', 'gisedu.views.school_district_list'),
-    (r'^house_district_list/', 'gisedu.views.house_district_list'),
-    (r'^senate_district_list/', 'gisedu.views.senate_district_list'),
+    (r'^list/(?P<list_type>\w+)', 'gisedu.views.list'),
     
     (r'^org_type_list/', 'organizations.views.org_type_list'),
     (r'^school_type_list/', 'schools.views.school_type_list'),
     (r'^school_itc_list/', 'schools.views.school_itc_list'),
     (r'^school_ode_list/', 'schools.views.school_ode_list'),
 
-
-    (r'^org_list_by_typename/(?P<type_name>(\w+\s\W*)*\w+\W*)/', 'organizations.views.org_list_by_typename'),
-    (r'^school_list_by_typename/(?P<type_name>(\w+\s\W*)*\w+\W*)/', 'schools.views.school_list_by_typename'),
-
+    (r'^org_list_by_type/(?P<type>\d+)/', 'organizations.views.org_list_by_type'),
+    (r'^school_list_by_type/(?P<type>\d+)/', 'schools.views.school_list_by_type'),
 
     (r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filter.views.parse_filter'),
 

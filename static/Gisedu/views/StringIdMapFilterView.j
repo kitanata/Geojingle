@@ -79,6 +79,8 @@
 
 - (void)onFilterUpdateButton:(id)sender
 {
+    console.log("onFilterUpdateButton called");
+
     var curSelItem = nil;
 
     if(m_bPopUp)
@@ -86,10 +88,14 @@
     else
         curSelItem = [m_SelectionControl stringValue];
 
+    console.log("AcceptedValues is " + m_AcceptedValues);
+
     if(curSelItem == "All")
         [m_Filter setValue:"All"];
     else
         [m_Filter setValue:[m_AcceptedValues objectForKey:curSelItem]];
+
+    console.log("Filter Values is " + [m_Filter value]);
 
     if(_action && _target)
     {
