@@ -5,13 +5,6 @@ from django.template.context import RequestContext
 from models import GiseduSchoolType, GiseduSchool
 from schools.models import SchoolItc, SchoolAreaClassification
 
-def school_type_list(request):
-    types = GiseduSchoolType.objects.all()
-    type_names = map(lambda type: str(type.school_type), types)
-    type_ids = map(lambda type: type.gid, types)
-    types = dict(zip(type_names, type_ids))
-    return render_to_response('json/base.json', {'json' : json.dumps(types)}, context_instance=RequestContext(request))
-
 def school_itc_list(request):
     itcs = SchoolItc.objects.all()
     itc_names = map(lambda itc: str(itc.itc), itcs)
@@ -25,20 +18,6 @@ def school_ode_list(request):
     ode_ids = map(lambda cls: cls.gid, classes)
     classes = dict(zip(ode_names, ode_ids))
     return render_to_response('json/base.json', {'json' : json.dumps(classes)}, context_instance=RequestContext(request))
-
-def school_list_by_type(request, type):
-    schools = GiseduSchool.objects.filter(school_type=type)
-    school_names = map(lambda school: str(school.school_name), schools)
-    school_ids = map(lambda school: school.gid, schools)
-    schools = dict(zip(school_ids, school_names))
-    return render_to_response('json/base.json', {'json' : json.dumps(schools)}, context_instance=RequestContext(request))
-
-def schools_by_type(request, type_name):
-    schools = GiseduSchool.objects.filter(school_type__school_type=type_name)
-    schools = map(lambda school: {"name": str(school.school_name), "gid" : int(school.gid), "org_gid": int(school.gid)}, schools)
-    schools.sort()
-    school_list = json.dumps(schools)
-    return render_to_response('json/base.json', {'json' : school_list}, context_instance=RequestContext(request))
 
 def school_geom(request, school_id):
     school = GiseduSchool.objects.get(pk=school_id)

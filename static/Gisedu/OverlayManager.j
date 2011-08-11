@@ -23,30 +23,21 @@ var overlayManagerInstance = nil;
 {
     MKMapView m_MapView                 @accessors(property=mapView);
 
-    CPDictionary m_PolygonalDataLists;                                                    //Maps a gisedu datatype to a
-                                                                                          //dictionary mapping the datatype's name to it's PK
-                                                                                          //in the database
-                                                                                          //{'county':['Franklin':25, 'Allen' 15], 'school_district' : []...}
+    CPDictionary m_PolygonalDataLists;  //Maps a gisedu datatype to a dictionary mapping the datatype's name to it's PK
+                                        //in the database {'county':{'Franklin':25, 'Allen':15}, 'school_district' : {}...}
+    CPDictionary m_PolygonalDataOverlayMaps;    //Maps a gisedu datatype to a dictionary mapping the datatype's name to it's Overlay
 
-    CPDictionary m_PolygonalDataOverlayMaps;                                              //Maps a gisedu datatype to a
-                                                                                          //dictionary mapping the datatype's name to it's Overlay
+    CPDictionary m_PointDataTypeLists;      //'school' : {1 : 'Elementary', 2 : 'Middle', 3 : 'High'}
 
-    CPDictionary m_PointDataLists;                                                        //Maps a gisedu datatype to a
-                                                                                          //dictionary mapping the datatype's name to it's PK
-                                                                                          //in the database
+    CPDictionary m_PointDataSubTypeLists;   //'school' : {1 : {10 : 'Elem School 1', 20 : 'Elem School 2', 30 : 'Elem School 3'},
+                                            //                   2 : {40 : 'Middle School 1', 50 : 'Middle School 2', 60 : 'Middle School 3'},
+                                            //                   3 : {70 : 'High School 1', 80 : 'High School 2', 90 : 'High School 3'}
+                                            //                  }
 
-    CPDictionary m_PointDataOverlayMaps;                                                  //Maps a gisedu datatype to a
-                                                                                          //dictionary mapping the datatype's name to it's Overlay
+    CPDictionary m_PointDataObjects;        //'school' : { 10 : <Elem School 1>, 20 : <Elem School 2>, 30 : <Elem School 3>,
+                                            //             40 : <Middle School 1>, 50 : <Middle School 2>, 60 : <Middle School 3>,
+                                            //             70 : <High School 1>, 80 : <High School 2>, 90 : <High School 3> }
 
-
-    CPDictionary m_OrgPkToName          @accessors(property=orgPkToName);                 //maps an organization PK to it's name
-    CPDictionary m_OrgGidToOrg          @accessors(property=organizations);               //maps the the organization primary key to it's object
-
-    CPDictionary m_SchoolPkToName       @accessors(property=schoolPkToName);              //maps the school's PK to it's name
-    CPDictionary m_SchoolGidToSchool    @accessors(property=schools);                     //maps school pk to it's object
-
-    CPDictionary m_OrganizationTypes    @accessors(property=orgTypes);                    //maps organization type to it's PK
-    CPDictionary m_SchoolTypes          @accessors(property=schoolTypes);     //each of these maps a name to an id representing the name server side
     CPDictionary m_SchoolItcTypes       @accessors(property=schoolItcTypes);
     CPDictionary m_SchoolOdeTypes       @accessors(property=schoolOdeTypes);
 
@@ -62,15 +53,12 @@ var overlayManagerInstance = nil;
         m_PolygonalDataLists = [CPDictionary dictionary];
         m_PolygonalDataOverlayMaps = [CPDictionary dictionary];
 
-        m_OrganizationTypes = [CPDictionary dictionary];
-        m_OrgPkToName = [CPDictionary dictionary];
-        m_OrgGidToOrg = [CPDictionary dictionary];
-
-        m_SchoolTypes = [CPDictionary dictionary];
-        m_SchoolPkToName = [CPDictionary dictionary];
-        m_SchoolGidToSchool = [CPDictionary dictionary];
+        m_PointDataTypeLists = [CPDictionary dictionary];
+        m_PointDataSubTypeLists = [CPDictionary dictionary];
+        m_PointDataObjects = [CPDictionary dictionary];
 
         m_SchoolItcTypes = [CPArray array];
+        m_SchoolOdeTypes = [CPArray array];
     }
 
     return self;
@@ -86,28 +74,21 @@ var overlayManagerInstance = nil;
     return [m_PolygonalDataOverlayMaps objectForKey:dataType];
 }
 
-- (id)getOrganization:(CPInteger)gid
+- (CPDictionary)pointDataTypes:(CPString)dataType
 {
-    return [m_OrgGidToOrg objectForKey:gid];
+    console.log([[m_PointDataTypeLists objectForKey:dataType] allKeys]);
+
+    return [m_PointDataTypeLists objectForKey:dataType];
 }
 
-- (id)createOrganization:(CPInteger)gid
+- (CPDictionary)pointDataObjects:(CPString)dataType
 {
-    newOrg = [[Organization alloc] initWithIdentifier:gid];
-    [m_OrgGidToOrg setObject:newOrg forKey:gid];
-    return newOrg;
+    return [m_PointDataObjects objectForKey:dataType];
 }
 
-- (id)getSchool:(CPInteger)gid
+- (id)getPointObject:(CPString)dataType objId:(CPInteger)objId
 {
-    return [m_SchoolGidToSchool objectForKey:gid];
-}
-
-- (id)createSchool:(CPInteger)gid
-{
-    newSchool = [[School alloc] initWithIdentifier:gid];
-    [m_SchoolGidToSchool setObject:newSchool forKey:gid];
-    return newSchool;
+    return [[m_PointDataObjects objectForKey:dataType] objectForKey:objId];
 }
 
 - (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId
@@ -137,22 +118,6 @@ var overlayManagerInstance = nil;
 
     if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
         [m_Delegate onPolygonOverlayLoaded:overlay dataType:[sender category]];
-}
-
-- (void)loadOrganizationTypeList
-{
-    organizationTypeListLoader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_type_list/")];
-    [organizationTypeListLoader setAction:@selector(onOrgTypeListLoaded:)];
-    [organizationTypeListLoader setTarget:self];
-    [organizationTypeListLoader load];
-}
-
-- (void)loadSchoolTypeList
-{
-    schoolTypeListLoader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_type_list/")];
-    [schoolTypeListLoader setAction:@selector(onSchoolTypeListLoaded:)];
-    [schoolTypeListLoader setTarget:self];
-    [schoolTypeListLoader load];
 }
 
 - (void)loadSchoolItcTypeList
@@ -200,104 +165,81 @@ var overlayManagerInstance = nil;
     console.log("Finished Loading Polygonal Data List of Type = " + dataType + ".");
 }
 
-- (void)onCountyOverlayLoaded:(id)sender
+- (void)loadPointDataTypeLists
 {
-    overlay = [sender overlay];
+    var dataTypes = ['school', 'organization'];
 
-    [[self polygonalDataOverlays:"county"] setObject:overlay forKey:[overlay pk]];
-
-    if([sender showOnLoad])
+    for(var i=0; i < dataTypes.length; i++)
     {
-        [overlay addToMapView];
-    }
+        var curDataType = dataTypes[i];
 
-    if([m_Delegate respondsToSelector:@selector(onCountyOverlayLoaded:)])
-        [m_Delegate onCountyOverlayLoaded:overlay];
-}
-
-- (void)onSchoolDistrictOverlayLoaded:(id)sender
-{
-    overlay = [sender overlay];
-
-    [[self polygonalDataOverlays:"school_district"] setObject:overlay forKey:[overlay pk]];
-
-    if([sender showOnLoad])
-    {
-        [overlay addToMapView];
-    }
-
-    if([m_Delegate respondsToSelector:@selector(onSchoolDistrictOverlayLoaded:)])
-        [m_Delegate onSchoolDistrictOverlayLoaded:overlay];
-}
-
-- (void)onHouseDistrictOverlayLoaded:(id)sender
-{
-    overlay = [sender overlay];
-
-    [[self polygonalDataOverlays:"house_district"] setObject:overlay forKey:[overlay pk]];
-
-    if([sender showOnLoad])
-    {
-        [overlay addToMapView];
-    }
-
-    if([m_Delegate respondsToSelector:@selector(onHouseDistrictOverlayLoaded:)])
-        [m_Delegate onHouseDistrictOverlayLoaded:overlay];
-}
-
-- (void)onSenateDistrictOverlayLoaded:(id)sender
-{
-    overlay = [sender overlay];
-
-    [[self polygonalDataOverlays:"senate_district"] setObject:overlay forKey:[overlay pk]];
-
-    if([sender showOnLoad])
-    {
-        [overlay addToMapView];
-    }
-
-    if([m_Delegate respondsToSelector:@selector(onSenateDistrictOverlayLoaded:)])
-        [m_Delegate onSenateDistrictOverlayLoaded:overlay];
-}
-
-- (void)onOrgTypeListLoaded:(id)sender
-{
-    m_OrganizationTypes = [sender dictionary];
-    var orgTypeIds = [m_OrganizationTypes allValues];
-
-    for(var i=0; i < [orgTypeIds count]; i++)
-    {
-        var curOrgTypeId = [orgTypeIds objectAtIndex:i];
-        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/org_list_by_type/" + curOrgTypeId)];
-        [loader setCategory:curOrgTypeId];
-        [loader setAction:@selector(onOrgListLoaded:)];
+        var loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/list/" + curDataType)];
+        [loader setCategory:curDataType];
+        [loader setAction:@selector(onPointDataTypeListLoaded:)];
         [loader setTarget:self];
         [loader load];
     }
-
-    if([m_Delegate respondsToSelector:@selector(onOrgTypeListLoaded)])
-        [m_Delegate onOrgTypeListLoaded];
 }
 
-- (void)onSchoolTypeListLoaded:(id)sender
+- (void)onPointDataTypeListLoaded:(id)sender
 {
-    m_SchoolTypes = [sender dictionary];
-    schoolTypeIds = [m_SchoolTypes allValues];
+    var dataType = [sender category];
 
-    for(var i=0; i < [schoolTypeIds count]; i++)
+    //console.log("pointDataTypeListLoaded =" + [sender dictionary]);
+
+    [m_PointDataTypeLists setObject:[sender dictionary] forKey:dataType];
+    [m_PointDataSubTypeLists setObject:[CPDictionary dictionary] forKey:dataType];
+    [m_PointDataObjects setObject:[CPDictionary dictionary] forKey:dataType];
+
+    var subDataTypes = [[sender dictionary] allKeys];
+
+    for(var i=0; i < [subDataTypes count]; i++)
     {
-        var curSchoolTypeId = [schoolTypeIds objectAtIndex:i];
-        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/school_list_by_type/" + curSchoolTypeId)];
-        [loader setCategory:curSchoolTypeId];
-        [loader setAction:@selector(onSchoolListLoaded:)];
+        var subDataTypeId = [subDataTypes objectAtIndex:i];
+        var subDataTypeName = [[sender dictionary] objectForKey:subDataTypeId];
+
+        //console.log("SubType Loader URL = " + g_UrlPrefix + "/list/" + dataType + "/type/" + subDataTypeId);
+        loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/list/" + dataType + "/type/" + subDataTypeId)];
+        [loader setCategory:dataType];
+        [loader setSubCategory:subDataTypeId];
+        [loader setAction:@selector(onPointSubDataTypeListLoaded:)];
         [loader setTarget:self];
         [loader load];
     }
+}
 
-    if([m_Delegate respondsToSelector:@selector(onSchoolTypeListLoaded)])
-        [m_Delegate onSchoolTypeListLoaded];
+- (void)onPointSubDataTypeListLoaded:(id)sender
+{
+    //console.log("pointSubDataTypeListLoaded =" + [sender dictionary]);
+    //console.log("pointSubDataType Category = " + [sender category]);
 
-    console.log("Finished Loading School Type List");
+    var subTypeList = [m_PointDataSubTypeLists objectForKey:[sender category]];
+    //console.log("subTypeList = " + subTypeList);
+    [subTypeList setObject:[sender dictionary] forKey:[sender subCategory]];
+    var idToObjDict = [m_PointDataObjects objectForKey:[sender category]];
+    //console.log("idToObjDict = " + idToObjDict);
+
+    var ids = [[sender dictionary] allKeys];
+    for(var i=0; i < [ids count]; i++)
+    {
+        var curId = [ids objectAtIndex:i];
+        var curName = [[sender dictionary] objectForKey:curId];
+
+        var newObject = nil;
+
+        if([sender category] == "organization")
+            newObject = [[Organization alloc] initWithIdentifier:curId];
+        else if([sender category] == "school")
+            newObject = [[School alloc] initWithIdentifier:curId];
+
+        if(newObject)
+        {
+            [newObject setName:curName];
+            [newObject setType:[sender subCategory]];
+            [newObject setDelegate:self];
+            [idToObjDict setObject:newObject forKey:curId];
+        }
+    }
 }
 
 - (void)onSchoolItcListLoaded:(id)sender
@@ -318,62 +260,6 @@ var overlayManagerInstance = nil;
         [m_Delegate onSchoolOdeListLoaded];
 
     console.log("Finished Loading School ODE Classification List");
-}
-
-- (void)onOrgListLoaded:(id)sender
-{
-    m_OrgPkToName = [sender dictionary];
-    var orgIds = [m_OrgPkToName allKeys];
-
-    for(var i=0; i < [orgIds count]; i++)
-    {
-        var curOrgId = [orgIds objectAtIndex:i];
-        var curOrgName = [m_OrgPkToName objectForKey:curOrgId];
-
-        var curOrg = [self createOrganization:curOrgId];
-        [curOrg setName:curOrgName];
-        [curOrg setType:[sender category]];
-        [curOrg setDelegate:self];
-    }
-
-    if([m_Delegate respondsToSelector:@selector(onOrgListLoaded:)])
-        [m_Delegate onOrgListLoaded:[sender category]];
-}
-
-- (void)onSchoolListLoaded:(id)sender
-{
-    m_SchoolPkToName = [sender dictionary];
-    var schoolIds = [m_SchoolPkToName allKeys];
-
-    for(var i=0; i < [schoolIds count]; i++)
-    {
-        var curSchoolId = [schoolIds objectAtIndex:i];
-        var curSchoolName = [m_SchoolPkToName objectForKey:curSchoolId];
-
-        var curSchool = [self createSchool:curSchoolId];
-        [curSchool setName:curSchoolName];
-        [curSchool setType:[sender category]];
-        [curSchool setDelegate:self];
-    }
-
-    if([m_Delegate respondsToSelector:@selector(onSchoolListLoaded:)])
-        [m_Delegate onSchoolListLoaded:[sender category]];
-}
-
-- (void)onOrgOverlayLoaded:(id)sender
-{
-    console.log("OverlayManager::onOrgOverlayLoaded Called");
-
-    if([m_Delegate respondsToSelector:@selector(onOrgOverlayLoaded:)])
-        [m_Delegate onOrgOverlayLoaded:sender];
-}
-
-- (void)onSchoolOverlayLoaded:(id)sender
-{
-    console.log("OverlayManager:onSchoolOverlayLoaded Called");
-
-    if([m_Delegate respondsToSelector:@selector(onSchoolOverlayLoaded:)])
-        [m_Delegate onSchoolOverlayLoaded:sender];
 }
 
 - (void)onOrgOverlaySelected:(id)sender
@@ -403,8 +289,14 @@ var overlayManagerInstance = nil;
         [self removePolygonOverlaysFromMapView:curDict];
     }
 
-    [self removePointOverlaysFromMapView:m_OrgGidToOrg];
-    [self removePointOverlaysFromMapView:m_SchoolGidToSchool];
+    var pointOverlayDicts = [m_PointDataObjects allValues];
+
+    for(var i=0; i < [pointOverlayDicts count]; i++)
+    {
+        var curDict = [pointOverlayDicts objectAtIndex:i];
+
+        [self removePointOverlaysFromMapView:curDict];
+    }
 }
 
 - (void)removePolygonOverlaysFromMapView:(CPDictionary)overlayDict

@@ -41,7 +41,7 @@ def parse_filter(request, filter_chain):
         elif isinstance(result, GiseduSchool):
             typeId_results.append("school:" + str(result.gid))
         elif isinstance(result, GiseduOrg):
-            typeId_results.append("org:" + str(result.gid))
+            typeId_results.append("organization:" + str(result.gid))
 
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
 
@@ -97,6 +97,8 @@ def filter_school_district(options, query_results, key_objects=None, object_filt
     elif key_objects is not None and object_filter is not None and not get_all:
         query_results.extend([sd_objects])
         key_objects = object_filter(key_objects, sd_objects)
+    elif isinstance(sd_objects, OhioSchoolDistricts):
+        query_results.append(sd_objects)
     else:
         query_results.extend(sd_objects)
 

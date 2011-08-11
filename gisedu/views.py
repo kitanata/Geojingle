@@ -5,6 +5,8 @@ from django.template.context import RequestContext
 import json
 from gisedu.models import OhioHouseDistricts, OhioSenateDistricts
 from models import OhioCounties, OhioSchoolDistricts
+from organizations.models import GiseduOrgType, GiseduOrg
+from schools.models import GiseduSchoolType, GiseduSchool
 
 def browser_test(request):
     return render_to_response('browser_test.html', context_instance=RequestContext(request))
@@ -16,28 +18,60 @@ def google_map(request):
     return render_to_response('map.html', context_instance=RequestContext(request))
 
 def list(request, list_type):
-
     list_data = None
 
     if list_type == "county":
         counties = OhioCounties.objects.all()
-        list_data = map(lambda county: {str(county.name) : int(county.gid)}, counties)
+        county_names = map(lambda county: str(county.name), counties)
+        county_ids = map(lambda county: int(county.gid), counties)
+        list_data = dict(zip(county_ids, county_names))
 
     elif list_type == "school_district":
         districts = OhioSchoolDistricts.objects.all()
-        list_data = map(lambda district: {str(district.name) : int(district.gid)}, districts)
+        district_names = map(lambda district: str(district.name), districts)
+        district_ids = map(lambda district: int(district.gid), districts)
+        list_data = dict(zip(district_ids, district_names))
 
     elif list_type == "house_district":
         districts = OhioHouseDistricts.objects.all()
         house_names = map(lambda house: "{:03d}".format(int(house.district)), districts)
         house_ids = map(lambda house: house.gid, districts)
-        list_data = dict(zip(house_names, house_ids))
+        list_data = dict(zip(house_ids, house_names))
 
     elif list_type == "senate_district":
         districts = OhioSenateDistricts.objects.all()
         senate_names = map(lambda senate: "{:03d}".format(int(senate.district)), districts)
         senate_ids = map(lambda senate: senate.gid, districts)
-        list_data = dict(zip(senate_names, senate_ids))
+        list_data = dict(zip(senate_ids, senate_names))
+
+    elif list_type == "organization":
+        types = GiseduOrgType.objects.all()
+        type_names = map(lambda type: str(type.org_type_name), types)
+        type_ids = map(lambda type: int(type.gid), types)
+        list_data = dict(zip(type_ids, type_names))
+
+    elif list_type == "school":
+        types = GiseduSchoolType.objects.all()
+        type_names = map(lambda type: str(type.school_type), types)
+        type_ids = map(lambda type: type.gid, types)
+        list_data = dict(zip(type_ids, type_names))
+
+    return render_to_response('json/base.json', {'json': json.dumps(list_data)}, context_instance=RequestContext(request))
+
+def list_by_type(request, list_type, type_id):
+    list_data = None
+
+    if list_type == "organization":
+        orgs = GiseduOrg.objects.filter(org_type=type_id)
+        org_names = map(lambda org: str(org.org_nm), orgs)
+        org_ids = map(lambda org: org.gid, orgs)
+        list_data = dict(zip(org_ids, org_names))
+
+    elif list_type == "school":
+        schools = GiseduSchool.objects.filter(school_type=type_id)
+        school_names = map(lambda school: str(school.school_name), schools)
+        school_ids = map(lambda school: school.gid, schools)
+        list_data = dict(zip(school_ids, school_names))
 
     return render_to_response('json/base.json', {'json': json.dumps(list_data)}, context_instance=RequestContext(request))
 

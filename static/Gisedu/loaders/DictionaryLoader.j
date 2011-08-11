@@ -4,6 +4,7 @@
 {
     CPDictionary m_Dictionary   @accessors(property=dictionary);
     CPString m_szCategory       @accessors(property=category);
+    CPString m_szSubCategory    @accessors(property=subCategory);//remove this once refactoring is done. Find a better way
 
     CPString m_szUrl;
     CPURLConnection m_Connection; //To pull data from django

@@ -3,6 +3,7 @@
 @import "StringFilterView.j"
 @import "IntegerFilterView.j"
 @import "StringIdMapFilterView.j"
+@import "IdStringMapFilterView.j"
 @import "BooleanFilterView.j"
 
 @import "../FilterManager.j"
@@ -105,36 +106,39 @@
 
     var names = nil;
 
-    if(filterType == "county")
-        names = [[m_OverlayManager polygonalDataList:"county"] allKeysForObject:[item value]];
-    else if(filterType == "school_district")
-        names = [[m_OverlayManager polygonalDataList:"school_district"] allKeysForObject:[item value]];
-    else if(filterType == "house_district")
-        names = [[m_OverlayManager polygonalDataList:"house_district"] allKeysForObject:[item value]];
-    else if(filterType == "senate_district")
-        names = [[m_OverlayManager polygonalDataList:"senate_district"] allKeysForObject:[item value]];
-    else if(filterType == "school_itc")
-        names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
-    else if(filterType == "ode_class")
-        names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
-    else if(filterType == "school")
-        names = [[m_OverlayManager schoolTypes] allKeysForObject:[item value]];
-    else if(filterType == "organization")
-        names = [[m_OverlayManager orgTypes] allKeysForObject:[item value]];
+    var polygonalFilterTypes = ['county', 'school_district', 'house_district', 'senate_district'];
+    var pointFilterTypes = ['organization', 'school'];
 
     var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
-    var filterLabel = "Generic Filter";
+    var filterLabel = "All " + filterTypeName + " Filter";
 
-    if(names)
+    if(polygonalFilterTypes.indexOf(filterType) != -1)
     {
+        var filterName = [[m_OverlayManager polygonalDataList:filterType] objectForKey:[item value]];
+
+        if(filterName)
+            filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if(pointFilterTypes.indexOf(filterType) != -1)
+    {
+        var filterName = [[m_OverlayManager pointDataTypes:filterType] objectForKey:[item value]];
+
+        if(filterName)
+            filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if(filterType == "school_itc")
+    {
+        names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
+
         if([names count] > 0)
             filterLabel = [names objectAtIndex:0] + " " + filterTypeName + " Filter";
-        else
-            filterLabel = "All " + filterTypeName + " Filter";
     }
-    else
+    else if(filterType == "ode_class")
     {
-        filterLabel = [item value] + " " + filterTypeName + " Filter";
+        names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
+
+        if([names count] > 0)
+            filterLabel = [names objectAtIndex:0] + " " + filterTypeName + " Filter";
     }
 
     return [filterLabel capitalizedString];
@@ -156,35 +160,37 @@
 
         var filterType = [m_FilterManager typeFromFilter:filter];
 
+        //TODO MARK
+
         if(filterType == "county")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"county"]];
         }
         else if(filterType == "school_district")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"school_district"]];
         }
         else if(filterType == "senate_district")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"senate_district"]];
         }
         else if(filterType == "house_district")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"house_district"]];
         }
         else if(filterType == "organization")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager orgTypes]];
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:"organization"]];
         }
         else if(filterType == "school")
         {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager schoolTypes]];
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:"school"]];
         }
         else if(filterType == "school_itc")
         {

@@ -141,10 +141,11 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     console.log("AppController:-mapViewIsReady() called");
 
-    [m_OverlayManager loadOrganizationTypeList];
-    [m_OverlayManager loadSchoolTypeList];
+    [m_OverlayManager loadPointDataTypeLists];
+    
     [m_OverlayManager loadSchoolItcTypeList];
     [m_OverlayManager loadSchoolOdeTypeList];
+    
     [m_OverlayManager loadPolygonalDataLists];
 
     [m_LeftSideTabView mapViewIsReady:mapView];
@@ -392,13 +393,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     else
     {
         var parentValue = [sender parentForItem:item];
-        var orgTypeList = [[m_OverlayManager orgTypes] allValues]
+        var orgTypeList = [[m_OverlayManager pointDataTypes:"organization"] allValues]
 
         if([orgTypeList indexOfObject:parentValue] != CPNotFound)
         {
             orgNames = [m_OverlayManager orgNames];
             var orgId = [orgNames objectForKey:item];
-            var curOrg = [[m_OverlayManager organizations] objectForKey:orgId];
+            var curOrg = [m_OverlayManager getPointObject:"organization" objId:orgId];
 
             [[curOrg overlay] toggleInfoWindow];
             [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];
@@ -474,8 +475,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     houseDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"house_district"];
     senateDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"senate_district"];
     schoolDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"school_district"];
-    var organizations = [m_OverlayManager organizations];
-    var schools = [m_OverlayManager schools];
 
     for(var i=0; i < [resultSet count]; i++)
     {
@@ -485,68 +484,56 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         itemType = [items objectAtIndex:0];
         itemId = [items objectAtIndex:1];
 
-        if(itemType == "county")
+        if(itemType == "county" || itemType == "house_district"
+        || itemType == "school_district" || itemType == "senate_district")
         {
-            [self handlePolygonFilterResult:countyOverlays dataType:"county" category:"Counties"];
+            [self handlePolygonFilterResult:itemType itemId:itemId];
         }
-        else if(itemType == "house_district")
+        else if(itemType == "organization" || itemType == "school")
         {
-            [self handlePolygonFilterResult:houseDistrictOverlays dataType:"house_district" category:"House Districts"];
-        }
-        else if(itemType == "senate_district")
-        {
-            [self handlePolygonFilterResult:senateDistrictOverlays dataType:"senate_district" category:"Senate Districts"];
-        }
-        else if(itemType == "school_district")
-        {
-            [self handlePolygonFilterResult:schoolDistrictOverlays dataType:"school_district" category:"School Districts"];
-        }
-        else if(itemType == "org")
-        {
-            var curOrg = [m_OverlayManager getOrganization:itemId];
-
-            if([curOrg overlay])
-            {
-                [[curOrg overlay] addToMapView:m_MapView];
-                [[m_LeftSideTabView outlineView] addItem:[curOrg name] forCategory:[curOrg type]];
-            }
-            else
-            {
-                [curOrg loadPointOverlay:YES];
-                [[m_LeftSideTabView outlineView] addItem:[curOrg name] forCategory:[curOrg type]];
-            }
-        }
-        else if(itemType == "school")
-        {
-            var curSchool = [m_OverlayManager getSchool:itemId];
-            
-            if([curSchool overlay])
-            {
-                [[curSchool overlay] addToMapView:m_MapView];
-                [[m_LeftSideTabView outlineView] addItem:[curSchool name] forCategory:[curSchool type]];
-            }
-            else
-            {
-                [curSchool loadPointOverlay:YES];
-                [[m_LeftSideTabView outlineView] addItem:[curSchool name] forCategory:[curSchool type]];
-            }
+            [self handlePointFilterResult:itemType itemId:itemId];
         }
     }
 
     [[m_LeftSideTabView outlineView] sortItems];
 }
 
-- (void)handlePolygonFilterResult:(CPDictionary)overlayDict dataType:(CPString)dataType category:(CPString)category
+- (void)handlePolygonFilterResult:(CPString)dataType itemId:(CPInteger)itemId
 {
+    var longNameMap = {
+                        'county' : "Counties",
+                        'school_district' : "School Districts",
+                        'senate_district' : "Senate Districts",
+                        'house_district' : "House Districts",
+    }
+
+    var overlayDict = [m_OverlayManager polygonalDataOverlays:dataType];
+    
     if([overlayDict containsKey:itemId])
     {
         overlay = [overlayDict objectForKey:itemId];
         [overlay addToMapView];
-        [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:category];
+        [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:longNameMap[dataType]];
     }
     else
     {
         [m_OverlayManager loadPolygonOverlay:dataType withId:itemId andShowOnLoad:YES];
+    }
+}
+
+- (void)handlePointFilterResult:(CPString)dataType itemId:(CPInteger)itemId
+{
+    var curObject = [m_OverlayManager getPointObject:dataType objId:itemId];
+
+    if([curObject overlay])
+    {
+        [[curObject overlay] addToMapView:m_MapView];
+        [[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
+    }
+    else
+    {
+        [curObject loadPointOverlay:YES];
+        [[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
     }
 }
 
