@@ -18,7 +18,6 @@ var g_FilterManagerInstance = nil;
     CPDictionary m_FilterMap    @accessors(property=filterMap);   //Maps Filter to Filter Type Name (ListFilter -> 'org', IntegerFilter -> 'mbit_less')
 
     var m_FilterRequestModifierMap;
-    var m_FilterRequestBaseMap;
 }
 
 - (void)init
@@ -39,6 +38,7 @@ var g_FilterManagerInstance = nil;
                                         'house_district' : "house_district",
                                         'senate_district' : "senate_district",
                                         'school_district' : "school_district",
+                                        'joint_voc_sd' : "joint_voc_sd",
                                         'connectivity_less' : "broadband_less",
                                         'connectivity_greater' : "broadband_greater",
                                         'school_itc' : "itc",
@@ -46,21 +46,14 @@ var g_FilterManagerInstance = nil;
                                         'organization' : "organization_by_type",
                                         'school' : "school_by_type",
                                         'comcast_coverage' : "comcast",
+                                        'atomic_learning' : "atomic_learning",
                                     }
 
         m_FilterOptionsMap = {
                                 'school' : ['school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater'],
-                                'school_district' : ['comcast_coverage']
+                                'school_district' : ['comcast_coverage', 'atomic_learning'],
+                                'joint_voc_sd' : ['atomic_learning']
                              }
-
-        m_FilterRequestBaseMap = {
-                                    'county' : "/filter/county_by_name=",
-                                    'house_district' : "/filter/house_district=",
-                                    'senate_district' : "/filter/senate_district=",
-                                    'school_district' : "/filter/school_district=",
-                                    'school' : "/filter/school_by_type=",
-                                    'organization' : "/filter/organization_by_type="
-                                }
     }
 
     return self;
@@ -94,13 +87,14 @@ var g_FilterManagerInstance = nil;
  {
     var newFilter = nil;
 
-    if(type == 'county' || type == 'school_district' || type == 'organization'
-        || type == 'school' || type == 'school_itc' || type == 'ode_class'
-        || type == 'house_district' || type == 'senate_district')
+    var basicFilterTypes = [m_OverlayManager basicDataTypes];
+
+    if(basicFilterTypes.indexOf(type) != -1 || type == 'organization'
+        || type == 'school')
         newFilter = [[GiseduFilter alloc] initWithValue:'All'];
     else if(type == 'connectivity_less' || type == 'connectivity_greater')
         newFilter = [[GiseduFilter alloc] initWithValue:100];
-    else if(type == 'comcast_coverage')
+    else if(type == 'comcast_coverage' || type == 'atomic_learning')
         newFilter = [[GiseduFilter alloc] initWithValue:YES];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
@@ -198,7 +192,7 @@ var g_FilterManagerInstance = nil;
 
     console.log("Final Filter Chain = " + filterChain);
 
-    var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization'];
+    var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization', 'joint_voc_sd'];
     var keyFilterItemList = ['school', 'organization'];
 
     var keyFilterType = nil;

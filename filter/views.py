@@ -4,8 +4,7 @@ import string
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from gisedu.models import OhioCounties, OhioSchoolDistricts, OhioHouseDistricts, OhioSenateDistricts
-from organizations.models import GiseduOrg
-from schools.models import GiseduSchool
+from point_objects.models import GiseduSchool, GiseduOrg, GiseduJointVocationalSchoolDistrict
 
 def parse_filter(request, filter_chain):
     queries = string.split(filter_chain, '/')
@@ -25,6 +24,8 @@ def parse_filter(request, filter_chain):
         filter_school_by_type(key_filter_options, queries, query_results)
     elif 'organization_by_type' in key_filter_options:
         filter_organization_by_type(key_filter_options, queries, query_results)
+    elif 'joint_voc_sd' in key_filter_options:
+        filter_joint_voc_school_district(key_filter_options, queries, query_results)
 
     print "Query Results " + str(query_results)
 
@@ -42,6 +43,8 @@ def parse_filter(request, filter_chain):
             typeId_results.append("school:" + str(result.gid))
         elif isinstance(result, GiseduOrg):
             typeId_results.append("organization:" + str(result.gid))
+        elif isinstance(result, GiseduJointVocationalSchoolDistrict):
+            typeId_results.append("joint_voc_sd:" + str(result.gid))
 
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
 
@@ -59,7 +62,6 @@ def process_school_in_filter(key_objects, object):
 
 def process_org_in_filter(key_objects, object):
     return key_objects.filter(the_geom__within=object.the_geom)
-
 
 def filter_county(options, query_results, key_objects=None, object_filter=None):
     option_argument = options['county']
@@ -88,6 +90,15 @@ def filter_school_district(options, query_results, key_objects=None, object_filt
     if 'comcast' in options:
         comcast_argument = (options['comcast'].upper() == "TRUE" or options['comcast'].upper() == "T")
         sd_objects = sd_objects.filter(comcast_coverage=comcast_argument)
+        query_results.extend(sd_objects)
+
+        if key_objects is not None and object_filter is not None:
+            key_objects_results = [object_filter(key_objects, dist) for dist in list(sd_objects)]
+            return reduce(lambda x, y: x | y, key_objects_results)
+
+    if 'atomic_learning' in options:
+        atomic_argument = (options['atomic_learning'].upper() == "TRUE" or options['atomic_learning'].upper() == "T")
+        sd_objects = sd_objects.filter(has_atomic_learning=atomic_argument)
         query_results.extend(sd_objects)
 
         if key_objects is not None and object_filter is not None:
@@ -171,6 +182,25 @@ def filter_organization_by_type(key_options, queries, query_results):
         key_objects = GiseduOrg.objects.all()
     else:
         key_objects = GiseduOrg.objects.filter(org_type__pk=key_argument)
+
+    key_objects = process_spatial_filters(key_objects, query_results, queries, process_org_in_filter)
+    query_results.extend(key_objects)
+
+    return query_results
+
+def filter_joint_voc_school_district(key_options, queries, query_results):
+    key_argument = key_options['joint_voc_sd']
+
+    if key_argument == "All":
+        key_objects = GiseduJointVocationalSchoolDistrict.objects.all()
+    else:
+        key_objects = GiseduJointVocationalSchoolDistrict.objects.filter(pk=key_argument)
+
+    print("JVSD Objects = " + str(key_objects))
+
+    if 'atomic_learning' in key_options:
+        atomic_argument = (key_options['atomic_learning'].upper() == "TRUE" or key_options['atomic_learning'].upper() == "T")
+        key_objects = key_objects.filter(has_atomic_learning=atomic_argument)
 
     key_objects = process_spatial_filters(key_objects, query_results, queries, process_org_in_filter)
     query_results.extend(key_objects)

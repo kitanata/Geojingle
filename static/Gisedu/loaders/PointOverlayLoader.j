@@ -4,7 +4,6 @@
 
 @implementation PointOverlayLoader : CPControl
 {
-    CPInteger m_nIdentifier @accessors(property=identifier);
     BOOL m_bVisibleOnLoad @accessors(property=showOnLoad);
 
     PointOverlay m_PointOverlay @accessors(property=overlay);
@@ -13,10 +12,9 @@
     CPString m_ConnectionURL @accessors(property=url);
 }
 
-- (id)initWithIdentifier:(CPInteger)identifier andUrl:(CPString)connectionUrl
+- (id)initWithRequestUrl:(CPString)connectionUrl
 {
     m_szName = "Undefined";
-    m_nIdentifier = identifier;
     m_Polygon = nil;
     m_ConnectionURL = connectionUrl;
 
@@ -28,7 +26,7 @@
     m_bVisibleOnLoad = showOnLoad;
 
     [m_Connection cancel];
-    m_Connection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL + m_nIdentifier] delegate:self];
+    m_Connection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL] delegate:self];
 }
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
@@ -54,7 +52,6 @@
 
         if(m_PointOverlay != nil)
         {
-            [m_PointOverlay setPk:m_nIdentifier];
             [m_PointOverlay setVisible:m_bVisibleOnLoad];
         }
 

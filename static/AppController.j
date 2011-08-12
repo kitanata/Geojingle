@@ -141,12 +141,9 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     console.log("AppController:-mapViewIsReady() called");
 
+    [m_OverlayManager loadBasicDataTypeMaps];
+
     [m_OverlayManager loadPointDataTypeLists];
-    
-    [m_OverlayManager loadSchoolItcTypeList];
-    [m_OverlayManager loadSchoolOdeTypeList];
-    
-    [m_OverlayManager loadPolygonalDataLists];
 
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
@@ -155,7 +152,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     console.log("AppController:-mapViewIsReady() finished");
 }
 
-- (void)onPolygonalDataListLoaded:(CPString)dataType
+- (void)onBasicDataTypeMapsLoaded:(CPString)dataType
 {
     if(dataType == "county")
         [self onUpdateMapFilters:self];
@@ -358,8 +355,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
             
     if([sender parentForItem:item] == "Counties")
     {
-        counties = [m_OverlayManager polygonalDataList:"county"];
-        countyOverlays = [m_OverlayManager polygonalDataOverlays:"county"];
+        counties = [m_OverlayManager basicDataTypeMap:"county"];
+        countyOverlays = [m_OverlayManager basicDataOverlayMap:"county"];
 
         itemPk = [counties objectForKey:item];
 
@@ -371,8 +368,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     }
     else if([sender parentForItem:item] == "School Districts")
     {
-        schoolDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"school_district"];
-        schoolDistricts = [m_OverlayManager polygonalDataList:"school_district"];
+        schoolDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"school_district"];
+        schoolDistricts = [m_OverlayManager basicDataTypeMap:"school_district"];
 
         itemPk = [schoolDistricts objectForKey:item];
 
@@ -471,10 +468,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     [[m_LeftSideTabView outlineView] clearItems];
 
-    countyOverlays = [m_OverlayManager polygonalDataOverlays:"county"];
-    houseDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"house_district"];
-    senateDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"senate_district"];
-    schoolDistrictOverlays = [m_OverlayManager polygonalDataOverlays:"school_district"];
+    countyOverlays = [m_OverlayManager basicDataOverlayMap:"county"];
+    houseDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"house_district"];
+    senateDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"senate_district"];
+    schoolDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"school_district"];
+
+    var polygonFilterResultItems = ["county", "house_district", "school_district", "senate_district"];
+    var pointFilterResultItems = ["organization", "school", "joint_voc_sd"];
 
     for(var i=0; i < [resultSet count]; i++)
     {
@@ -484,12 +484,11 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         itemType = [items objectAtIndex:0];
         itemId = [items objectAtIndex:1];
 
-        if(itemType == "county" || itemType == "house_district"
-        || itemType == "school_district" || itemType == "senate_district")
+        if(polygonFilterResultItems.indexOf(itemType) != -1)
         {
             [self handlePolygonFilterResult:itemType itemId:itemId];
         }
-        else if(itemType == "organization" || itemType == "school")
+        else if(pointFilterResultItems.indexOf(itemType) != -1)
         {
             [self handlePointFilterResult:itemType itemId:itemId];
         }
@@ -507,7 +506,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
                         'house_district' : "House Districts",
     }
 
-    var overlayDict = [m_OverlayManager polygonalDataOverlays:dataType];
+    var overlayDict = [m_OverlayManager basicDataOverlayMap:dataType];
     
     if([overlayDict containsKey:itemId])
     {
@@ -524,6 +523,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 - (void)handlePointFilterResult:(CPString)dataType itemId:(CPInteger)itemId
 {
     var curObject = [m_OverlayManager getPointObject:dataType objId:itemId];
+
+    //console.log("handlePointFilterResult curObject=" + curObject);
 
     if([curObject overlay])
     {

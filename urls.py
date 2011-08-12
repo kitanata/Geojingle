@@ -27,19 +27,12 @@ urlpatterns = patterns('',
     (r'^senate_district/(?P<district_id>\d+)/', 'gisedu.views.senate_district'),
 
     #Point Data
-    (r'^org_geom/(?P<org_id>\d+)/', 'organizations.views.org_geom'),
-    (r'^school_geom/(?P<school_id>\d+)/', 'schools.views.school_geom'),
-
-    (r'^org_info/(?P<org_id>\d+)/', 'organizations.views.org_info'),
-
-    (r'^org_infobox/(?P<org_id>\d+)/', 'organizations.views.org_infobox'),
-    (r'^school_infobox/(?P<school_id>\d+)/', 'schools.views.school_infobox'),
+    (r'^point_geom/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_geom_by_type'),
+    (r'^point_info/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_info_by_type'),
+    (r'^point_infobox/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_infobox_by_type'),
 
     (r'^list/(?P<list_type>\w+)/type/(?P<type_id>\d+)', 'gisedu.views.list_by_type'),
     (r'^list/(?P<list_type>\w+)', 'gisedu.views.list'),
-
-    (r'^school_itc_list/', 'schools.views.school_itc_list'),
-    (r'^school_ode_list/', 'schools.views.school_ode_list'),
 
     (r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filter.views.parse_filter'),
 )

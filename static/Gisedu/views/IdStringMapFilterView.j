@@ -88,7 +88,7 @@
     else
         curSelItem = [m_SelectionControl stringValue];
 
-    console.log("AcceptedValues is " + m_AcceptedValues);
+    //console.log("AcceptedValues is " + m_AcceptedValues);
 
     if(curSelItem == "All")
     {

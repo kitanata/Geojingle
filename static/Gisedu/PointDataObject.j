@@ -1,10 +1,12 @@
 @import <Foundation/CPObject.j>
 
-@implementation Organization : CPObject
+//More of a manager for a point overlay, markers, infowindows, handles loading, etc
+@implementation PointDataObject : CPObject
 {
     CPInteger m_nIdentifier @accessors(property=pk);
     CPString m_szName       @accessors(property=name);
     CPString m_szType       @accessors(property=type);
+    CPString m_szDataType   @accessors(property=dataType); //'organization', 'school', 'joint_voc_sd' etc
 
     PointOverlayLoader m_PointLoader;
     PointOverlay m_Overlay  @accessors(property=overlay);
@@ -50,13 +52,14 @@
 
 - (void)loadPointOverlay:(BOOL)showOnLoad
 {
-    m_PointLoader = [[PointOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:(g_UrlPrefix + "/org_geom/")];
-    [m_PointLoader setAction:@selector(onOrgOverlayLoaded:)];
+    var loaderUrl = g_UrlPrefix + "/point_geom/" + m_szDataType + "/id/" + m_nIdentifier;
+    m_PointLoader = [[PointOverlayLoader alloc] initWithRequestUrl:loaderUrl];
+    [m_PointLoader setAction:@selector(onPointGeomLoaded:)];
     [m_PointLoader setTarget:self];
     [m_PointLoader loadAndShow:showOnLoad];
 }
 
-- (void)onOrgOverlayLoaded:(id)sender
+- (void)onPointGeomLoaded:(id)sender
 {
     m_Overlay = [sender overlay];
     [m_Overlay setTitle:m_szName];
@@ -69,12 +72,13 @@
         [m_Overlay addToMapView:mapView];
     }
 
-    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithIdentifier:m_nIdentifier andUrl:(g_UrlPrefix + "/org_infobox/")];
+    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;
+    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
     [m_InfoLoader setTarget:self];
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
 
-    if([m_Delegate respondsToSelector:@selector(onOrgOverlayLoaded:)])
-        [m_Delegate onOrgOverlayLoaded:self];
+    if([m_Delegate respondsToSelector:@selector(onPointGeomLoaded:)])
+        [m_Delegate onPointGeomLoaded:self];
 }
 
 - (void)onInfoWindowLoaded:(id)sender
@@ -116,15 +120,20 @@
     }
 }
 
-+ (id)orgWithId:(CPInteger)id andName:(CPString)theName andType:(CPString)theType
+- (void)removeFromMapView
 {
-    var newOrg = [[Organization alloc] init];
+    if(m_Overlay)
+        [m_Overlay removeFromMapView];
+}
 
-    [newOrg setPk:id];
-    [newOrg setName:theName];
-    [newOrg setType:theType];
++ (id)pointDataObjectWithIdentifier:(CPInteger)id dataType:(CPString)dataType
+{
+    var newDataObject = [[PointDataObject alloc] init];
 
-    return newOrg;
+    [newDataObject setPk:id];
+    [newDataObject setDataType:dataType];
+
+    return newDataObject;
 }
 
 @end

@@ -4,16 +4,14 @@
 
 @implementation InfoWindowOverlayLoader : CPControl
 {
-    CPInteger m_nIdentifier @accessors(property=identifier);
     InfoWindowOverlay m_InfoOverlay @accessors(property=overlay);
 
     CPURLConnection m_Connection; //To pull data from django
     CPString m_ConnectionURL @accessors(property=url);
 }
 
-- (id)initWithIdentifier:(CPInteger)identifier andUrl:(CPString)connectionUrl
+- (id)initWithRequestUrl:(CPString)connectionUrl
 {
-    m_nIdentifier = identifier;
     m_ConnectionURL = connectionUrl;
 
     return self;
@@ -22,7 +20,7 @@
 - (void)load
 {
     [m_Connection cancel];
-    m_Connection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL + m_nIdentifier] delegate:self];
+    m_Connection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL] delegate:self];
 }
 
 - (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError

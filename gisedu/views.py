@@ -5,8 +5,8 @@ from django.template.context import RequestContext
 import json
 from gisedu.models import OhioHouseDistricts, OhioSenateDistricts
 from models import OhioCounties, OhioSchoolDistricts
-from organizations.models import GiseduOrgType, GiseduOrg
-from schools.models import GiseduSchoolType, GiseduSchool
+from point_objects.models import SchoolItc, GiseduSchoolType, GiseduOrgType, \
+        SchoolAreaClassification, GiseduJointVocationalSchoolDistrict, GiseduOrg, GiseduSchool
 
 def browser_test(request):
     return render_to_response('browser_test.html', context_instance=RequestContext(request))
@@ -55,6 +55,24 @@ def list(request, list_type):
         type_names = map(lambda type: str(type.school_type), types)
         type_ids = map(lambda type: type.gid, types)
         list_data = dict(zip(type_ids, type_names))
+
+    elif list_type == "school_itc":
+        itcs = SchoolItc.objects.all()
+        itc_names = map(lambda itc: str(itc.itc), itcs)
+        itc_ids = map(lambda itc: itc.gid, itcs)
+        list_data = dict(zip(itc_ids, itc_names))
+
+    elif list_type == "ode_class":
+        classes = SchoolAreaClassification.objects.all()
+        ode_names = map(lambda cls: cls.classification, classes)
+        ode_ids = map(lambda cls: cls.gid, classes)
+        list_data = dict(zip(ode_ids, ode_names))
+
+    elif list_type == "joint_voc_sd":
+        jvsds = GiseduJointVocationalSchoolDistrict.objects.all()
+        jvsd_names = map(lambda jvsd: jvsd.jvsd_name, jvsds)
+        jvsd_ids = map(lambda jvsd: jvsd.gid, jvsds)
+        list_data = dict(zip(jvsd_ids, jvsd_names))
 
     return render_to_response('json/base.json', {'json': json.dumps(list_data)}, context_instance=RequestContext(request))
 

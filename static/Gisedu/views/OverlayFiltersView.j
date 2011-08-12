@@ -106,15 +106,16 @@
 
     var names = nil;
 
-    var polygonalFilterTypes = ['county', 'school_district', 'house_district', 'senate_district'];
+    var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
     var pointFilterTypes = ['organization', 'school'];
+    var booleanDataFilters = ['comcast_coverage', 'atomic_learning'];
 
     var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
     var filterLabel = "All " + filterTypeName + " Filter";
 
-    if(polygonalFilterTypes.indexOf(filterType) != -1)
+    if(basicDataFilterTypes.indexOf(filterType) != -1)
     {
-        var filterName = [[m_OverlayManager polygonalDataList:filterType] objectForKey:[item value]];
+        var filterName = [[m_OverlayManager basicDataTypeMap:filterType] objectForKey:[item value]];
 
         if(filterName)
             filterLabel = filterName + " " + filterTypeName + " Filter";
@@ -126,19 +127,12 @@
         if(filterName)
             filterLabel = filterName + " " + filterTypeName + " Filter";
     }
-    else if(filterType == "school_itc")
+    else if(booleanDataFilters.indexOf(filterType) != -1)
     {
-        names = [[m_OverlayManager schoolItcTypes] allKeysForObject:[item value]];
-
-        if([names count] > 0)
-            filterLabel = [names objectAtIndex:0] + " " + filterTypeName + " Filter";
-    }
-    else if(filterType == "ode_class")
-    {
-        names = [[m_OverlayManager schoolOdeTypes] allKeysForObject:[item value]];
-
-        if([names count] > 0)
-            filterLabel = [names objectAtIndex:0] + " " + filterTypeName + " Filter";
+        if([item value])
+            filterLabel = "Has " + filterTypeName + " Filter";
+        else
+            filterLabel = "Doesn't have " + filterTypeName + " Filter";
     }
 
     return [filterLabel capitalizedString];
@@ -160,47 +154,19 @@
 
         var filterType = [m_FilterManager typeFromFilter:filter];
 
-        //TODO MARK
+        var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
+        var pointDataFilters = ['organization', 'school', 'joint_voc_sd'];
+        var booleanDataFilters = ['comcast_coverage', 'atomic_learning'];
 
-        if(filterType == "county")
+        if(basicDataFilterTypes.indexOf(filterType) != -1)
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"county"]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
         }
-        else if(filterType == "school_district")
+        else if(pointDataFilters.indexOf(filterType) != -1)
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"school_district"]];
-        }
-        else if(filterType == "senate_district")
-        {
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"senate_district"]];
-        }
-        else if(filterType == "house_district")
-        {
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager polygonalDataList:"house_district"]];
-        }
-        else if(filterType == "organization")
-        {
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:"organization"]];
-        }
-        else if(filterType == "school")
-        {
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:"school"]];
-        }
-        else if(filterType == "school_itc")
-        {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager schoolItcTypes]];
-        }
-        else if(filterType == "ode_class")
-        {
-            m_CurrentFilterView = [[StringIdMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager schoolOdeTypes]];
+                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:filterType]];
         }
         else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
         {
@@ -209,7 +175,7 @@
             m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:acceptedValues];
         }
-        else if(filterType == "comcast_coverage")
+        else if(booleanDataFilters.indexOf(filterType) != -1)
         {
             m_CurrentFilterView = [[BooleanFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter];

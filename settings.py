@@ -100,8 +100,6 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'gisedu',
     'filter',
-    'organizations',
-    'schools',
     'session',
-    'jvsd'
+    'point_objects'
 )
