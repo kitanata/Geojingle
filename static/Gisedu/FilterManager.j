@@ -379,4 +379,67 @@ var g_FilterManagerInstance = nil;
     return resultSet;
 }
 
+- (id)toJson
+{
+    var userFilters = [[FilterManager getInstance] userFilters];
+    var filterJson = [];
+
+    for(var i=0; i < [userFilters count]; i++)
+    {
+        var curFilter = [userFilters objectAtIndex:i];
+
+        filterJson.push([self _buildFilterJson:curFilter]);
+        //[{'type': theType, 'value': theValue, 'children' : [filter, filter, filter]}]
+    }
+
+    console.log(filterJson);
+
+    return filterJson;
+}
+
+- (id) _buildFilterJson:(id)curFilter
+{
+    var curFilterType = [self typeFromFilter:curFilter];
+    var curFilterValue = [curFilter value];
+
+    var childNodes = [curFilter childNodes];
+
+    var childJson = [];
+
+    for(var i=0; i < [childNodes count]; i++)
+    {
+        childJson.push([self _buildFilterJson:[childNodes objectAtIndex:i]]);
+    }
+
+    return {"type" : curFilterType, "value" : curFilterValue, "children" : childJson};
+}
+
+- (void)fromJson:(id)jsonObject
+{
+    [m_UserFilters removeAllObjects];
+    
+    for(var i=0; i < jsonObject.length; i++)
+    {
+        var curJsonFilter = jsonObject[i];
+
+        [self _buildFilterFromJson:curJsonFilter parent:nil];
+    }
+
+    console.log("New User Filters are " + m_UserFilters);
+}
+
+- (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter
+{
+    var newFilter = [self createFilter:jsonFilter['type']];
+    [newFilter setValue:jsonFilter['value']];
+    [self addFilter:newFilter parent:parentFilter];
+
+    var children = jsonFilter['children'];
+
+    for(var i=0; i < children.length; i++)
+    {
+        [self _buildFilterFromJson:children[i] parent:newFilter];
+    }
+}
+
 @end

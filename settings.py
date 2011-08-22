@@ -101,5 +101,6 @@ INSTALLED_APPS = (
     'gisedu',
     'filter',
     'session',
-    'point_objects'
+    'cloud',
+    'point_objects',
 )

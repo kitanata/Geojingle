@@ -207,32 +207,24 @@ var SCDefaultSessionManager = nil;
 {
     if(aConnection == m_SessionSyncConnection)
     {
-        if (!data)
-            return;
-
-        var responseBody = [data objectFromJSON];
-
-        if (responseBody.username && responseBody.csrf_token)
-        {
-            m_csrfToken = responseBody.csrf_token;
-
-            [self setStatus:CPUserSessionLoggedInStatus];
-            [self setUserIdentifier:responseBody.username];
-        }
+        [self onUserAuthenticationSuccessful:data];
 
         if (m_Delegate && [m_Delegate respondsToSelector:@selector(onSessionSyncSuccessful:)])
             [m_Delegate onSessionSyncSuccessful:self];
     }
     else if(aConnection == m_LoginConnection)
     {
+        [self onUserAuthenticationSuccessful:data];
+
         [aConnection cancel];
 
-        m_csrfToken = data;
+        if ([m_Delegate respondsToSelector:@selector(onLoginSuccessful:)])
+            [m_Delegate onLoginSuccessful:self];
 
-        [self setStatus:CPUserSessionLoggedInStatus];
-        [self setUserIdentifier:[m_LoginPanel username]];
+        [m_LoginConnection start];
+        m_LoginConnection = nil;
 
-        [self onLoginSuccess];
+        [m_LoginPanel close];
     }
     else if(aConnection == m_RegisterConnection)
     {
@@ -244,6 +236,22 @@ var SCDefaultSessionManager = nil;
         [self setUserIdentifier:[m_RegisterPanel username]];
 
         [self onRegisterSuccess];
+    }
+}
+
+- (void)onUserAuthenticationSuccessful:(id)data
+{
+    if (!data)
+        return;
+
+    var responseBody = [data objectFromJSON];
+
+    if (responseBody.username && responseBody.csrf_token)
+    {
+        m_csrfToken = responseBody.csrf_token;
+
+        [self setStatus:CPUserSessionLoggedInStatus];
+        [self setUserIdentifier:responseBody.username];
     }
 }
 
@@ -351,19 +359,6 @@ var SCDefaultSessionManager = nil;
     m_LoginConnection = nil;
 
     [m_LoginPanel loginFailed];
-}
-
-- (void)onLoginSuccess
-{
-    console.log("onLoginSuccess called");
-
-    if ([m_Delegate respondsToSelector:@selector(onLoginSuccessful:)])
-        [m_Delegate onLoginSuccessful:self];
-
-    [m_LoginConnection start];
-    m_LoginConnection = nil;
-
-    [m_LoginPanel close];
 }
 
 - (void)onRegisterFailed

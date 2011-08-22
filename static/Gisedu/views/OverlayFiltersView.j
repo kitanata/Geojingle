@@ -293,4 +293,10 @@
     }
 }
 
+- (void)refreshOutline
+{
+    [m_OutlineView reloadItem:nil reloadChildren:YES];
+    [m_OutlineView expandItem:nil expandChildren:YES];
+}
+
 @end

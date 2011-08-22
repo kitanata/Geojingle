@@ -25,6 +25,8 @@
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
+@import "Gisedu/FileKit/FKFileController.j"
+
 var m_OverlayOptionsToolbarId = 'overlayOptions';
 var m_AddFilterToolbarId = 'addFilter';
 var m_DeleteFilterToolbarId = 'deleteFilter';
@@ -61,13 +63,23 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     var m_MapWidth;     //map's current width
 
     SCUserSessionManager m_SessionManager;
+    FKFileController m_ProjectCloudManager;
+
+    CPMenu m_FileMenu;
+    CPMenuItem m_FileNewMenuItem;       //reloads browser
+    CPMenuItem m_FileOpenMenuItem;      //open a project
+    CPMenuItem m_FileSaveMenuItem;      //save project
+    CPMenuItem m_FileSaveAsMenuItem;    //save project as
+    CPMenuItem m_FileSeparatorItem;
+    CPMenuItem m_FileExitMenuItem;      //exit Gisedu (closes browser tab)
 
     CPMenu m_AccountMenu;
     CPMenuItem m_AccountLoginMenuItem;
     CPMenuItem m_AccountRegisterMenuItem;
     CPMenuItem m_AccountLogOutMenuItem;
-    CPMenuItem m_AccountManageMenuItem;
     CPMenuItem m_AccountAdminMenuItem;
+
+    CPAlert m_ExitAlert;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -135,6 +147,9 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [CPURLConnection setClassDelegate:m_SessionManager];
     [m_SessionManager setDelegate:self];
     [m_SessionManager syncSession];
+
+    m_ProjectCloudManager = [FKFileController getInstance];
+    [m_ProjectCloudManager setDelegate:self];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -246,19 +261,28 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     console.log("AppController:-initMenu() called");
 
-    var menu = [[CPMenu alloc] initWithTitle:"dummy"];
+    var menu = [[CPMenu alloc] initWithTitle:"main_menu"];
 
-  	var menuItem1 = [[CPMenuItem alloc] initWithTitle:@"File" action:nil keyEquivalent:@"1"];
-  	[menu addItem:menuItem1];
+    //BEGIN FILE MENU
+    var fileMenuItem = [[CPMenuItem alloc] initWithTitle:@"File" action:nil keyEquivalent:@"F"];
+  	m_FileMenu = [[CPMenu alloc] initWithTitle:@"file_menu"];
+  	    m_FileNewMenuItem = [[CPMenuItem alloc] initWithTitle:@"New Project" action:@selector(onNewProject:) keyEquivalent:@"N"];
+        m_FileOpenMenuItem = [[CPMenuItem alloc] initWithTitle:@"Open Project" action:@selector(onOpenProject:) keyEquivalent:@"O"];
+        m_FileSaveMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project" action:@selector(onSaveProject:) keyEquivalent:@"S"];
+        m_FileSaveAsMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project As..." action:@selector(onSaveProjectAs:) keyEquivalent:nil];
+        m_FileSeparatorItem = [CPMenuItem separatorItem];
+        m_FileExitMenuItem = [[CPMenuItem alloc] initWithTitle:@"Exit Gisedu" action:@selector(onExitGisedu:) keyEquivalent:nil];
 
-  	var menu11 = [[CPMenu alloc] initWithTitle:@"dummy"];
-  	var menuItem111 = [[CPMenuItem alloc] initWithTitle:@"AAA" action:@selector(showAlert:) keyEquivalent:@"3"];
-  	[menu11 addItem:menuItem111];
-  	[menu11 addItem:[CPMenuItem separatorItem]];
-  	var menuItem112 = [[CPMenuItem alloc] initWithTitle:@"BBB" action:@selector(showAlert:) keyEquivalent:@"3"];
-  	[menu11 addItem:menuItem112];
+        [m_FileMenu addItem:m_FileNewMenuItem];
+        [m_FileMenu addItem:m_FileOpenMenuItem];
+        [m_FileMenu addItem:m_FileSaveMenuItem];
+        [m_FileMenu addItem:m_FileSaveAsMenuItem];
+        [m_FileMenu addItem:m_FileSeparatorItem];
+        [m_FileMenu addItem:m_FileExitMenuItem];
 
-	[menuItem1 setSubmenu:menu11];
+  	[fileMenuItem setSubmenu:m_FileMenu];
+  	[menu addItem:fileMenuItem];
+  	//END FILE MENU
 
   	var menuItem2 = [[CPMenuItem alloc] initWithTitle:@"Edit" action:nil keyEquivalent:@"4"];
   	[menu addItem:menuItem2];
@@ -288,23 +312,19 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     var accountMenuItem = [[CPMenuItem alloc] initWithTitle:"My Account" action:nil keyEquivalent:nil];
     m_AccountMenu = [[CPMenu alloc] initWithTitle:@"Account Menu"];
 	    m_AccountLoginMenuItem = [[CPMenuItem alloc] initWithTitle:"Login" action:@selector(onLoginUser:) keyEquivalent:"L"];
-	    m_AccountRegisterMenuItem = [[CPMenuItem alloc] initWithTitle:"Sign-Up" action:@selector(onRegisterUser:) keyEquivalent:"S"];
+	    m_AccountRegisterMenuItem = [[CPMenuItem alloc] initWithTitle:"Sign-Up" action:@selector(onRegisterUser:) keyEquivalent:"R"];
 	    m_AccountLogOutMenuItem = [[CPMenuItem alloc] initWithTitle:"Logout" action:@selector(onLogoutUser:) keyEquivalent:"L"];
-	    m_AccountManageMenuItem = [[CPMenuItem alloc] initWithTitle:"Manage" action:@selector(onManageUser:) keyEquivalent:"M"];
         m_AccountAdminMenuItem = [[CPMenuItem alloc] initWithTitle:"Admin" action:@selector(onAdminUser:) keyEquivalent:"A"];
-
-	    [m_AccountLogOutMenuItem setHidden:YES];
-	    [m_AccountManageMenuItem setHidden:YES];
-	    [m_AccountAdminMenuItem setHidden:YES];
 
 	    [m_AccountMenu addItem:m_AccountLoginMenuItem];
 	    [m_AccountMenu addItem:m_AccountRegisterMenuItem];
-	    [m_AccountMenu addItem:m_AccountManageMenuItem];
 	    [m_AccountMenu addItem:m_AccountAdminMenuItem];
 	    [m_AccountMenu addItem:m_AccountLogOutMenuItem];
 
     [accountMenuItem setSubmenu:m_AccountMenu];
 	[menu addItem:accountMenuItem];
+
+	[self updateMenuItems:NO];
 
 	console.log("AppController:-initMenu() finished");
 }
@@ -587,14 +607,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onSessionSyncSuccessful:(id)sender
 {
-    //Change Menu To Show Log-Out
-    [m_AccountLoginMenuItem setHidden:YES];
-    [m_AccountRegisterMenuItem setHidden:YES];
-    [m_AccountAdminMenuItem setHidden:NO];
-    [m_AccountLogOutMenuItem setHidden:NO];
-    
-    //Change the Project Title
-    [CPMenu setMenuBarTitle:[[sender userIdentifier] capitalizedString] + "'s Untitled Project"];
+    [self updateMenuItems:YES];
+    [self updateMenuBarTitle];
 }
 
 - (void)onSessionSyncFailed:(id)sender
@@ -604,42 +618,150 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onLoginSuccessful:(id)sender
 {
-    //Change Menu To Show Log-Out
-    [m_AccountLoginMenuItem setHidden:YES];
-    [m_AccountRegisterMenuItem setHidden:YES];
-    [m_AccountAdminMenuItem setHidden:NO];
-    [m_AccountLogOutMenuItem setHidden:NO];
-
-    //Change the Project Title
-    [CPMenu setMenuBarTitle:[[sender userIdentifier] capitalizedString] + "'s Untitled Project"];
+    [self updateMenuItems:YES];
+    [self updateMenuBarTitle];
+    [m_ProjectCloudManager loadProjectDictData];
 }
 
 - (void)onRegisterSuccessful:(id)sender
 {
     //Change Menu To Show Log-Out
-    [m_AccountLoginMenuItem setHidden:YES];
-    [m_AccountRegisterMenuItem setHidden:YES];
-    [m_AccountAdminMenuItem setHidden:NO];
-    [m_AccountLogOutMenuItem setHidden:NO];
-
-    //Change the Project Title
-    [CPMenu setMenuBarTitle:[[sender userIdentifier] capitalizedString] + "'s Untitled Project"];
+    [self updateMenuItems:YES];
+    [self updateMenuBarTitle];
 }
 
 - (void)onLogoutSuccessful:(id)sender
 {
-    [m_AccountLoginMenuItem setHidden:NO];
-    [m_AccountRegisterMenuItem setHidden:NO];
-    [m_AccountAdminMenuItem setHidden:YES];
-    [m_AccountLogOutMenuItem setHidden:YES];
+    [self updateMenuItems:NO];
+    [m_ProjectCloudManager clearProjectDictData];
+    [m_ProjectCloudManager setProjectName:"Untitled"];
 
-    [CPMenu setMenuBarTitle:"Untitled Project"];
+    [self updateMenuBarTitle];
 }
 
 - (void)onLogoutFailed:(id)sender
 {
     logoutFailedAlter = [CPAlert alertWithError:"Something went terrible wrong and we were unable to log you out."];
     [logoutFailedAlter addButtonWithTitle:"Ok, I'll call eTech IT right away!"];
+}
+
+- (void)updateMenuItems:(BOOL)sessionActive
+{
+    [m_AccountLoginMenuItem setHidden:sessionActive];
+    [m_AccountRegisterMenuItem setHidden:sessionActive];
+
+    [m_FileOpenMenuItem setHidden:!sessionActive];
+    [m_FileSaveMenuItem setHidden:!sessionActive];
+    [m_FileSaveAsMenuItem setHidden:!sessionActive];
+    [m_FileSeparatorItem setHidden:!sessionActive];
+
+    [m_AccountAdminMenuItem setHidden:!sessionActive];
+    [m_AccountLogOutMenuItem setHidden:!sessionActive];
+}
+
+- (void)updateMenuBarTitle
+{
+    var userId = [[SCUserSessionManager defaultManager] userIdentifier];
+    var projectName = [[FKFileController getInstance] projectName];
+
+    var theTitle = "";
+
+    if(userId)
+        theTitle += [userId capitalizedString] + "'s ";
+
+    theTitle += [projectName capitalizedString] + " Project";
+
+    [CPMenu setMenuBarTitle:theTitle];
+}
+
+//FILE MENU SELECTORS
+
+- (void)onNewProject:(id)sender
+{
+    location.reload(true);
+}
+
+- (void)onOpenProject:(id)sender
+{
+    [m_ProjectCloudManager triggerOpenProject];
+}
+
+- (void)onSaveProject:(id)sender
+{
+    [m_ProjectCloudManager triggerSaveProject];
+}
+
+- (void)onSaveProjectAs:(id)sender
+{
+    [m_ProjectCloudManager triggerSaveProjectAs];
+}
+
+- (void)onExitGisedu:(id)sender
+{
+    m_ExitAlert = [[CPAlert alloc] init];
+    [m_ExitAlert setTitle:"Are you sure?"];
+    [m_ExitAlert setAlertStyle:CPInformationalAlertStyle];
+    [m_ExitAlert setMessageText:"Are you sure you want to close gisedu?"];
+    [m_ExitAlert addButtonWithTitle:@"No"];
+    [m_ExitAlert addButtonWithTitle:@"Yes"];
+    [m_ExitAlert setDelegate:self];
+    
+    [m_ExitAlert runModal];
+}
+
+- (void)alertDidEnd:(CPAlert)theAlert returnCode:(int)returnCode
+{
+    if(theAlert == m_ExitAlert && returnCode == 1)
+    {
+        [[CPApplication sharedApplication] terminate:self];
+
+        [[[CPApplication sharedApplication] mainWindow] close];
+        [[[CPApplication sharedApplication] keyWindow] close];
+        [[[CPApplication sharedApplication] modalWindow] close];
+
+        [[theWindow platformWindow] orderOut:self];
+
+        window.close();
+
+        var badAlert = [CPAlert alertWithError:"Sorry. I could not close the window."];
+        [badAlert runModal];
+    }
+}
+
+- (id)buildJsonSaveData
+{
+    return {"filters": [[FilterManager getInstance] toJson]};
+}
+
+- (void)onOpenFileRequestSuccessful:(id)sender
+{
+    var jsonData = [sender jsonData];
+
+    var filters = jsonData['filters'];
+
+    [[FilterManager getInstance] fromJson:filters];
+    [[m_LeftSideTabView filtersView] refreshOutline];
+    [self onUpdateMapFilters:self];
+    [self updateMenuBarTitle];
+}
+
+- (void)onOpenFileRequestFailed:(id)sender
+{
+    var badAlert = [CPAlert alertWithError:"Sorry. I could not open the project. " + [sender error]];
+    [badAlert runModal];
+}
+
+- (void)onSaveFileRequestSuccessful:(id)sender
+{
+    var successAlert = [CPAlert alertWithError:"Your project was saved successfully to the server."];
+    [successAlert setAlertStyle:CPInformationalAlertStyle];
+    [successAlert runModal];
+}
+
+- (void)onSaveFileRequestFailed:(id)sender
+{
+    var badAlert = [CPAlert alertWithError:"Sorry. I could not save the project. " + [sender error]];
+    [badAlert runModal];
 }
 
 @end

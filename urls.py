@@ -20,6 +20,9 @@ urlpatterns = patterns('',
     (r'^session/', 'session.views.session_request'),
     (r'^register/', 'session.views.register_request'),
     (r'^check_username/(?P<username>\w+)', 'session.views.check_user'),
+
+    (r'^cloud/project_list/', 'cloud.views.project_list'),
+    (r'^cloud/project/(?P<project_name>(\w+\s?\W*)*\w+\W*)', 'cloud.views.project'),
     
     (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
     (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),

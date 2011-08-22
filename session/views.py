@@ -18,7 +18,6 @@ from django.core.context_processors import csrf
 
 @csrf_exempt
 def session_request(request):
-    print("Session Request Called")
     if request.method ==  'POST':
         return login_user(request)
     if request.method == 'DELETE':
@@ -31,7 +30,6 @@ def session_request(request):
 
 @csrf_exempt
 def register_request(request):
-    print("Register Request Called")
     if request.method == 'POST':
         return register_user(request)
     else:
