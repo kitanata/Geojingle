@@ -3,6 +3,7 @@
 @import "GiseduFilter.j"
 
 @import "GiseduFilterRequest.j"
+@import "GiseduFilterChain.j"
 
 var g_FilterManagerInstance = nil;
 
@@ -10,14 +11,14 @@ var g_FilterManagerInstance = nil;
 {
     OverlayManager m_OverlayManager;
 
-    CPArray m_UserFilters       @accessors(property=userFilters); //Filters that the user declares
-    CPArray m_ProcessedFilters;                                   //Filters that the filter engine optimizes for
+    CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
+    CPArray m_ProcessedFilters;                                         //Filters that the filter engine optimizes for
+    CPArray m_FilterChains;                                             //Cached Filter Chains
 
-    id m_Delegate         @accessors(property=delegate);
+    id m_Delegate                   @accessors(property=delegate);
 
-    CPDictionary m_FilterMap    @accessors(property=filterMap);   //Maps Filter to Filter Type Name (ListFilter -> 'org', IntegerFilter -> 'mbit_less')
-
-    var m_FilterRequestModifierMap;
+    var m_FilterRequestModifierMap  @accessors(property=filterRequestModifiers);
+    var m_FilterOptionsMap          @accessors(property=filterOptions);
 }
 
 - (void)init
@@ -29,7 +30,7 @@ var g_FilterManagerInstance = nil;
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
         m_ProcessedFilters = [CPArray array];
-        m_FilterMap = [CPDictionary dictionary];
+        m_FilterChains = [CPArray array];
 
         [self addFilter:[self createFilter:'county'] parent:nil];
 
@@ -98,14 +99,9 @@ var g_FilterManagerInstance = nil;
         newFilter = [[GiseduFilter alloc] initWithValue:YES];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
-    [m_FilterMap setObject:type forKey:newFilter];
+    [newFilter setType:type];
 
     return newFilter;
- }
-
- - (CPString)typeFromFilter:(CPTreeNode)filter
- {
-    return [m_FilterMap objectForKey:filter];
  }
 
 - (void)addFilter:(CPTreeNode)filter parent:(CPTreeNode)parent
@@ -170,213 +166,25 @@ var g_FilterManagerInstance = nil;
         else//leaf and has a parent
         {
             console.log("Current Filter is leaf and has parent");
-            var requestUrl = [self _buildRequestUrlFromFilter:curFilter];
 
-            if(requestUrl)
-            {
-                var newFilterRequest = [GiseduFilterRequest requestWithUrl:requestUrl];
-                [m_ProcessedFilters addObject:newFilterRequest];
-                [newFilterRequest trigger];
-            }
+            var filterChain = [GiseduFilterChain filterChain];
+            [self _buildFilterChain:curFilter withChain:filterChain];
+            [filterChain setDelegate:m_Delegate];
+            [m_FilterChains addObject:filterChain];
+
+            [filterChain sendFilterRequest];
         }
     }
 }
 
-- (CPString)_buildRequestUrlFromFilter:(id)leaf
-{
-    console.log("Building Request URL");
-
-    //First build the filter chain (leaf to parent)
-    var filterChain = [CPArray array];
-    [self _buildFilterChain:leaf withArray:filterChain];
-
-    console.log("Final Filter Chain = " + filterChain);
-
-    var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization', 'joint_voc_sd'];
-    var keyFilterItemList = ['school', 'organization'];
-
-    var keyFilterType = nil;
-    var filterChainBuffer = [CPArray array];
-    var filterRequestStrings = {}
-
-    //Pop Item off FilterChain
-    //Is the item a filter base?
-        //Is the item the "key" filter (org or school)?
-            //If so remember it in keyFilter variable
-        //if so build the filter base
-        //add to a list of filter base request strings
-    //else: Is the item an option of a current filter base?
-        //if so add to the filter base request string for that filter base
-    //else:
-        //Push back onto FilterChain
-    //Remove the keyFilter from the filterBase list
-    //Start with the keyFilter add the other filterbases onto it (concatenate them together)
-    while(true)
-    {
-        var curFilter = [filterChain lastObject];
-        [filterChain removeLastObject];
-
-        console.log("Current Filter is " + curFilter);
-
-        if(!curFilter)
-            break;
-
-        var curFilterType = [self typeFromFilter:curFilter];
-
-        console.log("Current Filter Type is " + curFilterType);
-
-        if(baseFilterItemList.indexOf(curFilterType) != -1)
-        {
-            //curFilter is a base for a filter query
-
-            if(keyFilterItemList.indexOf(curFilterType) != -1)
-            {
-                //curFilter is a key base filter
-                keyFilterType = curFilterType;
-                filterRequestStrings[curFilterType] = "/" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
-
-                console.log("Built KeyFilter Request String: " + filterRequestStrings[curFilterType]);
-            }
-            else
-            {
-                filterRequestStrings[curFilterType] = "/" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
-
-                console.log("Built BaseFilter Request String: " + filterRequestStrings[curFilterType]);
-            }
-
-            [filterChain addObjectsFromArray:filterChainBuffer];
-            [filterChainBuffer removeAllObjects];
-        }
-        else
-        {
-            var bNoBase = true;
-
-            for(baseFilterType in filterRequestStrings)
-            {
-                if(baseFilterType in m_FilterOptionsMap)
-                {
-                    var filterOptions = m_FilterOptionsMap[baseFilterType];
-                
-                    console.log("filterOptions = " + filterOptions);
-
-                    if(filterOptions.indexOf(curFilterType) != -1)
-                    {
-                        //add to the base filter
-                        filterRequestStrings[baseFilterType] += ":" + m_FilterRequestModifierMap[curFilterType] + "=" + [curFilter value];
-
-                        console.log("Updated BaseFilter Request String To: " + filterRequestStrings[curFilterType]);
-                        bNoBase = false;
-                    }
-                }
-            }
-
-            if(bNoBase)
-            {
-                [filterChainBuffer addObject:curFilter];
-            }
-        }
-    }
-
-    var requestUrl = g_UrlPrefix + "/filter";
-
-    if(keyFilterType in filterRequestStrings)
-        requestUrl += filterRequestStrings[keyFilterType]
-
-    for(filterString in filterRequestStrings)
-    {
-        if(filterRequestStrings[filterString] != filterRequestStrings[keyFilterType])
-            requestUrl += filterRequestStrings[filterString];
-    }
-
-    console.log("Resulting Request URL is: " + requestUrl);
-
-    return requestUrl;
-}
-
-- (void)_buildFilterChain:(id)filter withArray:(CPArray)filterChain
+- (void)_buildFilterChain:(id)filter withChain:(GiseduFilterChain)filterChain
 {
     if([filter parentNode])
-        [self _buildFilterChain:[filter parentNode] withArray:filterChain];
+        [self _buildFilterChain:[filter parentNode] withChain:filterChain];
 
-    [filterChain addObject:filter];
+    [filterChain addFilter:filter];
 
     console.log("Filter Chain = " + filterChain);
-}
-
-- (id)_extractKeyFilter:(CPArray)filterChain
-{
-    for(var i=0; i < [filterChain count]; i++)
-    {
-        var curFilter = [filterChain objectAtIndex:i];
-        var curFilterType = [self typeFromFilter:curFilter];
-
-        if(curFilterType == "organization" || curFilterType == "school")
-        {
-            [filterChain removeObject:curFilter];
-
-            return curFilter;
-        }
-    }
-}
-
-- (CPString)_buildFilterRequestModifier:(id)filter
-{
-    var filterType = [self typeFromFilter:filter];
-
-    return m_FilterRequestModifierMap[filterType] + [filter value];
-}
-
-- (void)onFilterLoaded:(id)filter
-{
-    console.log("onFilterLoaded called");
-
-    if([self filtersAreFinished])
-    {
-        if([m_Delegate respondsToSelector:@selector(onFilterManagerFiltered:)])
-            [m_Delegate onFilterManagerFiltered:[self processFilters]];
-    }
-}
-
-- (BOOL)filtersAreFinished
-{
-    return [self filtersAreFinished:m_ProcessedFilters];
-}
-
-- (BOOL)filtersAreFinished:(CPArray)filters
-{
-    for(var i=0; i < [filters count]; i++)
-    {
-        curFilter = [filters objectAtIndex:i];
-
-        console.log("FiltersAreFinished curFilter is " + curFilter);
-
-        if(![curFilter finished])
-            return NO;
-    }
-
-    return YES;
-}
-
-- (CPSet)processFilters
-{
-    console.log(m_ProcessedFilters);
-
-    return [self _processFilters:m_ProcessedFilters];
-}
-
-
-- (CPSet)_processFilters:(CPArray)filters
-{
-    resultSet = [CPSet set];
-
-    for(var i=0; i < [filters count]; i++)
-    {
-        curFilter = [filters objectAtIndex:i];
-
-        resultSet = [resultSet setByAddingObjectsFromArray:[curFilter resultSet]];
-    }
-
-    return resultSet;
 }
 
 - (id)toJson
@@ -399,7 +207,7 @@ var g_FilterManagerInstance = nil;
 
 - (id) _buildFilterJson:(id)curFilter
 {
-    var curFilterType = [self typeFromFilter:curFilter];
+    var curFilterType = [curFilter type];
     var curFilterValue = [curFilter value];
 
     var childNodes = [curFilter childNodes];

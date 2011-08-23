@@ -5,10 +5,12 @@
     BOOL m_bFinished    @accessors(property=finished);
     BOOL m_bCached      @accessors(property=cached);
 
-    CPString m_szUrl;
+    CPString m_szUrl    @accessors(property=url);
     CPURLConnection m_Connection; //To pull data from django
 
     CPArray m_ResultSet @accessors(property=resultSet);
+
+    id m_Delegate       @accessors(property=delegate);
 }
 
 - (id)initWithUrl:(CPString)url
@@ -76,7 +78,8 @@
 
         m_ResultSet = [CPArray arrayWithObjects:listData count:listData.length];
 
-        [[FilterManager getInstance] onFilterLoaded:self];
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestSuccessful:)])
+            [m_Delegate onFilterRequestSuccessful:self];
     }
 }
 

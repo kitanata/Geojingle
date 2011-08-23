@@ -102,7 +102,7 @@
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
-    var filterType = [m_FilterManager typeFromFilter:item];
+    var filterType = [item type];
 
     var names = nil;
 
@@ -152,7 +152,7 @@
         if(m_CurrentFilterView)
             [m_CurrentFilterView removeFromSuperview];
 
-        var filterType = [m_FilterManager typeFromFilter:filter];
+        var filterType = [filter type];
 
         var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
         var pointDataFilters = ['organization', 'school', 'joint_voc_sd'];

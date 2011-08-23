@@ -5,7 +5,9 @@ recreating the node. This gets around that."*/
 
 @implementation GiseduFilter : CPTreeNode
 {
-    id m_FilterValue    @accessors(property=value);
+    CPString m_FilterType   @accessors(property=type);
+    id m_FilterValue        @accessors(property=value);
+    id m_DisplayOptions     @accessors(property=displayOptions); //regular javascript map
 }
 
 - (id)initWithValue:(id)value

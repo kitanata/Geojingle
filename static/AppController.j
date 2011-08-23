@@ -480,7 +480,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [filterManager triggerFilters];
 }
 
-- (void)onFilterManagerFiltered:(CPSet)filterResult
+- (void)onFilterRequestSuccessful:(CPSet)filterResult
 {
     var resultSet = [filterResult allObjects];
 

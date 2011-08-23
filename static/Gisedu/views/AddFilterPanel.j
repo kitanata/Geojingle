@@ -41,7 +41,7 @@
         [m_FilterType setTitle:"Select Filter Here"];
 
         filterManager = [FilterManager getInstance];
-        parentType = [filterManager typeFromFilter:parentFilter]
+        parentType = [parentFilter type];
 
         m_ExclusionFilterMap = {
                                'county': ['county', 'school_district', 'house_district', 'senate_district'],
@@ -93,7 +93,7 @@
 
             while(parentIter != nil)
             {
-               parentType = [filterManager typeFromFilter:parentIter];
+               parentType = [parentIter type];
 
                var itemsExcluded = m_ExclusionFilterMap[parentType];
 
