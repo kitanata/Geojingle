@@ -78,16 +78,54 @@ var overlayManagerInstance = nil;
 
 - (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId
 {
-    [self loadOverlay:dataType withId:dataId andShowOnLoad:NO];
+    [self loadPolygonOverlay:dataType withId:dataId andShowOnLoad:NO];
+}
+
+- (void)loadPointOverlay:(CPString)dataType withId:(CPInteger)dataId
+{
+    [self loadPointOverlay:dataType withId:dataId andShowOnLoad:NO];
 }
 
 - (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId andShowOnLoad:(BOOL)show
 {
-    overlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:dataId andUrl:(g_UrlPrefix + "/" + dataType + "/")];
-    [overlayLoader setAction:@selector(onPolygonOverlayLoaded:)];
-    [overlayLoader setCategory:dataType];
-    [overlayLoader setTarget:self];
-    [overlayLoader loadAndShow:show];
+    var overlayDict = [self basicDataOverlayMap:dataType];
+
+    if([overlayDict containsKey:itemId])
+    {
+        overlay = [overlayDict objectForKey:itemId];
+        [overlay addToMapView];
+
+        if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
+            [m_Delegate onPolygonOverlayLoaded:overlay dataType:dataType];
+    }
+    else
+    {
+        overlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:dataId andUrl:(g_UrlPrefix + "/" + dataType + "/")];
+        [overlayLoader setAction:@selector(onPolygonOverlayLoaded:)];
+        [overlayLoader setCategory:dataType];
+        [overlayLoader setTarget:self];
+        [overlayLoader loadAndShow:show];
+    }
+}
+
+- (void)loadPointOverlay:(CPString)dataType withId:(CPInteger)dataId andShowOnLoad:(BOOL)show
+{
+    var curObject = [self getPointObject:dataType objId:itemId];
+
+    //console.log("handlePointFilterResult curObject=" + curObject);
+
+    if([curObject overlay])
+    {
+        [[curObject overlay] addToMapView:m_MapView];
+
+         if([m_Delegate respondsToSelector:@selector(onPointOverlayLoaded:dataType:)])
+            [m_Delegate onPointOverlayLoaded:curObject dataType:dataType];
+    }
+    else
+    {
+        [curObject loadPointOverlay:YES];
+        //[[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
+    }
 }
 
 - (void)onPolygonOverlayLoaded:(id)sender
@@ -103,6 +141,12 @@ var overlayManagerInstance = nil;
 
     if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
         [m_Delegate onPolygonOverlayLoaded:overlay dataType:[sender category]];
+}
+
+- (void)onPointGeomLoaded:(id)sender
+{
+    if([m_Delegate respondsToSelector:@selector(onPointOverlayLoaded:dataType:)])
+            [m_Delegate onPointOverlayLoaded:sender dataType:[sender type]];
 }
 
 - (void)loadBasicDataTypeMaps

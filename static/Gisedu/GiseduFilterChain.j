@@ -18,6 +18,7 @@
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
+    OverlayManager m_OverlayManager;
 
     id m_Delegate                       @accessors(property=delegate);
 }
@@ -31,6 +32,7 @@
         m_Filters = [CPArray array];
 
         m_FilterManager = [FilterManager getInstance];
+        m_OverlayManager = [OverlayManager getInstance];
     }
 
     return self;
@@ -173,10 +175,34 @@
 
 - (void)onFilterRequestSuccessful:(id)sender
 {
-    var resultSet = [sender resultSet];
+    var filterResult = [CPSet setWithArray:[sender resultSet]]; //to remove duplicates dummy. Array->Set->Array
+    var resultSet = [filterResult allObjects];
 
-    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestSuccessful:)])
-        [m_Delegate onFilterRequestSuccessful:[CPSet setWithArray:resultSet]];
+    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
+
+    var polygonFilterResultItems = ["county", "house_district", "school_district", "senate_district"];
+    var pointFilterResultItems = ["organization", "school", "joint_voc_sd"];
+
+    for(var i=0; i < [resultSet count]; i++)
+    {
+        typeIdPair = [resultSet objectAtIndex:i];
+        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
+
+        itemType = [items objectAtIndex:0];
+        itemId = [items objectAtIndex:1];
+
+        if(polygonFilterResultItems.indexOf(itemType) != -1)
+        {
+            [m_OverlayManager loadPolygonOverlay:itemType withId:itemId andShowOnLoad:YES];
+        }
+        else if(pointFilterResultItems.indexOf(itemType) != -1)
+        {
+            [m_OverlayManager loadPointOverlay:itemType withId:itemId andShowOnLoad:YES];
+        }
+    }
+
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
+        [m_Delegate onFilterRequestProcessed:self];
 }
 
 + (id)filterChain

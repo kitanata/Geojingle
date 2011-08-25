@@ -5,17 +5,46 @@
 
 @import "loaders/InfoWindowOverlayLoader.j"
 
+g_IconTypes = { "Map Marker" : "marker",
+                    "Map Marker With Dot" : "marker-dot",
+                    "Casetta" : "casetta",
+                    "Push-Pin" : "pushpin",
+                    "Circle" : "circle",
+                    "Rectangle" : "rectangle",
+                    "Educational Icon": "education" };
+
+g_EducationIconTypes = {"Cram/Night School" : "cramschool",
+                            "Dance Class" : "dance_class",
+                            "Daycare / Preschool" : "daycare",
+                            "High School" : "highschool",
+                            "Babysitter / Nanny" : "nanny",
+                            "Baby Nursery" : "nursery",
+                            "School / Academy" : "school",
+                            "Summer Camp" : "summercamp",
+                            "University / College" : "university" };
+
+g_MapIconColors = { "Black" : "black",
+                        "Blue" : "blue",
+                        "Green" : "green",
+                        "Grey" : "grey",
+                        "Purple" : "purple",
+                        "Red" : "red",
+                        "White" : "white",
+                        "Yellow" : "yellow" };
+
 @implementation PointOverlay : CPControl
 {
-    Marker m_GoogleMarker @accessors(property=marker);
+    Marker m_GoogleMarker           @accessors(property=marker);
 
-    MKLocation m_Point @accessors(property=point);
+    MKLocation m_Point              @accessors(property=point);
 
-    CPInteger m_nIdentifier @accessors(property=pk);
-    CPString m_szTitle      @accessors(property=title);
-    BOOL m_bVisible @accessors(property=visible);
+    CPInteger m_nIdentifier         @accessors(property=pk);
+    CPString m_szTitle              @accessors(property=title);
+    CPString m_szIconLocation       @accessors(property=icon);          // path like "education/school"
+    CPString m_szIconColor          @accessors(property=iconColor);     // the value part of g_MapIconColors "green" not "Green"
+    BOOL m_bVisible                 @accessors(property=visible);
 
-    id m_Delegate   @accessors(property=delegate);
+    id m_Delegate                   @accessors(property=delegate);
 }
 
 - (id)init
@@ -39,6 +68,9 @@
     {
         m_Point = location;
         m_bVisible = NO;
+
+        m_szIconLocation = "marker-dot";
+        m_szIconColor = "red";
     }
     
     return self;
@@ -55,19 +87,33 @@
         clickable: true,
         draggable: false,
         title: m_szTitle
-     };
+    };
+
+    if(m_szIconLocation && m_szIconColor)
+        markerOptions.icon = "/static/Resources/map_icons/" + m_szIconColor + "/" + m_szIconLocation + ".png";
 
     m_GoogleMarker = new gm.Marker(markerOptions);
 
     gm.event.addListener(m_GoogleMarker, 'click', function() {[self onClick];});
 }
 
-- (void)addToMapView:(MKMapView)mapView
+- (void)updateGoogleMarker
+{
+    [self removeFromMapView];
+
+    m_GoogleMarker = nil;
+
+    [self addToMapView];
+}
+
+- (void)addToMapView
 {
     if(m_GoogleMarker == nil)
     {
         [self createGoogleMarker];
     }
+
+    var mapView = [MKMapView getInstance];
 
     m_GoogleMarker.setMap([mapView gMap]);
 }

@@ -67,9 +67,7 @@
 
     if([sender showOnLoad])
     {
-        var mapView = [MKMapView getInstance];
-
-        [m_Overlay addToMapView:mapView];
+        [m_Overlay addToMapView];
     }
 
     var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;

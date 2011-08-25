@@ -23,46 +23,91 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="FilterManager.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="165" column="35" selection-start="5079" selection-end="5079" vertical-scroll-proportion="-8.357142">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GiseduFilterChain.j" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="1" selection-start="998" selection-end="998" vertical-scroll-proportion="-1.103679">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GiseduFilterRequest.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterRequest.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="66" column="1" selection-start="1294" selection-end="1294" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GiseduFilter.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilter.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="9" column="62" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="AppController.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/AppController.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="490" column="69" selection-start="18004" selection-end="18004" vertical-scroll-proportion="0.0">
+            <state line="124" column="86" selection-start="3909" selection-end="3909" vertical-scroll-proportion="-7.964286">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OverlayOptionsView.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayOptionsView.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="28" column="94" selection-start="1197" selection-end="1197" vertical-scroll-proportion="-7.571429">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PolygonOverlayOptionsView.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/PolygonOverlayOptionsView.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="1" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FilterManager.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="153" column="39" selection-start="4715" selection-end="4715" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GiseduFilterChain.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="186" column="5" selection-start="6030" selection-end="6030" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OverlayManager.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="102" column="62" selection-start="3628" selection-end="3628" vertical-scroll-proportion="-7.464286">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PointOverlay.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="15" column="15" selection-start="473" selection-end="493" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PointOverlayOptionsView.j" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/PointOverlayOptionsView.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="177" column="5" selection-start="5879" selection-end="5879" vertical-scroll-proportion="1.0225694">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AddFilterPanel.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="39" column="10" selection-start="1118" selection-end="1253" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PointDataObject.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/static/Gisedu/PointDataObject.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="68" column="5" selection-start="1714" selection-end="1714" vertical-scroll-proportion="-7.571429">
               <folding />
             </state>
           </provider>
@@ -82,12 +127,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/settings.py" />
-        <option value="$PROJECT_DIR$/session/views.py" />
-        <option value="$PROJECT_DIR$/urls.py" />
-        <option value="$PROJECT_DIR$/cloud/models.py" />
-        <option value="$PROJECT_DIR$/static/Gisedu/FileKit/FKFilePanel.j" />
-        <option value="$PROJECT_DIR$/cloud/views.py" />
         <option value="$PROJECT_DIR$/static/Frameworks/SCAuth/SCUserSessionManager.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/FileKit/FKFileController.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j" />
@@ -95,9 +134,15 @@
         <option value="$PROJECT_DIR$/static/Gisedu/GiseduFilter.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/FilterChain.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/GiseduFilterRequest.j" />
-        <option value="$PROJECT_DIR$/static/AppController.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/FilterManager.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/OverlayManager.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/PointOverlay.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/PointDataObject.j" />
+        <option value="$PROJECT_DIR$/static/AppController.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayOptionsView.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/PolygonOverlayOptionsView.j" />
+        <option value="$PROJECT_DIR$/static/Gisedu/views/PointOverlayOptionsView.j" />
       </list>
     </option>
   </component>
@@ -173,7 +218,47 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="MapKit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gis_Demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gis_Demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -539,43 +624,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="58" selection-start="996" selection-end="996" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/FileKit/FKFilePanel.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="99" column="36" selection-start="3389" selection-end="3389" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="57" column="1" selection-start="2294" selection-end="2294" vertical-scroll-proportion="-3.8214285" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/FileKit/FKFileController.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="194" column="5" selection-start="5857" selection-end="5857" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/LeftSideTabView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="70" selection-start="248" selection-end="259" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Frameworks/SCAuth/SCUserSessionManager.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="211" column="51" selection-start="5940" selection-end="5940" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cloud/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="0" selection-start="987" selection-end="987" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/session/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="98" column="32" selection-start="2944" selection-end="2944" vertical-scroll-proportion="0.0" />
@@ -586,23 +634,9 @@
         <state line="14" column="22" selection-start="484" selection-end="484" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="46" selection-start="4786" selection-end="4786" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="157" column="74" selection-start="4930" selection-end="4930" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilter.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="62" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -614,23 +648,86 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/static/AppController.j">
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilter.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="490" column="69" selection-start="18004" selection-end="18004" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="165" column="35" selection-start="5079" selection-end="5079" vertical-scroll-proportion="-8.357142">
+        <state line="9" column="62" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="1" selection-start="998" selection-end="998" vertical-scroll-proportion="-1.103679">
+        <state line="186" column="5" selection-start="6030" selection-end="6030" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="39" column="10" selection-start="1118" selection-end="1253" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="153" column="39" selection-start="4715" selection-end="4715" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="102" column="62" selection-start="3628" selection-end="3628" vertical-scroll-proportion="-7.464286">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/MapKit/MKMapView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="254" column="5" selection-start="5987" selection-end="5987" vertical-scroll-proportion="0.3962264">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointDataObject.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="68" column="5" selection-start="1714" selection-end="1714" vertical-scroll-proportion="-7.571429">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/AppController.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="124" column="86" selection-start="3909" selection-end="3909" vertical-scroll-proportion="-7.964286">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayOptionsView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="94" selection-start="1197" selection-end="1197" vertical-scroll-proportion="-7.571429">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/PolygonOverlayOptionsView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="1" selection-start="382" selection-end="382" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="15" column="15" selection-start="473" selection-end="493" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/PointOverlayOptionsView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="177" column="5" selection-start="5879" selection-end="5879" vertical-scroll-proportion="1.0225694">
           <folding />
         </state>
       </provider>

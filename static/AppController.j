@@ -122,7 +122,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
     [m_ContentView addSubview:m_LeftSideTabView];
 
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView andMapView:m_MapView];
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
     //Not added to mapview because default is minimized
 
     m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
@@ -329,19 +329,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 	console.log("AppController:-initMenu() finished");
 }
 
-- (void)onPolygonOverlayLoaded:(id)overlay dataType:(CPString)dataType
-{
-    var dataTypeNameMap = {
-                            'county' : "Counties",
-                            'school_district' : "School District",
-                            'house_district' : "House Districts",
-                            'senate_district' : "Senate Districts"
-    }
-
-    [overlay setDelegate:self];
-    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:dataTypeNameMap[dataType]];
-}
-
 - (void)onPolygonOverlaySelected:(id)sender
 {
     [m_OverlayOptionsView setPolygonOverlayTarget:sender];
@@ -475,87 +462,34 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onUpdateMapFilters:(id)sender
 {
+    [[m_LeftSideTabView outlineView] clearItems];
+
     filterManager = [FilterManager getInstance];
     [filterManager setDelegate:self];
     [filterManager triggerFilters];
 }
 
-- (void)onFilterRequestSuccessful:(CPSet)filterResult
+- (void)onPolygonOverlayLoaded:(id)overlay dataType:(CPString)dataType
 {
-    var resultSet = [filterResult allObjects];
-
-    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
-
-    [[m_LeftSideTabView outlineView] clearItems];
-
-    countyOverlays = [m_OverlayManager basicDataOverlayMap:"county"];
-    houseDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"house_district"];
-    senateDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"senate_district"];
-    schoolDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"school_district"];
-
-    var polygonFilterResultItems = ["county", "house_district", "school_district", "senate_district"];
-    var pointFilterResultItems = ["organization", "school", "joint_voc_sd"];
-
-    for(var i=0; i < [resultSet count]; i++)
-    {
-        typeIdPair = [resultSet objectAtIndex:i];
-        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
-
-        itemType = [items objectAtIndex:0];
-        itemId = [items objectAtIndex:1];
-
-        if(polygonFilterResultItems.indexOf(itemType) != -1)
-        {
-            [self handlePolygonFilterResult:itemType itemId:itemId];
-        }
-        else if(pointFilterResultItems.indexOf(itemType) != -1)
-        {
-            [self handlePointFilterResult:itemType itemId:itemId];
-        }
+    var dataTypeNameMap = {
+                            'county' : "Counties",
+                            'school_district' : "School District",
+                            'house_district' : "House Districts",
+                            'senate_district' : "Senate Districts"
     }
 
+    [overlay setDelegate:self];
+    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:dataTypeNameMap[dataType]];
+}
+
+- (void)onPointOverlayLoaded:(id)overlay dataType:(CPString)dataType
+{
+    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:[overlay type]];
+}
+
+- (void)onFilterRequestProcessed:(id)sender
+{
     [[m_LeftSideTabView outlineView] sortItems];
-}
-
-- (void)handlePolygonFilterResult:(CPString)dataType itemId:(CPInteger)itemId
-{
-    var longNameMap = {
-                        'county' : "Counties",
-                        'school_district' : "School Districts",
-                        'senate_district' : "Senate Districts",
-                        'house_district' : "House Districts",
-    }
-
-    var overlayDict = [m_OverlayManager basicDataOverlayMap:dataType];
-    
-    if([overlayDict containsKey:itemId])
-    {
-        overlay = [overlayDict objectForKey:itemId];
-        [overlay addToMapView];
-        [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:longNameMap[dataType]];
-    }
-    else
-    {
-        [m_OverlayManager loadPolygonOverlay:dataType withId:itemId andShowOnLoad:YES];
-    }
-}
-
-- (void)handlePointFilterResult:(CPString)dataType itemId:(CPInteger)itemId
-{
-    var curObject = [m_OverlayManager getPointObject:dataType objId:itemId];
-
-    //console.log("handlePointFilterResult curObject=" + curObject);
-
-    if([curObject overlay])
-    {
-        [[curObject overlay] addToMapView:m_MapView];
-        [[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
-    }
-    else
-    {
-        [curObject loadPointOverlay:YES];
-        [[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
-    }
 }
 
 

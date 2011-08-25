@@ -4,7 +4,6 @@
 
 @implementation PolygonOverlayOptionsView : CPView
 {
-    MKMapView m_MapView;
     PolygonOverlay m_OverlayPolygon;
 
     CPColorWell m_LineColorWell;
@@ -15,15 +14,13 @@
     CPCheckBox m_ShowButton;
 }
 
-- (id) initWithFrame:(CGRect)aFrame andMapView:(MKMapView)mapView
+- (id) initWithFrame:(CGRect)aFrame
 {
     self = [super initWithFrame:aFrame];
     [self setAutoresizingMask:CPViewHeightSizable | CPViewMinXMargin];
 
     if(self)
     {
-        m_MapView = mapView;
-        
         lineColorLabel = [[CPTextField alloc] initWithFrame:CGRectMakeZero()]
         [lineColorLabel setStringValue:@"Polygon Line Color"];
         [lineColorLabel setFont:[CPFont systemFontOfSize:12.0]];
