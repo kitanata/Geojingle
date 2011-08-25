@@ -53,6 +53,18 @@
     {
         var gm = [MKMapView gmNamespace];
 
+        m_GooglePolygon = new gm.Polygon();
+
+        [self updateGooglePolygon];
+
+        gm.event.addListener(m_GooglePolygon, 'click', function() { [self onClick]; });
+    }
+}
+
+- (void)updateGooglePolygon
+{
+    if(m_GooglePolygon)
+    {
         var loc = nil
         var linePaths = [];
 
@@ -67,8 +79,8 @@
         {
             zIndex = 1;
         }
-
-        m_GooglePolygon = new gm.Polygon({
+        
+        var polyOptions = {
             paths: linePaths,
             strokeColor: m_LineColorCode,
             strokeOpacity: m_LineOpacity,
@@ -76,9 +88,9 @@
             fillColor: m_FillColorCode,
             fillOpacity: m_FillOpacity,
             zIndex: 1
-        });
+        };
 
-        gm.event.addListener(m_GooglePolygon, 'click', function() { [self onClick]; });
+        m_GooglePolygon.setOptions(polyOptions);
     }
 }
 

@@ -34,7 +34,7 @@ g_MapIconColors = { "Black" : "black",
 
 @implementation PointOverlay : CPControl
 {
-    Marker m_GoogleMarker           @accessors(property=marker);
+    var m_GoogleMarker              @accessors(property=marker);
 
     MKLocation m_Point              @accessors(property=point);
 
@@ -42,6 +42,7 @@ g_MapIconColors = { "Black" : "black",
     CPString m_szTitle              @accessors(property=title);
     CPString m_szIconLocation       @accessors(property=icon);          // path like "education/school"
     CPString m_szIconColor          @accessors(property=iconColor);     // the value part of g_MapIconColors "green" not "Green"
+    id m_IconOptions                @accessors(property=iconOptions);   // JS object representing additional options for the icon (used with circles and rects)
     BOOL m_bVisible                 @accessors(property=visible);
 
     id m_Delegate                   @accessors(property=delegate);
@@ -66,6 +67,15 @@ g_MapIconColors = { "Black" : "black",
 
     if(self)
     {
+        m_IconOptions = {
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            radius: 100
+        }
+        
         m_Point = location;
         m_bVisible = NO;
 
@@ -76,34 +86,80 @@ g_MapIconColors = { "Black" : "black",
     return self;
 }
 
+- (void)setIconOption:(CPString)option value:(id)value
+{
+    m_IconOptions[option] = value;
+}
+
 - (void)createGoogleMarker
 {
     var gm = [MKMapView gmNamespace];
-    var latLng = [m_Point googleLatLng];
 
-    var markerOptions =
-    {
-        position: latLng,
-        clickable: true,
-        draggable: false,
-        title: m_szTitle
-    };
-
-    if(m_szIconLocation && m_szIconColor)
-        markerOptions.icon = "/static/Resources/map_icons/" + m_szIconColor + "/" + m_szIconLocation + ".png";
-
-    m_GoogleMarker = new gm.Marker(markerOptions);
+    if(m_szIconLocation == "circle")
+        m_GoogleMarker = new gm.Circle();
+    else if(m_szIconLocation == "rectangle")
+        m_GoogleMarker = new gm.Rectangle();
+    else
+        m_GoogleMarker = new gm.Marker();
 
     gm.event.addListener(m_GoogleMarker, 'click', function() {[self onClick];});
+
+    [self updateGoogleMarker];
 }
 
 - (void)updateGoogleMarker
 {
-    [self removeFromMapView];
+    if(m_GoogleMarker)
+    {
+        var gm = [MKMapView gmNamespace];
+        var latLng = [m_Point googleLatLng];
 
-    m_GoogleMarker = nil;
+        var DEG_TO_METERS = 111120;
+        var METERS_TO_DEG = 0.000008999;
 
-    [self addToMapView];
+        if(m_szIconLocation == "circle")
+        {
+            var circleOptions = m_IconOptions;
+
+            circleOptions.center = latLng;
+            circleOptions.clickable = true;
+            circleOptions.title = m_szTitle;
+            circleOptions.zIndex = 3;
+
+            m_GoogleMarker.setOptions(circleOptions);
+        }
+        else if(m_szIconLocation == "rectangle")
+        {
+            var rectOptions = m_IconOptions;
+            var radius = m_IconOptions.radius * METERS_TO_DEG;
+
+            var rectSW = new gm.LatLng(latLng.lat() - radius, latLng.lng() - radius);
+            var rectNE = new gm.LatLng(latLng.lat() + radius, latLng.lng() + radius);
+
+            rectOptions.clickable = true;
+            rectOptions.title = m_szTitle;
+            rectOptions.zIndex = 2,
+            rectOptions.bounds = new gm.LatLngBounds(rectSW, rectNE);
+
+            m_GoogleMarker.setOptions(rectOptions);
+        }
+        else //normal marker
+        {
+            var markerOptions =
+            {
+                position: latLng,
+                clickable: true,
+                draggable: false,
+                title: m_szTitle,
+                zIndex: 4,
+            };
+
+            if(m_szIconLocation && m_szIconColor)
+                markerOptions.icon = "/static/Resources/map_icons/" + m_szIconColor + "/" + m_szIconLocation + ".png";
+
+            m_GoogleMarker.setOptions(markerOptions);
+        }
+    }
 }
 
 - (void)addToMapView
@@ -111,16 +167,16 @@ g_MapIconColors = { "Black" : "black",
     if(m_GoogleMarker == nil)
     {
         [self createGoogleMarker];
+        [self updateGoogleMarker];
     }
 
-    var mapView = [MKMapView getInstance];
-
-    m_GoogleMarker.setMap([mapView gMap]);
+    m_GoogleMarker.setMap([[MKMapView getInstance] gMap]);
 }
 
 - (void)removeFromMapView
 {
-    m_GoogleMarker.setMap(null);
+    if(m_GoogleMarker)
+        m_GoogleMarker.setMap(null);
 }
 
 // EVENTS

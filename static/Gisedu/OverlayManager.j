@@ -116,7 +116,7 @@ var overlayManagerInstance = nil;
 
     if([curObject overlay])
     {
-        [[curObject overlay] addToMapView:m_MapView];
+        [[curObject overlay] addToMapView];
 
          if([m_Delegate respondsToSelector:@selector(onPointOverlayLoaded:dataType:)])
             [m_Delegate onPointOverlayLoaded:curObject dataType:dataType];
