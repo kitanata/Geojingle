@@ -50,13 +50,13 @@
         [m_Delegate onOrgOverlaySelected:self];
 }
 
-- (void)loadPointOverlay:(BOOL)showOnLoad
+- (void)loadWithDisplayOptions:(id)displayOptions
 {
     var loaderUrl = g_UrlPrefix + "/point_geom/" + m_szDataType + "/id/" + m_nIdentifier;
     m_PointLoader = [[PointOverlayLoader alloc] initWithRequestUrl:loaderUrl];
     [m_PointLoader setAction:@selector(onPointGeomLoaded:)];
     [m_PointLoader setTarget:self];
-    [m_PointLoader loadAndShow:showOnLoad];
+    [m_PointLoader loadWithDisplayOptions:displayOptions];
 }
 
 - (void)onPointGeomLoaded:(id)sender
@@ -65,10 +65,7 @@
     [m_Overlay setTitle:m_szName];
     [m_Overlay setDelegate:self];
 
-    if([sender showOnLoad])
-    {
-        [m_Overlay addToMapView];
-    }
+    [m_Overlay addToMapView];
 
     var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;
     m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];

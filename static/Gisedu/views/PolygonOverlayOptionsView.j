@@ -4,7 +4,7 @@
 
 @implementation PolygonOverlayOptionsView : CPView
 {
-    PolygonOverlay m_OverlayPolygon;
+    id m_OptionsController          @accessors(property=controller);
 
     CPColorWell m_LineColorWell;
     CPColorWell m_FillColorWell;
@@ -108,99 +108,76 @@
     return self;
 }
 
-- (void)setOverlayTarget:(PolygonOverlay)overlayTarget
+//- (void)setOverlayTarget:(PolygonOverlay)overlayTarget
+- (void)setOptionsController:(id)optionsController
 {
-    [m_OverlayPolygon setActive:NO];
+    m_OptionsController = optionsController;
 
-    m_OverlayPolygon = overlayTarget;
+    var displayOptions = [m_OptionsController displayOptions];
+    [m_LineColorWell setColor:[CPColor colorWithHexString:[displayOptions.strokeColor substringFromIndex:1]]];
+    [m_FillColorWell setColor:[CPColor colorWithHexString:[displayOptions.fillColor substringFromIndex:1]]];
 
-    [m_LineColorWell setColor:[CPColor colorWithHexString:[[m_OverlayPolygon lineColorCode] substringFromIndex:1]]];
-    [m_FillColorWell setColor:[CPColor colorWithHexString:[[m_OverlayPolygon fillColorCode] substringFromIndex:1]]];
+    [m_LineStrokeSlider setValue:displayOptions.strokeWeight];
+    [m_LineOpacitySlider setValue:displayOptions.strokeOpacity * 100];
+    [m_FillOpacitySlider setValue:displayOptions.fillOpacity * 100];
 
-    [m_LineStrokeSlider setValue:[m_OverlayPolygon lineStroke]];
-    [m_LineOpacitySlider setValue:([m_OverlayPolygon lineOpacity] * 100)];
-    [m_FillOpacitySlider setValue:([m_OverlayPolygon fillOpacity] * 100)];
-
-    if([m_OverlayPolygon visible])
-    {
+    if(displayOptions.visible)
         [m_ShowButton setState:CPOnState];
-    }
     else
-    {
         [m_ShowButton setState:CPOffState];
-    }
-
-    [m_OverlayPolygon setActive:YES];
 }
 
 - (void)onLineColorWell:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView];
-    [m_OverlayPolygon setLineColorCode:"#" + [[m_LineColorWell color] hexString]];
+    var lineColor = "#" + [[m_LineColorWell color] hexString];
 
-    if([m_OverlayPolygon visible])
-    {
-        [m_OverlayPolygon addToMapView];
-    }
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineColorChanged:)])
+        [m_OptionsController onLineColorChanged:lineColor];
 }
 
 - (void)onFillColorWell:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView];
-    [m_OverlayPolygon setFillColorCode:"#" + [[m_FillColorWell color] hexString]];
+    var fillColor = "#" + [[m_FillColorWell color] hexString];
 
-    if([m_OverlayPolygon visible])
-    {
-        [m_OverlayPolygon addToMapView];
-    }
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onFillColorChanged:)])
+        [m_OptionsController onFillColorChanged:fillColor];
 }
 
 - (void)onStrokeSlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView];
-    [m_OverlayPolygon setLineStroke:[m_LineStrokeSlider doubleValue]];
+    var lineStroke = [m_LineStrokeSlider doubleValue];
 
-    if([m_OverlayPolygon visible])
-    {
-        [m_OverlayPolygon addToMapView];
-    }
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineStrokeChanged:)])
+        [m_OptionsController onLineStrokeChanged:lineStroke];
 }
 
 - (void)onLineOpacitySlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView];
-    [m_OverlayPolygon setLineOpacity:([m_LineOpacitySlider doubleValue] / 100)];
+    var lineOpacity = ([m_LineOpacitySlider doubleValue] / 100);
 
-    if([m_OverlayPolygon visible])
-    {
-        [m_OverlayPolygon addToMapView];
-    }
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineOpacityChanged:)])
+        [m_OptionsController onLineOpacityChanged:lineOpacity];
 }
 
 - (void)onFillOpacitySlider:(id)sender
 {
-    [m_OverlayPolygon removeFromMapView];
-    [m_OverlayPolygon setFillOpacity:([m_FillOpacitySlider doubleValue] / 100)];
+    var fillOpacity = ([m_FillOpacitySlider doubleValue] / 100);
 
-    if([m_OverlayPolygon visible])
-    {
-        [m_OverlayPolygon addToMapView];
-    }
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onFillOpacityChanged:)])
+        [m_OptionsController onFillOpacityChanged:fillOpacity];
 }
 
 - (void)onShowButton:(id)sender
 {
+    var visible = NO;
+
     if([m_ShowButton state] == CPOnState)
-    {
-        [m_OverlayPolygon setVisible:YES];
-        [m_OverlayPolygon addToMapView];
-    }
-    //the else is nessecary CPMixedState is possible
+        visible = YES;
     else if([m_ShowButton state] == CPOffState)
-    {
-        [m_OverlayPolygon setVisible:NO];
-        [m_OverlayPolygon removeFromMapView];
-    }
+        visible = NO;
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onVisibilityChanged:)])
+        [m_OptionsController onVisibilityChanged:visible];
 }
 
 @end

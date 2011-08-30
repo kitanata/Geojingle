@@ -61,8 +61,6 @@ var overlayManagerInstance = nil;
 
 - (CPDictionary)pointDataTypes:(CPString)dataType
 {
-    console.log([[m_PointDataTypeLists objectForKey:dataType] allKeys]);
-
     return [m_PointDataTypeLists objectForKey:dataType];
 }
 
@@ -71,28 +69,28 @@ var overlayManagerInstance = nil;
     return [m_OverlayDataObjects objectForKey:dataType];
 }
 
-- (id)getPointObject:(CPString)dataType objId:(CPInteger)objId
+- (id)getOverlayObject:(CPString)dataType objId:(CPInteger)objId
 {
     return [[m_OverlayDataObjects objectForKey:dataType] objectForKey:objId];
 }
 
 - (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId
 {
-    [self loadPolygonOverlay:dataType withId:dataId andShowOnLoad:NO];
+    [self loadPolygonOverlay:dataType withId:dataId withDisplayOptions:nil];
 }
 
 - (void)loadPointOverlay:(CPString)dataType withId:(CPInteger)dataId
 {
-    [self loadPointOverlay:dataType withId:dataId andShowOnLoad:NO];
+    [self loadPointOverlay:dataType withId:dataId withDisplayOptions:nil];
 }
 
-- (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId andShowOnLoad:(BOOL)show
+- (void)loadPolygonOverlay:(CPString)dataType withId:(CPInteger)dataId withDisplayOptions:(id)displayOptions
 {
     var overlayDict = [self basicDataOverlayMap:dataType];
 
-    if([overlayDict containsKey:itemId])
+    if([overlayDict containsKey:dataId])
     {
-        overlay = [overlayDict objectForKey:itemId];
+        overlay = [overlayDict objectForKey:dataId];
         [overlay addToMapView];
 
         if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
@@ -104,15 +102,13 @@ var overlayManagerInstance = nil;
         [overlayLoader setAction:@selector(onPolygonOverlayLoaded:)];
         [overlayLoader setCategory:dataType];
         [overlayLoader setTarget:self];
-        [overlayLoader loadAndShow:show];
+        [overlayLoader loadWithDisplayOptions:displayOptions];
     }
 }
 
-- (void)loadPointOverlay:(CPString)dataType withId:(CPInteger)dataId andShowOnLoad:(BOOL)show
+- (void)loadPointOverlay:(CPString)dataType withId:(CPInteger)dataId withDisplayOptions:(id)displayOptions
 {
-    var curObject = [self getPointObject:dataType objId:itemId];
-
-    //console.log("handlePointFilterResult curObject=" + curObject);
+    var curObject = [self getOverlayObject:dataType objId:dataId];
 
     if([curObject overlay])
     {
@@ -123,8 +119,7 @@ var overlayManagerInstance = nil;
     }
     else
     {
-        [curObject loadPointOverlay:YES];
-        //[[m_LeftSideTabView outlineView] addItem:[curObject name] forCategory:[curObject type]];
+        [curObject loadWithDisplayOptions:displayOptions];
     }
 }
 
@@ -134,10 +129,7 @@ var overlayManagerInstance = nil;
 
     [[self basicDataOverlayMap:[sender category]] setObject:overlay forKey:[overlay pk]];
 
-    if([sender showOnLoad])
-    {
-        [overlay addToMapView];
-    }
+    [overlay addToMapView];
 
     if([m_Delegate respondsToSelector:@selector(onPolygonOverlayLoaded:dataType:)])
         [m_Delegate onPolygonOverlayLoaded:overlay dataType:[sender category]];
@@ -174,8 +166,6 @@ var overlayManagerInstance = nil;
     if(dataType == "joint_voc_sd")
         [self createPointDataObjects:dataTypeMap withDataType:dataType];
 
-    //console.log("OverlayDataObjects = " + [m_OverlayDataObjects]);
-
     if([m_Delegate respondsToSelector:@selector(onBasicDataTypeMapsLoaded:)])
         [m_Delegate onBasicDataTypeMapsLoaded:dataType];
 
@@ -202,8 +192,6 @@ var overlayManagerInstance = nil;
 {
     var dataType = [sender category];
 
-    //console.log("pointDataTypeListLoaded =" + [sender dictionary]);
-
     [m_PointDataTypeLists setObject:[sender dictionary] forKey:dataType];
     [m_PointDataSubTypeLists setObject:[CPDictionary dictionary] forKey:dataType];
     [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:dataType];
@@ -215,7 +203,6 @@ var overlayManagerInstance = nil;
         var subDataTypeId = [subDataTypes objectAtIndex:i];
         var subDataTypeName = [[sender dictionary] objectForKey:subDataTypeId];
 
-        //console.log("SubType Loader URL = " + g_UrlPrefix + "/list/" + dataType + "/type/" + subDataTypeId);
         loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/list/" + dataType + "/type/" + subDataTypeId)];
         [loader setCategory:dataType];
         [loader setSubCategory:subDataTypeId];
@@ -227,16 +214,10 @@ var overlayManagerInstance = nil;
 
 - (void)onPointSubDataTypeListLoaded:(id)sender
 {
-    //console.log("pointSubDataTypeListLoaded =" + [sender dictionary]);
-    //console.log("pointSubDataType Category = " + [sender category]);
-
     var subTypeList = [m_PointDataSubTypeLists objectForKey:[sender category]];
-    //console.log("subTypeList = " + subTypeList);
     [subTypeList setObject:[sender dictionary] forKey:[sender subCategory]];
 
     [self createPointDataObjects:[sender dictionary] withDataType:[sender category]];
-
-    //console.log("OverlayDataObjects = " + [m_OverlayDataObjects]);
 }
 
 - (void)createPointDataObjects:(CPDictionary)dictionary withDataType:(CPString)dataType
@@ -263,16 +244,12 @@ var overlayManagerInstance = nil;
 
 - (void)onOrgOverlaySelected:(id)sender
 {
-    console.log("OverlayManager:onOrgOverlaySelected Called");
-
     if([m_Delegate respondsToSelector:@selector(onOrgOverlaySelected:)])
         [m_Delegate onOrgOverlaySelected:sender];
 }
 
 - (void)onSchoolOverlaySelected:(id)sender
 {
-    console.log("OverlayManager:onSchoolOverlaySelected Called");
-
     if([m_Delegate respondsToSelector:@selector(onSchoolOverlaySelected:)])
         [m_Delegate onSchoolOverlaySelected:sender];
 }

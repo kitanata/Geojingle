@@ -7,6 +7,7 @@ recreating the node. This gets around that."*/
 {
     CPString m_FilterType   @accessors(property=type);
     id m_FilterValue        @accessors(property=value);
+    
     id m_DisplayOptions     @accessors(property=displayOptions); //regular javascript map
 }
 
@@ -17,7 +18,29 @@ recreating the node. This gets around that."*/
     if(self)
         m_FilterValue = value;
 
+    m_DisplayOptions = {
+        "icon" : "marker-dot",
+        "iconColor" : "red",
+        "strokeColor" : "#ff0000",
+        "strokeOpacity" : 1.0,
+        "strokeWeight" : 3.0,
+        "fillColor" : "#000000",
+        "fillOpacity" : 0.3,
+        "radius" : 100,
+        "visible" : YES
+    };
+
     return self;
+}
+
+- (void)setDisplayOption:(CPString)option value:(id)value
+{
+    m_DisplayOptions[option] = value;
+}
+
+- (id)getDisplayOption:(CPString)option
+{
+    return m_DisplayOptions[option];
 }
 
 @end

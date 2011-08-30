@@ -3,6 +3,12 @@
 @import "PolygonOverlayOptionsView.j"
 @import "PointOverlayOptionsView.j"
 
+@import "../PointOverlayOptionsController.j"
+@import "../PointFilterOptionsController.j"
+
+@import "../PolygonOverlayOptionsController.j"
+@import "../PolygonFilterOptionsController.j"
+
 @implementation OverlayOptionsView : CPView
 {
     PolygonOverlayOptionsView m_PolyOptionsView @accessors(property=polyOptionsView);
@@ -46,14 +52,36 @@
 
 - (void) setPolygonOverlayTarget: (PolygonOverlay)overlayTarget
 {
-    [m_PolyOptionsView setOverlayTarget:overlayTarget];
+    var optionsController = [PolygonOverlayOptionsController controllerWithOverlay:overlayTarget];
+
+    [m_PolyOptionsView setOptionsController:optionsController];
+
+    [m_TabView selectTabViewItem:m_PolyTabItem];
+}
+
+- (void)setPolygonFilterTarget:(PolygonFilter)filterTarget
+{
+    var optionsController = [PolygonFilterOptionsController controllerWithFilter:filterTarget];
+
+    [m_PolyOptionsView setOptionsController:optionsController];
 
     [m_TabView selectTabViewItem:m_PolyTabItem];
 }
 
 - (void) setPointOverlayTarget: (PointOverlay)overlayTarget
 {
-    [m_PointOptionsView setOverlayTarget:overlayTarget];
+    var optionsController = [PointOverlayOptionsController controllerWithOverlay:overlayTarget];
+
+    [m_PointOptionsView setOptionsController:optionsController];
+
+    [m_TabView selectTabViewItem:m_PointTabItem];
+}
+
+- (void) setPointFilterTarget: (PointFilter)filterTarget
+{
+    var optionsController = [PointFilterOptionsController controllerWithFilter:filterTarget];
+
+    [m_PointOptionsView setOptionsController:optionsController];
 
     [m_TabView selectTabViewItem:m_PointTabItem];
 }

@@ -11,6 +11,8 @@
 
 @implementation OverlayFiltersView : CPView
 {
+    OverlayOptionsView m_OverlayOptionsView @accessors(property=optionsView);
+    
     AddFilterPanel m_AddFilterPanel;
     CPAlert m_DeleteFilterAlert;
 
@@ -155,6 +157,7 @@
         var filterType = [filter type];
 
         var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
+        var polygonalFilterTypes = ['county', 'school_district', 'house_district', 'senate_district'];
         var pointDataFilters = ['organization', 'school', 'joint_voc_sd'];
         var booleanDataFilters = ['comcast_coverage', 'atomic_learning'];
 
@@ -162,11 +165,19 @@
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
+
+            if(polygonalFilterTypes.indexOf(filterType) != -1)
+            {
+                [m_OverlayOptionsView setPolygonFilterTarget:filter];
+            }
         }
         else if(pointDataFilters.indexOf(filterType) != -1)
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:filterType]];
+
+            [m_OverlayOptionsView setPointFilterTarget:filter];
+            //open the point options view
         }
         else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
         {

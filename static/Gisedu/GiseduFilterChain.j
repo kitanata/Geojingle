@@ -13,13 +13,14 @@
 
 @implementation GiseduFilterChain : CPObject
 {
-    CPArray             m_Filters       @accessors(property=filters);
+    CPArray             m_Filters              @accessors(property=filters);
+    CPDictionary        m_OverlayIds;          //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
     
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
     OverlayManager m_OverlayManager;
-
+    
     id m_Delegate                       @accessors(property=delegate);
 }
 
@@ -30,6 +31,7 @@
     if(self)
     {
         m_Filters = [CPArray array];
+        m_OverlayIds = [CPDictionary dictionary];
 
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
@@ -51,6 +53,17 @@
 - (id)addFilter:(GiseduFilter)filter
 {
     [m_Filters addObject:filter];
+}
+
+- (BOOL)containsFilter:(GiseduFilter)filter
+{
+    for(var i=0; i < [m_Filters count]; i++)
+    {
+        if([m_Filters objectAtIndex:i] == filter)
+            return YES;
+    }
+
+    return NO;
 }
 
 - (CPString)buildFilterRequest
@@ -180,9 +193,6 @@
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
-    var polygonFilterResultItems = ["county", "house_district", "school_district", "senate_district"];
-    var pointFilterResultItems = ["organization", "school", "joint_voc_sd"];
-
     for(var i=0; i < [resultSet count]; i++)
     {
         typeIdPair = [resultSet objectAtIndex:i];
@@ -191,19 +201,90 @@
         itemType = [items objectAtIndex:0];
         itemId = [items objectAtIndex:1];
 
-        if(polygonFilterResultItems.indexOf(itemType) != -1)
-        {
-            [m_OverlayManager loadPolygonOverlay:itemType withId:itemId andShowOnLoad:YES];
-        }
-        else if(pointFilterResultItems.indexOf(itemType) != -1)
-        {
-            [m_OverlayManager loadPointOverlay:itemType withId:itemId andShowOnLoad:YES];
-        }
+        if(![m_OverlayIds objectForKey:itemType])
+            [m_OverlayIds setObject:[CPArray array] forKey:itemType];
+
+        [[m_OverlayIds objectForKey:itemType] addObject:itemId];
     }
+
+    [self updateOverlays];
 
     if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
         [m_Delegate onFilterRequestProcessed:self];
 }
+
+- (void)updateOverlays
+{
+    console.log("FilterChain::updateOverlays called");
+    
+    var dataTypes = [m_OverlayIds allKeys];
+
+    var pointDataTypes = ["school", "org", "joint_voc_sd"];
+    var polygonDataType = ["county", "school_district", "house_district", "senate_district"];
+
+    var overlayOptions = {}
+
+    for(var i=0; i < [m_Filters count]; i++)
+    {
+        var curFilter = [m_Filters objectAtIndex:i];
+        var curFilterType = [curFilter type];
+
+        overlayOptions[curFilterType] = [curFilter displayOptions];
+    }
+
+    for(var i=0; i < [dataTypes count]; i++)
+    {
+        var curType = [dataTypes objectAtIndex:i];
+        var curOptions = overlayOptions[curType];
+        var curIds = [m_OverlayIds objectForKey:curType];
+
+        for(var j=0; j < [curIds count]; j++)
+        {
+            var curItemId = [curIds objectAtIndex:j];
+            var dataObj = [m_OverlayManager getOverlayObject:curType objId:curItemId];
+
+            if(pointDataTypes.indexOf(curType) != -1)
+            {
+                var overlay = [dataObj overlay];
+
+                if(overlay)
+                {
+                    [overlay setDisplayOptions:curOptions];
+
+                    if(![overlay markerValid])
+                    {
+                        [overlay removeFromMapView];
+                        [overlay createGoogleMarker];
+                    }
+
+                    [overlay updateGoogleMarker];
+                }
+                else
+                {
+                    [m_OverlayManager loadPointOverlay:curType withId:curItemId withDisplayOptions:curOptions];
+                }
+
+            }
+            else if(polygonDataType.indexOf(curType) != -1)
+            {
+                var overlay = dataObj;
+
+                if(overlay)
+                {
+                    [overlay setDisplayOptions:curOptions];
+                    [overlay setDisplayOption:"visible" value:YES];
+
+                    [overlay updateGooglePolygon];
+                }
+                else
+                {
+                    [m_OverlayManager loadPolygonOverlay:curType withId:curItemId withDisplayOptions:curOptions];
+                }
+            }
+        }
+    }
+}
+
 
 + (id)filterChain
 {

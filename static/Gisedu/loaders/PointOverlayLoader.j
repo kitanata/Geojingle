@@ -4,12 +4,12 @@
 
 @implementation PointOverlayLoader : CPControl
 {
-    BOOL m_bVisibleOnLoad @accessors(property=showOnLoad);
+    id m_DisplayOptions             @accessors(property=displayOptions);
 
-    PointOverlay m_PointOverlay @accessors(property=overlay);
+    PointOverlay m_PointOverlay     @accessors(property=overlay);
 
     CPURLConnection m_Connection; //To pull data from django
-    CPString m_ConnectionURL @accessors(property=url);
+    CPString m_ConnectionURL        @accessors(property=url);
 }
 
 - (id)initWithRequestUrl:(CPString)connectionUrl
@@ -21,9 +21,9 @@
     return self;
 }
 
-- (void)loadAndShow:(BOOL)showOnLoad
+- (void)loadWithDisplayOptions:(id)displayOptions
 {
-    m_bVisibleOnLoad = showOnLoad;
+    m_DisplayOptions = displayOptions;
 
     [m_Connection cancel];
     m_Connection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL] delegate:self];
@@ -52,7 +52,8 @@
 
         if(m_PointOverlay != nil)
         {
-            [m_PointOverlay setVisible:m_bVisibleOnLoad];
+            if(m_DisplayOptions)
+                [m_PointOverlay setDisplayOptions:m_DisplayOptions];
         }
 
         if(_action != nil && _target != nil)

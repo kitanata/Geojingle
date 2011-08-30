@@ -12,7 +12,6 @@ var g_FilterManagerInstance = nil;
     OverlayManager m_OverlayManager;
 
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
-    CPArray m_ProcessedFilters;                                         //Filters that the filter engine optimizes for
     CPArray m_FilterChains;                                             //Cached Filter Chains
 
     id m_Delegate                   @accessors(property=delegate);
@@ -29,7 +28,6 @@ var g_FilterManagerInstance = nil;
     {
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
-        m_ProcessedFilters = [CPArray array];
         m_FilterChains = [CPArray array];
 
         [self addFilter:[self createFilter:'county'] parent:nil];
@@ -82,6 +80,20 @@ var g_FilterManagerInstance = nil;
     }
 
     return NO;
+}
+
+- (CPArray)filterChainsWithFilter:(GiseduFilter)filter
+{
+    var results = [CPArray array];
+
+    for(var i=0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+        if([curChain containsFilter:filter])
+            [results addObject:curChain];
+    }
+
+    return results;
 }
 
 - (CPTreeNode)createFilter:(CPString)type
@@ -145,7 +157,7 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters
 {
-    [m_ProcessedFilters removeAllObjects];
+    [m_FilterChains removeAllObjects];
     [m_OverlayManager removeAllOverlaysFromMapView];
 
     [self _triggerFilters:m_UserFilters];
@@ -187,6 +199,15 @@ var g_FilterManagerInstance = nil;
     console.log("Filter Chain = " + filterChain);
 }
 
+- (void)updateAllFilterChains
+{
+    for(var i=0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+        [curChain updateOverlays];
+    }
+}
+
 - (id)toJson
 {
     var userFilters = [[FilterManager getInstance] userFilters];
@@ -209,6 +230,7 @@ var g_FilterManagerInstance = nil;
 {
     var curFilterType = [curFilter type];
     var curFilterValue = [curFilter value];
+    var curFilterDisplayOptions = [curFilter displayOptions];
 
     var childNodes = [curFilter childNodes];
 
@@ -219,7 +241,7 @@ var g_FilterManagerInstance = nil;
         childJson.push([self _buildFilterJson:[childNodes objectAtIndex:i]]);
     }
 
-    return {"type" : curFilterType, "value" : curFilterValue, "children" : childJson};
+    return {"type" : curFilterType, "value" : curFilterValue, "display_options" : curFilterDisplayOptions, "children" : childJson};
 }
 
 - (void)fromJson:(id)jsonObject
@@ -241,6 +263,11 @@ var g_FilterManagerInstance = nil;
     var newFilter = [self createFilter:jsonFilter['type']];
     [newFilter setValue:jsonFilter['value']];
     [self addFilter:newFilter parent:parentFilter];
+
+    var displayOptions = jsonFilter['display_options'];
+
+    if(displayOptions)
+        [newFilter setDisplayOptions:displayOptions];
 
     var children = jsonFilter['children'];
 

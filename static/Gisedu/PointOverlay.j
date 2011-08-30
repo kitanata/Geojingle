@@ -40,10 +40,9 @@ g_MapIconColors = { "Black" : "black",
 
     CPInteger m_nIdentifier         @accessors(property=pk);
     CPString m_szTitle              @accessors(property=title);
-    CPString m_szIconLocation       @accessors(property=icon);          // path like "education/school"
-    CPString m_szIconColor          @accessors(property=iconColor);     // the value part of g_MapIconColors "green" not "Green"
-    id m_IconOptions                @accessors(property=iconOptions);   // JS object representing additional options for the icon (used with circles and rects)
-    BOOL m_bVisible                 @accessors(property=visible);
+    CPString m_szMode;              //optimization
+
+    id m_DisplayOptions;            // JS object representing additional options for the icon (used with circles and rects)
 
     id m_Delegate                   @accessors(property=delegate);
 }
@@ -55,7 +54,18 @@ g_MapIconColors = { "Black" : "black",
     if(self)
     {
         m_Point = nil;
-        m_bVisible = NO;
+
+        m_DisplayOptions = {
+            icon: "marker-dot",
+            iconColor : "red",
+            strokeColor: "#FF0000",
+            strokeOpacity: 0.8,
+            strokeWeight: 2,
+            fillColor: "#FF0000",
+            fillOpacity: 0.35,
+            radius: 100,
+            visible: YES
+        };
     }
 
     return self;
@@ -67,40 +77,67 @@ g_MapIconColors = { "Black" : "black",
 
     if(self)
     {
-        m_IconOptions = {
-            strokeColor: "#FF0000",
-            strokeOpacity: 0.8,
-            strokeWeight: 2,
-            fillColor: "#FF0000",
-            fillOpacity: 0.35,
-            radius: 100
-        }
-        
         m_Point = location;
-        m_bVisible = NO;
-
-        m_szIconLocation = "marker-dot";
-        m_szIconColor = "red";
     }
     
     return self;
 }
 
-- (void)setIconOption:(CPString)option value:(id)value
+- (void)setDisplayOptions:(id)displayOptions
 {
-    m_IconOptions[option] = value;
+    //Note to losers. This is a necessary psuedo-deep copy.
+    m_DisplayOptions.icon = displayOptions.icon;
+    m_DisplayOptions.iconColor = displayOptions.iconColor;
+    m_DisplayOptions.strokeColor = displayOptions.strokeColor;
+    m_DisplayOptions.strokeOpacity = displayOptions.strokeOpacity;
+    m_DisplayOptions.strokeWeight = displayOptions.strokeWeight;
+    m_DisplayOptions.fillColor = displayOptions.fillColor;
+    m_DisplayOptions.fillOpacity = displayOptions.fillOpacity;
+    m_DisplayOptions.radius = displayOptions.radius;
+    m_DisplayOptions.visible = displayOptions.visible;
+}
+
+- (void)setDisplayOption:(CPString)option value:(id)value
+{
+    m_DisplayOptions[option] = value;
+}
+
+- (id)getDisplayOptions:(CPString)option
+{
+    return m_DisplayOptions[option];
+}
+
+- (BOOL)markerValid
+{
+    var gm = [MKMapView gmNamespace];
+
+    if(m_DisplayOptions.icon != "circle" && m_DisplayOptions.icon != "rectangle" && m_szMode == "marker")
+        return YES;
+    else if(m_DisplayOptions.icon != m_szMode )
+        return NO;
+
+    return YES;
 }
 
 - (void)createGoogleMarker
 {
     var gm = [MKMapView gmNamespace];
 
-    if(m_szIconLocation == "circle")
+    if(m_DisplayOptions.icon == "circle")
+    {
         m_GoogleMarker = new gm.Circle();
-    else if(m_szIconLocation == "rectangle")
+        m_szMode = "circle";
+    }
+    else if(m_DisplayOptions.icon == "rectangle")
+    {
         m_GoogleMarker = new gm.Rectangle();
+        m_szMode = "rectangle";
+    }
     else
+    {
         m_GoogleMarker = new gm.Marker();
+        m_szMode = "marker";
+    }
 
     gm.event.addListener(m_GoogleMarker, 'click', function() {[self onClick];});
 
@@ -117,9 +154,9 @@ g_MapIconColors = { "Black" : "black",
         var DEG_TO_METERS = 111120;
         var METERS_TO_DEG = 0.000008999;
 
-        if(m_szIconLocation == "circle")
+        if(m_DisplayOptions.icon == "circle")
         {
-            var circleOptions = m_IconOptions;
+            var circleOptions = m_DisplayOptions;
 
             circleOptions.center = latLng;
             circleOptions.clickable = true;
@@ -128,10 +165,10 @@ g_MapIconColors = { "Black" : "black",
 
             m_GoogleMarker.setOptions(circleOptions);
         }
-        else if(m_szIconLocation == "rectangle")
+        else if(m_DisplayOptions.icon == "rectangle")
         {
-            var rectOptions = m_IconOptions;
-            var radius = m_IconOptions.radius * METERS_TO_DEG;
+            var rectOptions = m_DisplayOptions;
+            var radius = m_DisplayOptions.radius * METERS_TO_DEG;
 
             var rectSW = new gm.LatLng(latLng.lat() - radius, latLng.lng() - radius);
             var rectNE = new gm.LatLng(latLng.lat() + radius, latLng.lng() + radius);
@@ -154,11 +191,16 @@ g_MapIconColors = { "Black" : "black",
                 zIndex: 4,
             };
 
-            if(m_szIconLocation && m_szIconColor)
-                markerOptions.icon = "/static/Resources/map_icons/" + m_szIconColor + "/" + m_szIconLocation + ".png";
+            if(m_DisplayOptions.icon && m_DisplayOptions.iconColor)
+                markerOptions.icon = "/static/Resources/map_icons/" + m_DisplayOptions.iconColor + "/" + m_DisplayOptions.icon + ".png";
 
             m_GoogleMarker.setOptions(markerOptions);
         }
+
+        if(m_DisplayOptions.visible)
+            [self addToMapView];
+        else
+            [self removeFromMapView];
     }
 }
 

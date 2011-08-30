@@ -119,10 +119,12 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     [m_OverlayManager setMapView:m_MapView];
 
+    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
+
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
+    [[m_LeftSideTabView filtersView] setOptionsView:m_OverlayOptionsView];
     [m_ContentView addSubview:m_LeftSideTabView];
 
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
     //Not added to mapview because default is minimized
 
     m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
@@ -367,8 +369,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
         itemPk = [counties objectForKey:item];
 
-        console.log([countyOverlays objectForKey:itemPk]);
-
         [m_OverlayOptionsView setPolygonOverlayTarget:[countyOverlays objectForKey:itemPk]];
 
         [self showOverlayOptionsView];
@@ -403,7 +403,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         {
             orgNames = [m_OverlayManager orgNames];
             var orgId = [orgNames objectForKey:item];
-            var curOrg = [m_OverlayManager getPointObject:"organization" objId:orgId];
+            var curOrg = [m_OverlayManager getOverlayObject:"organization" objId:orgId];
 
             [[curOrg overlay] toggleInfoWindow];
             [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];

@@ -9,9 +9,9 @@
 
     CPInteger m_nIdentifier;
     CPString m_szCategory       @accessors(property=category);
-    BOOL m_bVisibleOnLoad @accessors(property=showOnLoad);  //To mark visible(Not related to ShowAll)
+    id m_DisplayOptions         @accessors(property=displayOptions);
 
-    PolygonOverlay m_Polygon @accessors(property=overlay);
+    PolygonOverlay m_Polygon    @accessors(property=overlay);
 }
 
 - (id)initWithIdentifier:(CPInteger)identifier andUrl:(CPString)connectionUrl
@@ -24,9 +24,9 @@
     return self;
 }
 
-- (void)loadAndShow:(BOOL)showOnLoad
+- (void)loadWithDisplayOptions:(id)displayOptions
 {
-    m_bVisibleOnLoad = showOnLoad;
+    m_DisplayOptions = displayOptions;
 
     [m_CountyConnection cancel];
     m_CountyConnection = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:m_ConnectionURL + m_nIdentifier] delegate:self];
@@ -75,7 +75,8 @@
             [m_Polygon setName:szName];
             [m_Polygon setPk:nPk];
 
-            [m_Polygon setVisible:m_bVisibleOnLoad];
+            if(m_DisplayOptions)
+                [m_Polygon setDisplayOptions:m_DisplayOptions];
         }
 
         if(_action != nil && _target != nil)

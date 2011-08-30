@@ -3,7 +3,8 @@
 
 @implementation PointOverlayOptionsView : CPView
 {
-    PointOverlay m_OverlayTarget @accessors(property=overlay);
+    //PointOverlay m_OverlayTarget    @accessors(property=overlay);
+    id m_OptionsController          @accessors(property=controller);
 
     CPPopUpButton m_IconTypeButton;
 
@@ -201,13 +202,6 @@
     return self;
 }
 
-- (void)onIconTypeChanged:(id)sender
-{
-    [self updateLayout];
-
-    [self updatePointOverlay];
-}
-
 - (void)updateLayout
 {
     var curIcon = [m_IconTypeButton titleOfSelectedItem];
@@ -275,54 +269,25 @@
             [m_ShowButton setFrameOrigin:CGPointMake(20, 160)];
         }
     }
-    
-    if(m_OverlayTarget && [m_OverlayTarget visible])
+
+    if(m_OptionsController && [m_OptionsController visible])
         [m_ShowButton setState:CPOnState];
     else
         [m_ShowButton setState:CPOffState];
 }
 
-- (void)onIconSubTypeChanged:(id)sender
+//- (void)setOverlayTarget:(PointOverlay)overlayTarget
+- (void)setOptionsController:(id)optionsController
 {
-    [self updatePointOverlay];
-}
-
-- (void)onIconColorChanged:(id)sender
-{
-    [self updatePointOverlay];
-}
-
-- (void)updatePointOverlay
-{
-    if(m_OverlayTarget)
-    {
-        var curType = g_IconTypes[[m_IconTypeButton titleOfSelectedItem]];
-
-        if(curType == "education")
-            [m_OverlayTarget setIcon:curType + "/" + g_EducationIconTypes[[m_IconSubTypeButton titleOfSelectedItem]]];
-        else
-            [m_OverlayTarget setIcon:curType];
-
-        [m_OverlayTarget setIconColor:g_MapIconColors[[m_IconColorButton titleOfSelectedItem]]];
-        
-        [m_OverlayTarget removeFromMapView];
-        [m_OverlayTarget createGoogleMarker];
-        [m_OverlayTarget updateGoogleMarker];
-        [m_OverlayTarget addToMapView];
-    }
-}
-
-- (void)setOverlayTarget:(PointOverlay)overlayTarget
-{
-    m_OverlayTarget = overlayTarget;
+    m_OptionsController = optionsController;
 
     var iconTypeMap = [CPDictionary dictionaryWithJSObject:g_IconTypes];
     var eduIconTypeMap = [CPDictionary dictionaryWithJSObject:g_EducationIconTypes];
     var iconColorMap = [CPDictionary dictionaryWithJSObject:g_MapIconColors];
 
-    var iconType = [m_OverlayTarget icon];
+    var iconType = [m_OptionsController icon];
     var iconSubType = nil
-    var iconColor = [m_OverlayTarget iconColor];
+    var iconColor = [m_OptionsController iconColor];
 
     var subTypeSplit = iconType.indexOf("/");
     if(subTypeSplit != -1)
@@ -349,64 +314,103 @@
 
 - (void)updateAdvancedOptionControls
 {
-    var iconOptions = [m_OverlayTarget iconOptions];
-    [m_LineColorWell setColor:[CPColor colorWithHexString:[iconOptions.strokeColor substringFromIndex:1]]];
-    [m_FillColorWell setColor:[CPColor colorWithHexString:[iconOptions.fillColor substringFromIndex:1]]];
+    var displayOptions = [m_OptionsController displayOptions];
+    [m_LineColorWell setColor:[CPColor colorWithHexString:[displayOptions.strokeColor substringFromIndex:1]]];
+    [m_FillColorWell setColor:[CPColor colorWithHexString:[displayOptions.fillColor substringFromIndex:1]]];
 
-    [m_LineStrokeSlider setValue:iconOptions.strokeWeight];
-    [m_LineOpacitySlider setValue:iconOptions.strokeOpacity * 100];
-    [m_FillOpacitySlider setValue:iconOptions.fillOpacity * 100];
+    [m_LineStrokeSlider setValue:displayOptions.strokeWeight];
+    [m_LineOpacitySlider setValue:displayOptions.strokeOpacity * 100];
+    [m_FillOpacitySlider setValue:displayOptions.fillOpacity * 100];
+}
+
+- (void)onIconTypeChanged:(id)sender
+{
+    [self updateLayout];
+
+    var curType = g_IconTypes[[m_IconTypeButton titleOfSelectedItem]];
+
+    if(curType == "education")
+        [self onIconSubTypeChanged:m_IconSubTypeButton];
+    else if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onIconTypeChanged:)])
+        [m_OptionsController onIconTypeChanged:curType];
+}
+
+- (void)onIconSubTypeChanged:(id)sender
+{
+    var curType = g_IconTypes[[m_IconTypeButton titleOfSelectedItem]];
+    curType = curType + "/" + g_EducationIconTypes[[m_IconSubTypeButton titleOfSelectedItem]];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onIconSubTypeChanged:)])
+        [m_OptionsController onIconSubTypeChanged:curType];
+}
+
+- (void)onIconColorChanged:(id)sender
+{
+    var iconColor = g_MapIconColors[[m_IconColorButton titleOfSelectedItem]];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onIconColorChanged:)])
+        [m_OptionsController onIconColorChanged:iconColor];
 }
 
 - (void)onLineColorWell:(id)sender
 {
-    [m_OverlayTarget setIconOption:"strokeColor" value:"#" + [[m_LineColorWell color] hexString]];
-    [m_OverlayTarget updateGoogleMarker];
+    var lineColor = "#" + [[m_LineColorWell color] hexString];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineColorChanged:)])
+        [m_OptionsController onLineColorChanged:lineColor];
 }
 
 - (void)onFillColorWell:(id)sender
 {
-    [m_OverlayTarget setIconOption:"fillColor" value:"#" + [[m_FillColorWell color] hexString]];
-    [m_OverlayTarget updateGoogleMarker];
+    var fillColor = "#" + [[m_FillColorWell color] hexString];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onFillColorChanged:)])
+        [m_OptionsController onFillColorChanged:fillColor];
 }
 
 - (void)onStrokeSlider:(id)sender
 {
-    [m_OverlayTarget setIconOption:"strokeWeight" value:[m_LineStrokeSlider doubleValue]];
-    [m_OverlayTarget updateGoogleMarker];
+    var lineStroke = [m_LineStrokeSlider doubleValue];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineStrokeChanged:)])
+        [m_OptionsController onLineStrokeChanged:lineStroke];
 }
 
 - (void)onLineOpacitySlider:(id)sender
 {
-    [m_OverlayTarget setIconOption:"strokeOpacity" value:([m_LineOpacitySlider doubleValue] / 100)];
-    [m_OverlayTarget updateGoogleMarker];
+    var lineOpacity = ([m_LineOpacitySlider doubleValue] / 100);
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onLineOpacityChanged:)])
+        [m_OptionsController onLineOpacityChanged:lineOpacity];
 }
 
 - (void)onFillOpacitySlider:(id)sender
 {
-    [m_OverlayTarget setIconOption:"fillOpacity" value:([m_FillOpacitySlider doubleValue] / 100)];
-    [m_OverlayTarget updateGoogleMarker];
+    var fillOpacity = ([m_FillOpacitySlider doubleValue] / 100);
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onFillOpacityChanged:)])
+        [m_OptionsController onFillOpacityChanged:fillOpacity];
 }
 
 - (void)onShapeRadiusSlider:(id)sender
 {
-    [m_OverlayTarget setIconOption:"radius" value:[m_ShapeRadiusSlider doubleValue]];
-    [m_OverlayTarget updateGoogleMarker];
+    var shapeRadius = [m_ShapeRadiusSlider doubleValue];
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onShapeRadiusChanged:)])
+        [m_OptionsController onShapeRadiusChanged:shapeRadius];
 }
 
 - (void)onShowButton:(id)sender
 {
+    var visible = NO;
+
     if([m_ShowButton state] == CPOnState)
-    {
-        [m_OverlayTarget setVisible:YES];
-        [m_OverlayTarget addToMapView];
-    }
-    //the else is nessecary CPMixedState is possible
+        visible = YES;
     else if([m_ShowButton state] == CPOffState)
-    {
-        [m_OverlayTarget setVisible:NO];
-        [m_OverlayTarget removeFromMapView];
-    }
+        visible = NO;
+
+    if(m_OptionsController && [m_OptionsController respondsToSelector:@selector(onVisibilityChanged:)])
+        [m_OptionsController onVisibilityChanged:visible];
 }
 
 @end
