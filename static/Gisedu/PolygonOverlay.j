@@ -13,7 +13,7 @@
     Polygon m_GooglePolygon         @accessors(property=googlePolygon);
 
     CPArray     m_Paths             @accessors(property=paths);
-    id          m_DisplayOptions;                                       // JS object representing additional options for the icon (used with circles and rects)
+    id          m_DisplayOptions    @accessors(getter=displayOptions);                                       // JS object representing additional options for the icon (used with circles and rects)
 
     BOOL m_bActive                  @accessors(property=active); //Is this polygon currently being edited?
 

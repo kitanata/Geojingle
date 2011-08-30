@@ -42,7 +42,7 @@ g_MapIconColors = { "Black" : "black",
     CPString m_szTitle              @accessors(property=title);
     CPString m_szMode;              //optimization
 
-    id m_DisplayOptions;            // JS object representing additional options for the icon (used with circles and rects)
+    id m_DisplayOptions             @accessors(getter=displayOptions);// JS object representing additional options for the icon (used with circles and rects)
 
     id m_Delegate                   @accessors(property=delegate);
 }
