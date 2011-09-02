@@ -106,7 +106,7 @@ class OhioLibraries(models.Model):
     loc_qual = models.CharField(max_length=8)
     loc_conf = models.IntegerField()
     served = models.CharField(max_length=1)
-    the_geom = models.PointField(srid=3857)
+    the_geom = models.PointField(srid=4326)
     objects = models.GeoManager()
 
     class Meta:

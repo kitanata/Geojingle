@@ -58,6 +58,7 @@
         [m_OutlineView setOutlineTableColumn:layerNameCol];
         [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
         [m_OutlineView setTarget:self];
+        [m_OutlineView registerForDraggedTypes:[CPArray arrayWithObject:"filters"]];
 
         [m_OutlineView setDataSource:self];
         [m_ScrollView setDocumentView:m_OutlineView];
@@ -138,6 +139,177 @@
     }
 
     return [filterLabel capitalizedString];
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView acceptDrop:(id)info item:(id)item childIndex:(CPInteger)index
+{
+    var pboard = [info draggingPasteboard];
+    var dataNode = [pboard dataForType:"filters"];
+
+    if(item == dataNode)
+        return NO;
+
+    var dataNodeParent = [dataNode parentNode];
+
+    if(!dataNodeParent)
+    {
+        [[m_FilterManager userFilters] removeObject:dataNode];
+
+        if(item)
+        {
+            var itemRootParent = item;
+
+            while([itemRootParent parentNode])
+                itemRootParent = [itemRootParent parentNode];
+
+            if(itemRootParent == dataNode)
+            {
+                [[m_FilterManager userFilters] addObjectsFromArray:[dataNode childNodes]];
+
+                while([[dataNode childNodes] count] > 0)
+                    [dataNode removeObjectFromChildNodesAtIndex:0];
+            }
+
+            [item insertObject:dataNode inChildNodesAtIndex:0];
+        }
+        else
+        {
+            [[m_FilterManager userFilters] addObject:dataNode];
+        }
+
+        return YES;
+    }
+    else if(!item)
+    {
+        if(dataNodeParent)
+        {
+            var dataNodeIndex = [[dataNodeParent childNodes] indexOfObject:dataNode];
+            [dataNodeParent removeObjectFromChildNodesAtIndex:dataNodeIndex];
+        }
+
+        [[m_FilterManager userFilters] addObject:dataNode];
+
+        return YES;
+    }
+    else if([item parentNode] != dataNode)
+    {
+        [item insertObject:dataNode inChildNodesAtIndex:0];
+
+        return YES;
+    }
+    else if([item parentNode] == dataNode)
+    {
+        if(dataNodeParent)
+        {
+            var itemIndex = [[dataNode childNodes] indexOfObject:item];
+            [dataNode removeObjectFromChildNodesAtIndex:itemIndex];
+
+            var dataNodeIndex = [[dataNodeParent childNodes] indexOfObject:dataNode];
+            [dataNodeParent removeObjectFromChildNodesAtIndex:dataNodeIndex];
+            [dataNodeParent insertObject:item inChildNodesAtIndex:dataNodeIndex];
+            [item insertObject:dataNode inChildNodesAtIndex:index];
+        }
+        else
+        {
+            var itemIndex = [[dataNode childNodes] indexOfObject:item];
+            [dataNode removeObjectFromChildNodesAtIndex:itemIndex];
+            [item insertObject:dataNode inChildNodesAtIndex:index];
+        }
+
+        return YES;
+    }
+
+    return NO;
+}
+
+- (CPDragOperation)outlineView:(CPOutlineView)outlineView validateDrop:(id)info proposedItem:(id)item proposedChildIndex:(CPInteger)index
+{
+    m_ExclusionFilterMap = {
+                           'county': ['county', 'school_district', 'house_district', 'senate_district'],
+                           'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
+                           'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                           'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                           'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
+                           'school_itc' : ['school_itc', 'organization'],
+                           'ode_class' : ['ode_class', 'organization'],
+                           'school' : ['school', 'organization'],
+                           'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                           'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                           'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
+                                            'atomic_learning', 'joint_voc_sd'],
+                           'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
+                                            'connectivity_greater', 'organization'],
+                           'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
+                           }
+
+    var movingItem = [[info draggingPasteboard] dataForType:"filters"];
+
+    var filtersInTree = [self allTypesInFilterTree:movingItem];
+    
+    var exclusionMap = {   'county': YES, 'school_district': YES, 'house_district': YES, 'senate_district' : YES,
+                           'comcast_coverage' : YES, 'school_itc' : YES, 'ode_class' : YES, 'school' : YES,
+                           'connectivity_less' : YES, 'connectivity_greater' : YES, 'organization' : YES,
+                           'atomic_learning' : YES, 'joint_voc_sd' : YES };
+
+    for(var i=0; i < [filtersInTree count]; i++)
+    {
+        var curFilterType = [filtersInTree objectAtIndex:i];
+        
+        var curExs = m_ExclusionFilterMap[curFilterType];
+
+        for(var j=0; j < curExs.length; j++)
+        {
+            exclusionMap[curExs[j]] = NO;
+        }
+    }
+
+    var filtersInProposedItem = [CPArray arrayWithObject:[item type]];
+
+    while([item parentNode])
+    {
+        [filtersInProposedItem addObject:[[item parentNode] type]];
+        item = [item parentNode];
+    }
+
+    for(var i=0; i < [filtersInProposedItem count]; i++)
+    {
+        var curFilterType = [filtersInProposedItem objectAtIndex:i];
+
+        if(exclusionMap[curFilterType] == NO)
+            return CPDragOperationNone;
+    }
+
+    return CPDragOperationMove;
+}
+
+- (CPArray)allTypesInFilterTree:(GiseduFilter)filter
+{
+    var typeList = [CPArray array];
+    var filterChildren = [filter childNodes];
+    
+    for(var i=0; i < [filterChildren count]; i++)
+    {
+        var curChild = [filterChildren objectAtIndex:i];
+
+        [typeList addObjectsFromArray:[self allTypesInFilterTree:curChild]];
+    }
+
+    [typeList addObject:[filter type]];
+
+    return typeList;
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView writeItems:(CPArray)items toPasteboard:(CPPasteboard)pboard
+{
+    if([items count] > 1 || [items count] == 0)
+        return NO;
+
+    var theItem = [items objectAtIndex:0];
+
+    [pboard declareTypes:[CPArray arrayWithObject:"filters"] owner:self];
+    [pboard setData:theItem forType:"filters"];
+    
+    return YES;
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -266,8 +438,6 @@
 
 - (void) onAddFilterConfirm:(CPString)filterType
 {
-    console.log("onAddFilterConfirm filterType is " + filterType);
-    
     var newFilter = [m_FilterManager createFilter:filterType];
 
     curSelRow = [m_OutlineView selectedRow];
@@ -280,7 +450,6 @@
     else
     {
         curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
-        console.log("Filter is " + newFilter + " and parent is " + curSelItem);
         
         [m_FilterManager addFilter:newFilter parent:curSelItem];
         [m_OutlineView reloadItem:curSelItem reloadChildren:YES];
