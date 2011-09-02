@@ -3,6 +3,7 @@
 @import "loaders/ListLoader.j"
 @import "loaders/DictionaryLoader.j"
 
+@import "FilterManager.j"
 @import "PointDataObject.j"
 
 var overlayManagerInstance = nil;
@@ -11,7 +12,6 @@ var overlayManagerInstance = nil;
 {
     MKMapView m_MapView                 @accessors(property=mapView);
 
-    var m_BasicDataTypes                @accessors(getter=basicDataTypes);
     CPDictionary m_BasicDataTypeMap;            //Maps a gisedu datatype to a dictionary mapping the datatype's name to it's PK
                                                 //in the database {'county':{'Franklin':25, 'Allen':15}, 'school_district' : {}...}
 
@@ -35,9 +35,6 @@ var overlayManagerInstance = nil;
 
     if(self)
     {
-        m_BasicDataTypes = ['county', 'school_district', 'house_district', 'senate_district',
-                            'joint_voc_sd', 'school_itc', 'ode_class'];
-        
         m_BasicDataTypeMap = [CPDictionary dictionary];
 
         m_PointDataTypeLists = [CPDictionary dictionary];
@@ -143,9 +140,11 @@ var overlayManagerInstance = nil;
 
 - (void)loadBasicDataTypeMaps
 {
-    for(var i=0; i < m_BasicDataTypes.length; i++)
+    var listBasedFilterTypes = [[FilterManager getInstance] listBasedFilterTypes];
+
+    for(var i=0; i < listBasedFilterTypes.length; i++)
     {
-        var curDataType = m_BasicDataTypes[i];
+        var curDataType = listBasedFilterTypes[i];
 
         var loader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/list/" + curDataType)];
         [loader setCategory:curDataType];
@@ -174,7 +173,7 @@ var overlayManagerInstance = nil;
 
 - (void)loadPointDataTypeLists
 {
-    var dataTypes = ['school', 'organization'];
+    var dataTypes = [[FilterManager getInstance] pointFilterTypes];
 
     for(var i=0; i < dataTypes.length; i++)
     {

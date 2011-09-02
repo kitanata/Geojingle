@@ -18,6 +18,8 @@ var g_FilterManagerInstance = nil;
 
     var m_FilterRequestModifierMap  @accessors(property=filterRequestModifiers);
     var m_FilterOptionsMap          @accessors(property=filterOptions);
+
+    var m_ExclusionFilterMap        @accessors(getter=filterExclusionMap);
 }
 
 - (void)init
@@ -53,9 +55,105 @@ var g_FilterManagerInstance = nil;
                                 'school_district' : ['comcast_coverage', 'atomic_learning'],
                                 'joint_voc_sd' : ['atomic_learning']
                              }
+
+        m_ExclusionFilterMap = {
+                           'county': ['county', 'school_district', 'house_district', 'senate_district'],
+                           'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
+                           'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                           'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
+                           'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
+                           'school_itc' : ['school_itc', 'organization'],
+                           'ode_class' : ['ode_class', 'organization'],
+                           'school' : ['school', 'organization'],
+                           'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                           'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
+                           'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
+                                            'atomic_learning', 'joint_voc_sd'],
+                           'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
+                                            'connectivity_greater', 'organization'],
+                           'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
+                           }
     }
 
     return self;
+}
+
+- (id)pointFilterTypes
+{
+    return ['school', 'organization', 'joint_voc_sd'];
+}
+
+- (id)polygonalFilterTypes
+{
+    return ['county', 'school_district', 'house_district', 'senate_district'];
+}
+
+- (id)reduceFilterTypes
+{
+    return ['school_itc', 'ode_class', 'connectivity_greater', 'connectivity_less',
+            'comcast_coverage', 'atomic_learning'];
+}
+
+- (id)baseFilterTypes
+{
+    var filterTypes = [];
+    return filterTypes.concat([self pointFilterTypes], [self polygonalFilterTypes]);
+}
+
+- (id)allFilterTypes
+{
+    var filterTypes = [];
+    return filterTypes.concat([self pointFilterTypes], [self polygonalFilterTypes], [self reduceFilterTypes]);
+}
+
+- (id)filterFlagMap
+{
+    return {    'county': YES, 'school_district': YES, 'house_district': YES, 'senate_district' : YES,
+                'comcast_coverage' : YES, 'school_itc' : YES, 'ode_class' : YES, 'school' : YES,
+                'connectivity_less' : YES, 'connectivity_greater' : YES, 'organization' : YES,
+                'atomic_learning' : YES, 'joint_voc_sd' : YES }
+}
+
+- (id)filterNameToTypeMap
+{
+    return {
+                'County' : 'county',
+                'School District' : 'school_district',
+                'House District' : 'house_district',
+                'Senate District' : 'senate_district',
+                'School ITC' : 'school_itc',
+                'ODE Income Classification' : 'ode_class',
+                'Public School' : 'school',
+                'Organization' : 'organization',
+                'Connectivity Greater Than' : 'connectivity_greater',
+                'Connectivity Less Than' : 'connectivity_less',
+                'Comcast Coverage' : 'comcast_coverage',
+                'Atomic Learning Participant' : 'atomic_learning',
+                'Joint Vocational School District' : 'joint_voc_sd'
+    };
+}
+
+- (id)filterTypeToNameMap
+{
+    var filterNameMap = [self filterNameToTypeMap];
+    var filterMap = {}
+
+    for(var key in filterNameMap)
+        filterMap[filterNameMap[key]] = key;
+
+    return filterMap;
+}
+
+/*These are used for dialogs*/
+- (id)listBasedFilterTypes
+{
+    return ['county', 'school_district', 'house_district', 'senate_district', 'joint_voc_sd',
+                'school_itc', 'ode_class', 'organization', 'school'];
+}
+
+- (id)booleanFilterTypes
+{
+     return ['comcast_coverage', 'atomic_learning'];
 }
 
 - (BOOL)containsFilter:(CPTreeNode)filter
@@ -100,14 +198,14 @@ var g_FilterManagerInstance = nil;
  {
     var newFilter = nil;
 
-    var basicFilterTypes = [m_OverlayManager basicDataTypes];
+    var listBasedFilterTypes = [self listBasedFilterTypes];
+    var boolFilterTypes = [self booleanFilterTypes];
 
-    if(basicFilterTypes.indexOf(type) != -1 || type == 'organization'
-        || type == 'school')
+    if(listBasedFilterTypes.indexOf(type) != -1)
         newFilter = [[GiseduFilter alloc] initWithValue:'All'];
     else if(type == 'connectivity_less' || type == 'connectivity_greater')
         newFilter = [[GiseduFilter alloc] initWithValue:100];
-    else if(type == 'comcast_coverage' || type == 'atomic_learning')
+    else if(boolFilterTypes.indexOf(type) != -1)
         newFilter = [[GiseduFilter alloc] initWithValue:YES];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
@@ -210,12 +308,11 @@ var g_FilterManagerInstance = nil;
 
 - (id)toJson
 {
-    var userFilters = [[FilterManager getInstance] userFilters];
     var filterJson = [];
 
-    for(var i=0; i < [userFilters count]; i++)
+    for(var i=0; i < [m_UserFilters count]; i++)
     {
-        var curFilter = [userFilters objectAtIndex:i];
+        var curFilter = [m_UserFilters objectAtIndex:i];
 
         filterJson.push([self _buildFilterJson:curFilter]);
         //[{'type': theType, 'value': theValue, 'children' : [filter, filter, filter]}]

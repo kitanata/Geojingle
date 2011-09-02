@@ -12,7 +12,6 @@
     CPTreeNode m_ParentFilter;
     id m_Delegate   @accessors(property=delegate);
 
-    var m_ExclusionFilterMap;
     var m_FilterNameToTypeMap;
     var m_FilterTypeToNameMap;
 }
@@ -43,48 +42,13 @@
         filterManager = [FilterManager getInstance];
         parentType = [parentFilter type];
 
-        m_ExclusionFilterMap = {
-                               'county': ['county', 'school_district', 'house_district', 'senate_district'],
-                               'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
-                               'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                               'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                               'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
-                               'school_itc' : ['school_itc', 'organization'],
-                               'ode_class' : ['ode_class', 'organization'],
-                               'school' : ['school', 'organization'],
-                               'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                               'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                               'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
-                                                'atomic_learning', 'joint_voc_sd'],
-                               'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
-                                                'connectivity_greater', 'organization'],
-                               'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
-                               }
+        var filterExclusionMap = [filterManager filterExclusionMap];
 
-        m_FilterNameToTypeMap = {
-                                'County' : 'county',
-                                'School District' : 'school_district',
-                                'House District' : 'house_district',
-                                'Senate District' : 'senate_district',
-                                'School ITC' : 'school_itc',
-                                'ODE Income Classification' : 'ode_class',
-                                'Public School' : 'school',
-                                'Organization' : 'organization',
-                                'Connectivity Greater Than' : 'connectivity_greater',
-                                'Connectivity Less Than' : 'connectivity_less',
-                                'Comcast Coverage' : 'comcast_coverage',
-                                'Atomic Learning Participant' : 'atomic_learning',
-                                'Joint Vocational School District' : 'joint_voc_sd'
-                                }
+        m_FilterNameToTypeMap = [filterManager filterNameToTypeMap];
 
-        m_FilterTypeToNameMap = {}
+        m_FilterTypeToNameMap = [filterManager filterTypeToNameMap];
 
-        for(var key in m_FilterNameToTypeMap)
-            m_FilterTypeToNameMap[m_FilterNameToTypeMap[key]] = key;
-
-        var itemList = ['county', 'school_district', 'house_district', 'senate_district', 'organization', 'school_itc',
-                        'ode_class', 'school', 'connectivity_greater', 'connectivity_less', 'comcast_coverage',
-                        'atomic_learning', 'joint_voc_sd'];
+        var itemList = [filterManager allFilterTypes];
 
         if(parentFilter && parentType)
         {
@@ -95,7 +59,7 @@
             {
                parentType = [parentIter type];
 
-               var itemsExcluded = m_ExclusionFilterMap[parentType];
+               var itemsExcluded = filterExclusionMap[parentType];
 
                console.log("Item List is " + itemList);
                console.log("Items excluded from parent type " + parentType + " items: " + itemsExcluded);

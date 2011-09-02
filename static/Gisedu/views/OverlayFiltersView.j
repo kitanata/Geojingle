@@ -109,14 +109,14 @@
 
     var names = nil;
 
-    var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
-    var pointFilterTypes = ['organization', 'school'];
-    var booleanDataFilters = ['comcast_coverage', 'atomic_learning'];
+    var listBasedFilterTypes = [m_FilterManager listBasedFilterTypes];
+    var pointFilterTypes = [m_FilterManager pointFilterTypes];
+    var booleanDataFilters = [m_FilterManager booleanFilterTypes];
 
     var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
     var filterLabel = "All " + filterTypeName + " Filter";
 
-    if(basicDataFilterTypes.indexOf(filterType) != -1)
+    if(listBasedFilterTypes.indexOf(filterType) != -1)
     {
         var filterName = [[m_OverlayManager basicDataTypeMap:filterType] objectForKey:[item value]];
 
@@ -224,38 +224,19 @@
 
 - (CPDragOperation)outlineView:(CPOutlineView)outlineView validateDrop:(id)info proposedItem:(id)item proposedChildIndex:(CPInteger)index
 {
-    m_ExclusionFilterMap = {
-                           'county': ['county', 'school_district', 'house_district', 'senate_district'],
-                           'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
-                           'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                           'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                           'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
-                           'school_itc' : ['school_itc', 'organization'],
-                           'ode_class' : ['ode_class', 'organization'],
-                           'school' : ['school', 'organization'],
-                           'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                           'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                           'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
-                                            'atomic_learning', 'joint_voc_sd'],
-                           'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
-                                            'connectivity_greater', 'organization'],
-                           'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
-                           }
+    var filterExclusionMap = [m_FilterManager filterExclusionMap];
 
     var movingItem = [[info draggingPasteboard] dataForType:"filters"];
 
     var filtersInTree = [self allTypesInFilterTree:movingItem];
     
-    var exclusionMap = {   'county': YES, 'school_district': YES, 'house_district': YES, 'senate_district' : YES,
-                           'comcast_coverage' : YES, 'school_itc' : YES, 'ode_class' : YES, 'school' : YES,
-                           'connectivity_less' : YES, 'connectivity_greater' : YES, 'organization' : YES,
-                           'atomic_learning' : YES, 'joint_voc_sd' : YES };
+    var exclusionMap = [m_FilterManager filterFlagMap];
 
     for(var i=0; i < [filtersInTree count]; i++)
     {
         var curFilterType = [filtersInTree objectAtIndex:i];
         
-        var curExs = m_ExclusionFilterMap[curFilterType];
+        var curExs = filterExclusionMap[curFilterType];
 
         for(var j=0; j < curExs.length; j++)
         {
@@ -328,20 +309,17 @@
 
         var filterType = [filter type];
 
-        var basicDataFilterTypes = [m_OverlayManager basicDataTypes];
-        var polygonalFilterTypes = ['county', 'school_district', 'house_district', 'senate_district'];
-        var pointDataFilters = ['organization', 'school', 'joint_voc_sd'];
-        var booleanDataFilters = ['comcast_coverage', 'atomic_learning'];
+        var listBasedFilterTypes = [m_FilterManager listBasedFilterTypes];
+        var polygonalFilterTypes = [m_FilterManager polygonalFilterTypes];
+        var pointDataFilters = [m_FilterManager pointFilterTypes];
+        var booleanDataFilters = [m_FilterManager booleanFilterTypes];
 
-        if(basicDataFilterTypes.indexOf(filterType) != -1)
+        if(polygonalFilterTypes.indexOf(filterType) != -1)
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
+                    andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
 
-            if(polygonalFilterTypes.indexOf(filterType) != -1)
-            {
-                [m_OverlayOptionsView setPolygonFilterTarget:filter];
-            }
+            [m_OverlayOptionsView setPolygonFilterTarget:filter];
         }
         else if(pointDataFilters.indexOf(filterType) != -1)
         {
@@ -349,7 +327,11 @@
                 andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:filterType]];
 
             [m_OverlayOptionsView setPointFilterTarget:filter];
-            //open the point options view
+        }
+        else if(listBasedFilterTypes.indexOf(filterType) != -1)
+        {
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                        andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
         }
         else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
         {

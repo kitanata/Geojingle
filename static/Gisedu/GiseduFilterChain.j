@@ -73,8 +73,8 @@
     var filterRequestModifiers = [m_FilterManager filterRequestModifiers];
     var filterOptionsMap = [m_FilterManager filterOptions];
 
-    var baseFilterItemList = ['county', 'house_district', 'senate_district', 'school_district', 'school', 'organization', 'joint_voc_sd'];
-    var keyFilterItemList = ['school', 'organization'];
+    var baseFilterItemList = [m_FilterManager baseFilterTypes];
+    var keyFilterItemList = [m_FilterManager pointFilterTypes];
 
     var keyFilterType = nil;
     var filterChainBuffer = [CPArray array];
@@ -219,8 +219,9 @@
     
     var dataTypes = [m_OverlayIds allKeys];
 
-    var pointDataTypes = ["school", "org", "joint_voc_sd"];
-    var polygonDataType = ["county", "school_district", "house_district", "senate_district"];
+    var pointDataTypes = [m_FilterManager pointFilterTypes];
+
+    var polygonDataType = [m_FilterManager polygonalFilterTypes];
 
     var overlayOptions = {}
 
