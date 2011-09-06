@@ -32,6 +32,9 @@ g_MapIconColors = { "Black" : "black",
                         "White" : "white",
                         "Yellow" : "yellow" };
 
+var DEG_TO_METERS = 111120;
+var METERS_TO_DEG = 0.000008999;
+
 @implementation PointOverlay : CPControl
 {
     var m_GoogleMarker              @accessors(property=marker);
@@ -150,9 +153,6 @@ g_MapIconColors = { "Black" : "black",
     {
         var gm = [MKMapView gmNamespace];
         var latLng = [m_Point googleLatLng];
-
-        var DEG_TO_METERS = 111120;
-        var METERS_TO_DEG = 0.000008999;
 
         if(m_DisplayOptions.icon == "circle")
         {

@@ -14,12 +14,16 @@
 @implementation GiseduFilterChain : CPObject
 {
     CPArray             m_Filters              @accessors(property=filters);
+    CPArray             m_DataTypes;           //m_OverlayIds Keys
     CPDictionary        m_OverlayIds;          //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
     
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
     OverlayManager m_OverlayManager;
+
+    var m_PointDataTypes;
+    var m_PolygonDataTypes;
     
     id m_Delegate                       @accessors(property=delegate);
 }
@@ -35,6 +39,9 @@
 
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
+
+        m_PointDataTypes = [m_FilterManager pointFilterTypes];
+        m_PolygonDataTypes = [m_FilterManager polygonalFilterTypes]; 
     }
 
     return self;
@@ -207,6 +214,7 @@
         [[m_OverlayIds objectForKey:itemType] addObject:itemId];
     }
 
+    m_DataTypes = [m_OverlayIds allKeys];
     [self updateOverlays];
 
     if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
@@ -215,14 +223,6 @@
 
 - (void)updateOverlays
 {
-    console.log("FilterChain::updateOverlays called");
-    
-    var dataTypes = [m_OverlayIds allKeys];
-
-    var pointDataTypes = [m_FilterManager pointFilterTypes];
-
-    var polygonDataType = [m_FilterManager polygonalFilterTypes];
-
     var overlayOptions = {}
 
     for(var i=0; i < [m_Filters count]; i++)
@@ -233,9 +233,9 @@
         overlayOptions[curFilterType] = [curFilter displayOptions];
     }
 
-    for(var i=0; i < [dataTypes count]; i++)
+    for(var i=0; i < [m_DataTypes count]; i++)
     {
-        var curType = [dataTypes objectAtIndex:i];
+        var curType = [m_DataTypes objectAtIndex:i];
         var curOptions = overlayOptions[curType];
         var curIds = [m_OverlayIds objectForKey:curType];
 
@@ -244,7 +244,7 @@
             var curItemId = [curIds objectAtIndex:j];
             var dataObj = [m_OverlayManager getOverlayObject:curType objId:curItemId];
 
-            if(pointDataTypes.indexOf(curType) != -1)
+            if(m_PointDataTypes.indexOf(curType) != -1)
             {
                 var overlay = [dataObj overlay];
 
@@ -266,7 +266,7 @@
                 }
 
             }
-            else if(polygonDataType.indexOf(curType) != -1)
+            else if(m_PolygonDataTypes.indexOf(curType) != -1)
             {
                 var overlay = dataObj;
 
