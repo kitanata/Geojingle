@@ -23,10 +23,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="settings.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="48" selection-start="2818" selection-end="2818" vertical-scroll-proportion="0.0">
+            <state line="50" column="0" selection-start="1816" selection-end="1816" vertical-scroll-proportion="0.51993066">
               <folding />
             </state>
           </provider>
@@ -50,10 +50,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="PointOverlay.j" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="PointOverlay.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="35" column="19" selection-start="1402" selection-end="1402" vertical-scroll-proportion="-4.2513">
+            <state line="35" column="19" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -140,9 +140,9 @@
         <option value="$PROJECT_DIR$/static/Gisedu/FilterManager.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/OverlayManager.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j" />
-        <option value="$PROJECT_DIR$/settings.py" />
         <option value="$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/PointOverlay.j" />
+        <option value="$PROJECT_DIR$/settings.py" />
       </list>
     </option>
   </component>
@@ -172,7 +172,7 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
+      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -269,16 +269,16 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Favorites" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="com.jetbrains.python.configuration.PythonSdkConfigurable" />
-    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="recentsLimit" value="5" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -393,8 +393,8 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="SDK_HOME" value="/usr/bin/python" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <module name="Gis_Demo" />
       <option name="port" value="8000" />
@@ -545,14 +545,27 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="330" column="49" selection-start="10314" selection-end="10314" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="330" column="49" selection-start="10314" selection-end="10314" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/AppController.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="366" column="55" selection-start="14240" selection-end="14240" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="260" column="47" selection-start="8175" selection-end="8193" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="19" selection-start="1402" selection-end="1402" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointFilterOptionsController.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="5" selection-start="992" selection-end="992" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/filter/views.py">
@@ -562,9 +575,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="0" selection-start="306" selection-end="306" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="13" column="0" selection-start="306" selection-end="306" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/PointDataObject.j">
@@ -574,42 +585,17 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="152" column="0" selection-start="6382" selection-end="6382" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="152" column="0" selection-start="6382" selection-end="6382" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/views/AddFilterPanel.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="42" column="41" selection-start="1319" selection-end="1319" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="42" column="41" selection-start="1319" selection-end="1319" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="48" selection-start="2818" selection-end="2818" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointFilterOptionsController.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="52" column="5" selection-start="992" selection-end="992" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/GiseduFilterChain.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="260" column="47" selection-start="8175" selection-end="8193" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="19" selection-start="1402" selection-end="1402" vertical-scroll-proportion="-4.2513">
+        <state line="50" column="0" selection-start="1816" selection-end="1816" vertical-scroll-proportion="0.51993066">
           <folding />
         </state>
       </provider>
