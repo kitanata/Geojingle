@@ -16,6 +16,10 @@ class GiseduPointItemFieldAdmin(gis_admin.GeoModelAdmin):
     list_display = ('point__item_name', 'field__field_name', 'field__field_value')
     list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
 
+class GiseduPointItemIntegerFieldAdmin(gis_admin.GeoModelAdmin):
+    list_display = ('point__item_name', 'field__field_name', 'field__field_value')
+    list_filter = ('point__filter__filter_name', 'field__field_name')
+
 class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__filter_name', 'item_type')
@@ -23,7 +27,7 @@ class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
 admin.site.register(GiseduPointItemAddress, GiseduPointItemAddressAdmin)
 admin.site.register(GiseduPointItem, GiseduPointItemAdmin)
 admin.site.register(GiseduPointItemCharField, GiseduPointItemFieldAdmin)
-admin.site.register(GiseduPointItemIntegerField, GiseduPointItemFieldAdmin)
+admin.site.register(GiseduPointItemIntegerField, GiseduPointItemIntegerFieldAdmin)
 admin.site.register(GiseduPointItemBooleanField, GiseduPointItemFieldAdmin)
 admin.site.register(OhioLibraries, gis_admin.GeoModelAdmin)
 

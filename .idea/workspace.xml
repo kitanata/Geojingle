@@ -23,19 +23,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="admin.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="admin.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="0" selection-start="391" selection-end="1034" vertical-scroll-proportion="0.0">
+            <state line="29" column="81" selection-start="1541" selection-end="1541" vertical-scroll-proportion="0.72621036">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="admin.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="admin.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="79" selection-start="903" selection-end="903" vertical-scroll-proportion="0.37562606">
+            <state line="8" column="0" selection-start="454" selection-end="673" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -104,9 +104,9 @@
         <option value="$PROJECT_DIR$/gisedu/admin.py" />
         <option value="$PROJECT_DIR$/gisedu/models.py" />
         <option value="$PROJECT_DIR$/point_objects/models.py" />
-        <option value="$PROJECT_DIR$/point_objects/admin.py" />
         <option value="$PROJECT_DIR$/polygon_objects/models.py" />
         <option value="$PROJECT_DIR$/polygon_objects/admin.py" />
+        <option value="$PROJECT_DIR$/point_objects/admin.py" />
       </list>
     </option>
   </component>
@@ -712,9 +712,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
+    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="391" selection-end="1034" vertical-scroll-proportion="0.0">
+        <state line="72" column="42" selection-start="2499" selection-end="2499" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -726,16 +726,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+    <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="42" selection-start="2499" selection-end="2499" vertical-scroll-proportion="0.0">
+        <state line="8" column="0" selection-start="454" selection-end="673" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
+    <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="79" selection-start="903" selection-end="903" vertical-scroll-proportion="0.37562606">
+        <state line="29" column="81" selection-start="1541" selection-end="1541" vertical-scroll-proportion="0.72621036">
           <folding />
         </state>
       </provider>

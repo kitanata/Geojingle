@@ -226,6 +226,16 @@ ALTER TABLE gisedu_integer_field DROP COLUMN jvsd_id;
 
 /* ALTER TABLE gisedu_point_item DROP COLUMN jvsd_id; */
 
+
+
+
+
+
+SELECT * FROM gisedu_point_item 
+	JOIN gisedu_point_item_boolean_field ON gisedu_point_item.id = gisedu_point_item_boolean_field.point_id
+	JOIN gisedu_boolean_field ON gisedu_boolean_field.id = gisedu_point_item_boolean_field.field_id
+	WHERE filter_id = 5;
+
 /*
 gisedu_boolean_field field_name field_value
 gisedu_integer_field field_name field_value
