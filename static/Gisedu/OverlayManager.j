@@ -223,9 +223,6 @@ var overlayManagerInstance = nil;
 {
     var overlayDicts = [m_OverlayDataObjects allValues];
 
-    console.log("dataObjects = "); console.log(m_OverlayDataObjects);
-    console.log("overlayDicts = "); console.log(overlayDicts);
-
     for(var i=0; i < [overlayDicts count]; i++)
     {
         var curDict = [overlayDicts objectAtIndex:i];

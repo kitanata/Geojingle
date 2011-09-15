@@ -208,12 +208,6 @@ var g_FilterManagerInstance = nil;
 - (void)_triggerFilters:(CPArray)filters
 {
     console.log("Trigger Filters Called");
-
-    console.log("Filters count = "); console.log([filters count]);
-
-    console.log("Filters = "); console.log(filters);
-
-    console.log("Filters at 0 = "); console.log([filters objectAtIndex:0]);
     
     for(var i=0; i < [filters count]; i++)
     {

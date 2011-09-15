@@ -98,7 +98,7 @@
       <file leaf-file-name="FilterManager.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="9" selection-start="2027" selection-end="2027" vertical-scroll-proportion="-11.571428">
+            <state line="232" column="5" selection-start="6093" selection-end="6093" vertical-scroll-proportion="-11.035714">
               <folding />
             </state>
           </provider>
@@ -107,7 +107,7 @@
       <file leaf-file-name="OverlayManager.j" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="144" column="37" selection-start="5183" selection-end="5183" vertical-scroll-proportion="0.65217394">
+            <state line="226" column="5" selection-start="7852" selection-end="7852" vertical-scroll-proportion="0.33333334">
               <folding />
             </state>
           </provider>
@@ -764,14 +764,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/FilterManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="9" selection-start="2027" selection-end="2027" vertical-scroll-proportion="-11.571428">
+        <state line="232" column="5" selection-start="6093" selection-end="6093" vertical-scroll-proportion="-11.035714">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="144" column="37" selection-start="5183" selection-end="5183" vertical-scroll-proportion="0.65217394">
+        <state line="226" column="5" selection-start="7852" selection-end="7852" vertical-scroll-proportion="0.33333334">
           <folding />
         </state>
       </provider>
