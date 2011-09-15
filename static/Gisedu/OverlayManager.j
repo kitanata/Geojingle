@@ -137,45 +137,42 @@ var overlayManagerInstance = nil;
     for(var i=0; i < [filterDescriptions count]; i++)
     {
         var curFilterDesc = [filterDescriptions objectAtIndex:i];
+        var dataDict = [curFilterDesc options];
+        var filterId = [curFilterDesc id];
+        var filterDataType = [curFilterDesc dataType];
+        var filterFilterType = [curFilterDesc filterType];
 
-        if([curFilterDesc dataType] == "POINT")
+        if(filterDataType == "POINT")
         {
-            if([curFilterDesc filterType] == "DICT")
+            if(filterFilterType == "DICT")
             {
-                var dataDict = [curFilterDesc options];
-                var filterId = [curFilterDesc id];
-
                 [m_PointDataTypeLists setObject:dataDict forKey:filterId];
                 [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:filterId];
 
                 var subDataTypes = [dataDict allKeys];
 
-                for(var i=0; i < [subDataTypes count]; i++)
+                for(var j=0; j < [subDataTypes count]; j++)
                 {
-                    var subDataTypeName = [subDataTypes objectAtIndex:i];
+                    var subDataTypeName = [subDataTypes objectAtIndex:j];
                     var subDataTypeDict = [dataDict objectForKey:subDataTypeName];
 
                     [self createPointDataObjects:subDataTypeDict withDataType:filterId];
                 }
             }
-            else if([curFilterDesc filterType] == "LIST")
+            else if(filterFilterType == "LIST")
             {
-                var dataDict = [curFilterDesc options];
-                var filterId = [curFilterDesc id];
-
                 [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:filterId];
 
                 [self createPointDataObjects:dataDict withDataType:filterId];
             }
         }
-        else if([curFilterDesc dataType] == "POLYGON")
+        else if(filterDataType == "POLYGON")
         {
-            if([curFilterDesc filterType] == "LIST")
+            if(filterFilterType == "LIST")
             {
-                var dataDict = [curFilterDesc options];
-                var filterId = [curFilterDesc id];
-
                 [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:filterId];
+
+                console.log("overlayDataObjects = "); console.log(m_OverlayDataObjects);
 
                 if([m_Delegate respondsToSelector:@selector(onBasicDataTypeMapsLoaded:)])
                     [m_Delegate onBasicDataTypeMapsLoaded:filterId];
@@ -225,6 +222,9 @@ var overlayManagerInstance = nil;
 - (void)removeAllOverlaysFromMapView
 {
     var overlayDicts = [m_OverlayDataObjects allValues];
+
+    console.log("dataObjects = "); console.log(m_OverlayDataObjects);
+    console.log("overlayDicts = "); console.log(overlayDicts);
 
     for(var i=0; i < [overlayDicts count]; i++)
     {

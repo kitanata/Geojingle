@@ -76,11 +76,9 @@ var g_FilterManagerInstance = nil;
 
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterDescriptionsLoaded)])
                 [m_Delegate onFilterDescriptionsLoaded];
-
-        console.log(filterList);
     }
 
-    console.log("Finished loading filter list");
+    console.log("Finished loading filter descriptions");
 }
 
 - (id)filterFlagMap

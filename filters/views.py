@@ -158,7 +158,6 @@ def filter_polygon(poly_filter, options, query_results, key_objects=None, object
     if len(option_names) > 0:
         boolean_fields = boolean_fields.filter(field__field_name__in=option_names)
         boolean_fields = boolean_fields.filter(field__field_value__in=option_values)
-        print(len(list(boolean_fields)))
         filtered_poly_objects = [field.polygon for field in boolean_fields]
         poly_objects = set(poly_objects).intersection(set(filtered_poly_objects))
     #end reduce bool
@@ -216,10 +215,8 @@ def process_point_reduce_boolean_filters(point_filter, point_objects, options):
     option_values = [True if value.upper() == "TRUE" or value.upper() == "T" else False for value in options.itervalues()]
 
     if len(option_names) > 0:
-        print("Bool Option Names " + str(option_names))
         boolean_fields = boolean_fields.filter(field__field_name__in=option_names)
         boolean_fields = boolean_fields.filter(field__field_value__in=option_values)
-        print(len(list(boolean_fields)))
         filtered_point_objects = [field.point for field in boolean_fields]
         point_objects = set(point_objects).intersection(set(filtered_point_objects))
 
@@ -230,18 +227,12 @@ def process_point_reduce_char_filters(point_filter, point_objects, options):
     char_options = GiseduCharField.objects.values('field_name').distinct()
     char_options = [option['field_name'] for option in char_options]
 
-    print("Char Options = " + str(char_options))
-
     option_names = [name for name in options.iterkeys() if name in char_options]
     option_values = [value for value in options.itervalues()]
 
-    print("Option Values = " + str(option_values))
-
     if len(option_names) > 0:
-        print("Char Option Names " + str(option_names))
         char_fields = char_fields.filter(field__field_name__in=option_names)
         char_fields = char_fields.filter(field__pk__in=option_values)
-        print(len(list(char_fields)))
         filtered_point_objects = [field.point for field in char_fields]
         point_objects = set(point_objects).intersection(set(filtered_point_objects))
 
@@ -260,8 +251,6 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
     integer_options.extend(gt_integer_options)
     integer_options.extend(eq_integer_options)
 
-    print("Integer Options = " + str(integer_options))
-
     for name, value in options.iteritems():
         try:
             value = int(value)
@@ -276,7 +265,6 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
         else:
             integer_query_option = ""
 
-        print("name:" + str(name) + " value:" + str(value))
         integer_fields = integer_fields.filter(field__field_name=name)
 
         if integer_query_option == "lt":

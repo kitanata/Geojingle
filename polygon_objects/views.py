@@ -18,7 +18,5 @@ def polygon_geom_list(request, data_type):
     poly_objects = poly_objects.filter(pk__in=poly_ids)
     object_result = dict([(x.pk, json.loads(x.the_geom.json)) for x in poly_objects])
 
-    print(object_result)
-
     return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
 

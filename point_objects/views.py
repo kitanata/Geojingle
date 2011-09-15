@@ -17,8 +17,6 @@ def point_geom_list(request, data_type):
     point_objects = point_objects.filter(pk__in=point_ids)
     object_result = dict([(x.pk, json.loads(x.the_geom.json)) for x in point_objects])
 
-    print(object_result)
-
     return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
 
 
