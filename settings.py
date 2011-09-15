@@ -116,7 +116,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'gisedu',
-    'filter',
+    'filters',
     'session',
     'cloud',
     'point_objects',

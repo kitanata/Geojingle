@@ -49,6 +49,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPArray m_SchoolDistrictItems;
 
     OverlayManager m_OverlayManager;
+    FilterManager m_FilterManager;
 
     TablesController m_TablesController;
 
@@ -96,6 +97,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     m_OverlayManager = [OverlayManager getInstance];
     [m_OverlayManager setDelegate:self];
+
+    m_FilterManager = [FilterManager getInstance];
+    [m_FilterManager setDelegate:self];
+    [m_FilterManager loadFilterDescriptions];
 
     m_CountyItems = [CPArray array];
     m_SchoolDistrictItems = [CPArray array];
@@ -158,21 +163,11 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     console.log("AppController:-mapViewIsReady() called");
 
-    [m_OverlayManager loadBasicDataTypeMaps];
-
-    [m_OverlayManager loadPointDataTypeLists];
-
     [m_LeftSideTabView mapViewIsReady:mapView];
     [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
     [[m_LeftSideTabView outlineView] setTarget:self];
 
     console.log("AppController:-mapViewIsReady() finished");
-}
-
-- (void)onBasicDataTypeMapsLoaded:(CPString)dataType
-{
-    if(dataType == "county")
-        [self onUpdateMapFilters:self];
 }
 
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
@@ -355,6 +350,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void) onOutlineItemSelected:(id)sender
 {
+    //TODO: This needs to be updated
     sender = [sender outline];
     
     var item = [sender itemAtRow:[sender selectedRow]];
@@ -460,31 +456,23 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     }
 }
 
+- (void)onFilterDescriptionsLoaded
+{
+    [m_OverlayManager onFilterDescriptionsLoaded];
+}
+
 - (void)onUpdateMapFilters:(id)sender
 {
     [[m_LeftSideTabView outlineView] clearItems];
-
-    filterManager = [FilterManager getInstance];
-    [filterManager setDelegate:self];
-    [filterManager triggerFilters];
+    [m_FilterManager triggerFilters];
 }
 
-- (void)onPolygonOverlayLoaded:(id)overlay dataType:(CPString)dataType
+- (void)onOverlayListLoaded:(CPArray)overlays dataType:(CPString)dataType
 {
-    var dataTypeNameMap = {
-                            'county' : "Counties",
-                            'school_district' : "School District",
-                            'house_district' : "House Districts",
-                            'senate_district' : "Senate Districts"
+    for(var i=0; i < [overlays count]; i++)
+    {
+        [[m_LeftSideTabView outlineView] addItem:[[overlays objectAtIndex:i] name] forCategory:dataType];
     }
-
-    [overlay setDelegate:self];
-    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:dataTypeNameMap[dataType]];
-}
-
-- (void)onPointOverlayLoaded:(id)overlay dataType:(CPString)dataType
-{
-    [[m_LeftSideTabView outlineView] addItem:[overlay name] forCategory:[overlay type]];
 }
 
 - (void)onFilterRequestProcessed:(id)sender
@@ -664,7 +652,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (id)buildJsonSaveData
 {
-    return {"filters": [[FilterManager getInstance] toJson]};
+    return {"filters": [m_FilterManager toJson]};
 }
 
 - (void)onOpenFileRequestSuccessful:(id)sender
@@ -673,7 +661,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     var filters = jsonData['filters'];
 
-    [[FilterManager getInstance] fromJson:filters];
+    [m_FilterManager fromJson:filters];
     [[m_LeftSideTabView filtersView] refreshOutline];
     [self onUpdateMapFilters:self];
     [self updateMenuBarTitle];

@@ -11,9 +11,6 @@
 
     CPTreeNode m_ParentFilter;
     id m_Delegate   @accessors(property=delegate);
-
-    var m_FilterNameToTypeMap;
-    var m_FilterTypeToNameMap;
 }
 
 - (id)initWithParentFilter:(GiseduFilter)parentFilter
@@ -42,13 +39,9 @@
         filterManager = [FilterManager getInstance];
         parentType = [parentFilter type];
 
-        var filterExclusionMap = [filterManager filterExclusionMap];
+        var filterDescriptions = [filterManager filterDescriptions];
 
-        m_FilterNameToTypeMap = [filterManager filterNameToTypeMap];
-
-        m_FilterTypeToNameMap = [filterManager filterTypeToNameMap];
-
-        var itemList = [filterManager allFilterTypes];
+        var excludedFilterIds = [CPArray array];
 
         if(parentFilter && parentType)
         {
@@ -57,35 +50,37 @@
 
             while(parentIter != nil)
             {
-               parentType = [parentIter type];
+                var parentDesc = [parentIter description];
 
-               var itemsExcluded = filterExclusionMap[parentType];
+                console.log("parentDesc excludedFilters ="); console.log([parentDesc excludeFilters]);
 
-               console.log("Item List is " + itemList);
-               console.log("Items excluded from parent type " + parentType + " items: " + itemsExcluded);
+                [excludedFilterIds addObjectsFromArray:[parentDesc excludeFilters]];
 
-               for(var i=0; i < itemsExcluded.length; i++)
-               {
-                    itemListIndex = itemList.indexOf(itemsExcluded[i]);
-
-                    if(itemListIndex != -1)
-                        itemList.splice(itemListIndex, 1);
-               }
-
-               console.log("New Item List is " + itemList);
-
-               parentIter = [parentIter parentNode];
+                parentIter = [parentIter parentNode];
             }
         }
 
-        console.log("Final Item List is " + itemList);
+        console.log("excludedFilterIds = "); console.log(excludedFilterIds);
+
+        var itemList = [CPArray arrayWithArray:[filterDescriptions allKeys]];
+        for(var i=0; i < [excludedFilterIds count]; i++)
+        {
+            var excludedId = [excludedFilterIds objectAtIndex:i].toString();
+
+            console.log("excludedId = "); console.log(excludedId);
+            
+            [itemList removeObject:excludedId];
+
+            console.log("itemList ="); console.log(itemList);
+        }
 
         if(itemList.length == 0)
             return null;
 
-        for(var i=0; i < itemList.length; i++)
+        for(var i=0; i < [itemList count]; i++)
         {
-            [m_FilterType addItemWithTitle:m_FilterTypeToNameMap[itemList[i]]];
+            var filterName = [[filterDescriptions objectForKey:[itemList objectAtIndex:i]] name];
+            [m_FilterType addItemWithTitle:filterName];
         }
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
@@ -107,12 +102,23 @@
 {
     var curSelFilterName = [[m_FilterType selectedItem] title];
 
-    var newFilterType = m_FilterNameToTypeMap[curSelFilterName];
+    var filterDescriptions = [[filterManager filterDescriptions] allValues];
+
+    var newFilterType = nil;
+
+    for(var i=0; i < [filterDescriptions count]; i++)
+    {
+        var curDesc = [filterDescriptions objectAtIndex:i];
+
+        if([curDesc name] == curSelFilterName)
+        {
+            newFilterType = [curDesc id];
+            break;
+        }
+    }
 
     console.log("CurSelFilterName is " + curSelFilterName);
     console.log("New Filter Type is " + newFilterType);
-
-    console.log("FilterNameToTypeMap is " + m_FilterNameToTypeMap);
 
     if(newFilterType && [m_Delegate respondsToSelector:@selector(onAddFilterConfirm:)])
         [m_Delegate onAddFilterConfirm:newFilterType];

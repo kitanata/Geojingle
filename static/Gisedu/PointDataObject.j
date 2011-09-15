@@ -9,7 +9,7 @@
     CPString m_szDataType   @accessors(property=dataType); //'organization', 'school', 'joint_voc_sd' etc
 
     PointOverlayLoader m_PointLoader;
-    PointOverlay m_Overlay  @accessors(property=overlay);
+    PointOverlay m_Overlay  @accessors(getter=overlay);
 
     InfoWindowOverlayLoader m_InfoLoader;
     InfoWindowOverlay m_InfoWindow;
@@ -74,6 +74,20 @@
 
     if([m_Delegate respondsToSelector:@selector(onPointGeomLoaded:)])
         [m_Delegate onPointGeomLoaded:self];
+}
+
+- (void)setOverlay:(id)overlay
+{
+    m_Overlay = overlay;
+    [m_Overlay setTitle:m_szName];
+    [m_Overlay setDelegate:self];
+
+    [m_Overlay addToMapView];
+
+    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;
+    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
+    [m_InfoLoader setTarget:self];
+    [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
 }
 
 - (void)onInfoWindowLoaded:(id)sender

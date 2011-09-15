@@ -8,76 +8,129 @@
 # into your database.
 
 from django.contrib.gis.db import models
+from filters.models import GiseduFilters
 
-class OhioCounties(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    objectid = models.IntegerField()
-    cnty_fips = models.CharField(max_length=3)
-    fips_num = models.IntegerField()
-    cnty_code = models.CharField(max_length=3)
-    cnty_num = models.IntegerField()
-    name = models.CharField(max_length=16)
-    cap_name = models.CharField(max_length=16)
-    abbrev = models.CharField(max_length=3)
-    shape_area = models.DecimalField(max_digits=1000, decimal_places=999)
-    shape_len = models.DecimalField(max_digits=1000, decimal_places=999)
-    the_geom = models.MultiPolygonField()
+class GiseduIntegerField(models.Model):
+    field_name = models.CharField(max_length=254, null=True)
+    field_value = models.IntegerField(null=True)
+
+    class Meta:
+        db_table = u'gisedu_integer_field'
+        verbose_name_plural = "Integer Fields"
+
+class GiseduCharField(models.Model):
+    field_name = models.CharField(max_length=254, null=True)
+    field_value = models.CharField(max_length=254, null=True)
+
+    class Meta:
+        db_table = u'gisedu_char_field'
+        verbose_name_plural = "Character Fields"
+
+class GiseduBooleanField(models.Model):
+    field_name = models.CharField(max_length=254, null=True)
+    field_value = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = u'gisedu_boolean_field'
+        verbose_name_plural = "Boolean Fields"
+
+class GiseduPolygonItem(models.Model):
+    filter = models.ForeignKey(GiseduFilters)
+    item_name = models.CharField(max_length=254, null=True)
+    item_type = models.CharField(max_length=254, null=True) #for dict fields
+    the_geom = models.MultiPolygonField(null=True)
     objects = models.GeoManager()
 
     class Meta:
-        db_table = u'ohio_counties'
-        verbose_name_plural = "Ohio Counties"
+        db_table = u'gisedu_polygon_item'
+        verbose_name_plural = "Polygon Items"
+
+class GiseduPolygonItemCharField(models.Model):
+    polygon = models.ForeignKey(GiseduPolygonItem)
+    field = models.ForeignKey(GiseduCharField)
+
+    class Meta:
+        db_table = u'gisedu_polygon_item_char_field'
+        verbose_name_plural = "Polygon Character Fields"
+
+class GiseduPolygonItemIntegerField(models.Model):
+    polygon = models.ForeignKey(GiseduPolygonItem)
+    field = models.ForeignKey(GiseduIntegerField)
+
+    class Meta:
+        db_table = u'gisedu_polygon_item_integer_field'
+        verbose_name_plural = "Polygon Integer Fields"
+
+class GiseduPolygonItemBooleanField(models.Model):
+    polygon = models.ForeignKey(GiseduPolygonItem)
+    field = models.ForeignKey(GiseduBooleanField)
+
+    class Meta:
+        db_table = u'gisedu_polygon_item_boolean_field'
+        verbose_name_plural = "Polygon Boolean Fields"
+
+class GiseduPointItemAddress(models.Model):
+    gid = models.IntegerField(primary_key=True)
+    street_num = models.IntegerField()
+    street_name = models.CharField(max_length=254)
+    mail_stop = models.CharField(max_length=254)
+    address_line_one = models.CharField(max_length=254)
+    address_line_two = models.CharField(max_length=254)
+    city = models.CharField(max_length=254)
+    state = models.CharField(max_length=254)
+    zip10 = models.CharField(max_length=254)
 
     def __str__(self):
-        return str(self.name)
+        return str(self.address_line_one) + " " + str(self.city) + ", " + str(self.state)
 
+    class Meta:
+        db_table = u'gisedu_point_item_address'
+        verbose_name_plural = "Educational Organization Addresses"
 
-class OhioSchoolDistricts(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=51)
-    lea_id = models.CharField(max_length=5)
-    beg_grade = models.CharField(max_length=2)
-    end_grade = models.CharField(max_length=2)
-    taxid = models.CharField(max_length=4)
-    id = models.CharField(max_length=6)
-    the_geom = models.MultiPolygonField()
-    district_irn = models.IntegerField()
-    comcast_coverage = models.BooleanField()
-    has_atomic_learning = models.BooleanField()
+class GiseduPointItem(models.Model):
+    filter = models.ForeignKey(GiseduFilters)
+    item_name = models.CharField(max_length=254, null=True)
+    item_type = models.CharField(max_length=254, null=True) #for dict fields
+    item_address = models.ForeignKey(GiseduPointItemAddress)
+    the_geom = models.PointField(null=True)
     objects = models.GeoManager()
 
     class Meta:
-        db_table = u'ohio_school_districts'
-        verbose_name_plural = "Ohio School Districts"
+        db_table = u'gisedu_point_item'
+        verbose_name_plural = "Point Items"
 
-    def __str__(self):
-        return str(self.name)
-
-class OhioHouseDistricts(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    district = models.IntegerField()
-    the_geom = models.MultiPolygonField()
-    objects = models.GeoManager()
+class GiseduPointItemCharField(models.Model):
+    point = models.ForeignKey(GiseduPointItem)
+    field = models.ForeignKey(GiseduCharField)
 
     class Meta:
-        db_table = u'ohio_house_districts'
-        verbose_name_plural = "Ohio House Districts"
+        db_table = u'gisedu_point_item_char_field'
+        verbose_name_plural = "Point Character Fields"
 
-    def __str__(self):
-        return "House District " + str(self.district)
-
-class OhioSenateDistricts(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    district = models.IntegerField()
-    the_geom = models.MultiPolygonField()
-    objects = models.GeoManager()
+class GiseduPointItemIntegerField(models.Model):
+    point = models.ForeignKey(GiseduPointItem)
+    field = models.ForeignKey(GiseduIntegerField)
 
     class Meta:
-        db_table = u'ohio_senate_districts'
-        verbose_name_plural = "Ohio Senate Districts"
+        db_table = u'gisedu_point_item_integer_field'
+        verbose_name_plural = "Point Integer Fields"
 
-    def __str__(self):
-        return "Senate District " + str(self.district)
+class GiseduPointItemBooleanField(models.Model):
+    point = models.ForeignKey(GiseduPointItem)
+    field = models.ForeignKey(GiseduBooleanField)
+
+    class Meta:
+        db_table = u'gisedu_point_item_boolean_field'
+        verbose_name_plural = "Point Boolean Fields"
+
+class GiseduReduceItem(models.Model):
+    reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')
+    target_filter = models.ForeignKey(GiseduFilters, related_name='target_filter')
+    item_field = models.CharField(max_length=254, null=True)
+
+    class Meta:
+        db_table = u'gisedu_reduce_item'
+        verbose_name_plural = "Reduce Items"
 
 class OhioLibraries(models.Model):
     gid = models.IntegerField(primary_key=True)

@@ -71,7 +71,7 @@ class TestFilters(TestCase):
 #
 #        c = Client()
 #
-#        response = c.get('/filter/county_by_name/All/')
+#        response = c.get('/filters/county_by_name/All/')
 #
 #        expected = '\n[]\n'
 #
@@ -82,7 +82,7 @@ class TestFilters(TestCase):
 #
 #        c = Client()
 #
-#        response = c.get('/filter/county_by_name/Athens/')
+#        response = c.get('/filters/county_by_name/Athens/')
 #
 #        expected = '\n[]\n'
 #
@@ -93,7 +93,7 @@ class TestFilters(TestCase):
 
         c = Client()
 
-        response = c.get('/filter/org_by_type/Area Media Center/')
+        response = c.get('/filters/org_by_type/Area Media Center/')
         expected = '\n[]\n'
 
         self.assertEqual(response.status_code, 200)
@@ -103,7 +103,7 @@ class TestFilters(TestCase):
 
         c = Client()
 
-        response = c.get('/filter/org_by_name/Eastland Career Center/')
+        response = c.get('/filters/org_by_name/Eastland Career Center/')
         expected = '\n[]\n'
 
         self.assertEqual(response.status_code, 200)

@@ -12,7 +12,7 @@
 @implementation OverlayFiltersView : CPView
 {
     OverlayOptionsView m_OverlayOptionsView @accessors(property=optionsView);
-    
+
     AddFilterPanel m_AddFilterPanel;
     CPAlert m_DeleteFilterAlert;
 
@@ -34,7 +34,7 @@
     {
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
-        
+
         m_DeleteFilterAlert = [CPAlert alertWithError:"Are you sure you want to delete this filter?"];
         [m_DeleteFilterAlert addButtonWithTitle:"No, not yet."];
         [m_DeleteFilterAlert addButtonWithTitle:"Yes"];
@@ -76,29 +76,42 @@
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
 {
+    console.log("indexOf Problem");
+    console.log("item = "); console.log(item);
     if (item === nil)
     {
+        console.log("index = "); console.log(index);
+        console.log("returning = "); console.log([[m_FilterManager userFilters] objectAtIndex:index]);
         return [[m_FilterManager userFilters] objectAtIndex:index];
     }
     else
     {
+        console.log("index = "); console.log(index);
+        console.log("returning = "); console.log([[item childNodes] objectAtIndex:index]);
         return [[item childNodes] objectAtIndex:index];
     }
 }
 
 - (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
 {
+    console.log(item);
+    console.log("Problem expandable");
+    console.log(([[item childNodes] count] > 0));
     return ([[item childNodes] count] > 0);
 }
 
 - (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
 {
+    console.log(item);
+    console.log("Problem Child Num");
     if (item === nil)
     {
+        console.log([[m_FilterManager userFilters] count]);
         return [[m_FilterManager userFilters] count];
     }
     else
     {
+        console.log([[item childNodes] count]);
         return [[item childNodes] count];
     }
 }
@@ -106,31 +119,41 @@
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
     var filterType = [item type];
+    var filterDescription = [item description];
 
     var names = nil;
 
-    var listBasedFilterTypes = [m_FilterManager listBasedFilterTypes];
-    var pointFilterTypes = [m_FilterManager pointFilterTypes];
-    var booleanDataFilters = [m_FilterManager booleanFilterTypes];
-
-    var filterTypeName = [filterType stringByReplacingOccurrencesOfString:'_' withString:' '];
+    var filterTypeName = [filterDescription name];
     var filterLabel = "All " + filterTypeName + " Filter";
 
-    if(listBasedFilterTypes.indexOf(filterType) != -1)
+    if([filterDescription filterType] == "LIST")
     {
-        var filterName = [[m_OverlayManager basicDataTypeMap:filterType] objectForKey:[item value]];
+        var filterName = [[filterDescription options] objectForKey:[item value]];
 
-        if(filterName)
-            filterLabel = filterName + " " + filterTypeName + " Filter";
+        if(!filterName)
+            filterName = "All";
+            
+        filterLabel = filterName + " " + filterTypeName + " Filter";
     }
-    else if(pointFilterTypes.indexOf(filterType) != -1)
+    else if([filterDescription filterType] == "DICT")
+    {
+        filterLabel = [item value] + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription dataType] == "POINT")
     {
         var filterName = [[m_OverlayManager pointDataTypes:filterType] objectForKey:[item value]];
 
         if(filterName)
             filterLabel = filterName + " " + filterTypeName + " Filter";
     }
-    else if(booleanDataFilters.indexOf(filterType) != -1)
+    else if([filterDescription filterType] == "CHAR")
+    {
+        var filterName = [[filterDescription options] objectForKey:[item value]];
+
+        if(filterName)
+            filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription filterType] == "BOOL")
     {
         if([item value])
             filterLabel = "Has " + filterTypeName + " Filter";
@@ -224,23 +247,27 @@
 
 - (CPDragOperation)outlineView:(CPOutlineView)outlineView validateDrop:(id)info proposedItem:(id)item proposedChildIndex:(CPInteger)index
 {
-    var filterExclusionMap = [m_FilterManager filterExclusionMap];
-
     var movingItem = [[info draggingPasteboard] dataForType:"filters"];
 
     var filtersInTree = [self allTypesInFilterTree:movingItem];
-    
+
     var exclusionMap = [m_FilterManager filterFlagMap];
+
+    console.log("Exclusion Map = ");
+    console.log(exclusionMap);
 
     for(var i=0; i < [filtersInTree count]; i++)
     {
         var curFilterType = [filtersInTree objectAtIndex:i];
-        
-        var curExs = filterExclusionMap[curFilterType];
+        var curFilterDesc = [[m_FilterManager filterDescriptions] objectForKey:curFilterType];
 
-        for(var j=0; j < curExs.length; j++)
+        var curExs = [curFilterDesc excludeFilters];
+
+        for(var j=0; j < [curExs count]; j++)
         {
-            exclusionMap[curExs[j]] = NO;
+            console.log([curExs objectAtIndex:j]);
+            
+            exclusionMap[[curExs objectAtIndex:j]] = NO;
         }
     }
 
@@ -267,7 +294,7 @@
 {
     var typeList = [CPArray array];
     var filterChildren = [filter childNodes];
-    
+
     for(var i=0; i < [filterChildren count]; i++)
     {
         var curChild = [filterChildren objectAtIndex:i];
@@ -289,7 +316,7 @@
 
     [pboard declareTypes:[CPArray arrayWithObject:"filters"] owner:self];
     [pboard setData:theItem forType:"filters"];
-    
+
     return YES;
 }
 
@@ -308,39 +335,47 @@
             [m_CurrentFilterView removeFromSuperview];
 
         var filterType = [filter type];
+        var filterDescription = [filter description];
 
-        var listBasedFilterTypes = [m_FilterManager listBasedFilterTypes];
-        var polygonalFilterTypes = [m_FilterManager polygonalFilterTypes];
-        var pointDataFilters = [m_FilterManager pointFilterTypes];
-        var booleanDataFilters = [m_FilterManager booleanFilterTypes];
-
-        if(polygonalFilterTypes.indexOf(filterType) != -1)
+        if([filterDescription dataType] == "POLYGON")
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                    andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
+                    andFilter:filter andAcceptedValues:[filterDescription options]];
 
             [m_OverlayOptionsView setPolygonFilterTarget:filter];
         }
-        else if(pointDataFilters.indexOf(filterType) != -1)
+        else if([filterDescription dataType] == "POINT")
         {
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[m_OverlayManager pointDataTypes:filterType]];
+            if([filterDescription filterType] == "DICT")
+            {
+                m_CurrentFilterView = [[StringFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[[m_OverlayManager pointDataTypes:filterType] allKeys]];
+            }
+            else if([filterDescription filterType] == "LIST")
+            {
+                m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[filterDescription options]];
+            }
 
             [m_OverlayOptionsView setPointFilterTarget:filter];
         }
-        else if(listBasedFilterTypes.indexOf(filterType) != -1)
+        else if([filterDescription filterType] == "LIST")
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                        andFilter:filter andAcceptedValues:[m_OverlayManager basicDataTypeMap:filterType]];
+                        andFilter:filter andAcceptedValues:[filterDescription options]];
         }
-        else if(filterType == "connectivity_less" || filterType == "connectivity_greater")
+        else if([filterDescription filterType] == "INTEGER")
         {
-            var acceptedValues = [CPArray arrayWithObjects:"1", "10", "100", "1000"];
-            
             m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:acceptedValues];
+                andFilter:filter andAcceptedValues:[[filterDescription options] allValues]];
         }
-        else if(booleanDataFilters.indexOf(filterType) != -1)
+        else if([filterDescription filterType] == "CHAR")
+        {
+            console.log("Char Filter Options = "); console.log([filterDescription options]);
+            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                andFilter:filter andAcceptedValues:[filterDescription options]];
+        }
+        else if([filterDescription filterType] == "BOOL")
         {
             m_CurrentFilterView = [[BooleanFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                 andFilter:filter];
@@ -427,12 +462,13 @@
     if(curSelRow == CPNotFound)
     {
         [m_FilterManager addFilter:newFilter parent:nil];
+        console.log("Problem Here 1");
         [m_OutlineView reloadItem:nil reloadChildren:YES];
     }
     else
     {
         curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
-        
+
         [m_FilterManager addFilter:newFilter parent:curSelItem];
         [m_OutlineView reloadItem:curSelItem reloadChildren:YES];
         [m_OutlineView expandItem:curSelItem];

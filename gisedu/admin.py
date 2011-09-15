@@ -1,6 +1,5 @@
 from django.contrib.gis import admin
-from models import OhioCounties, OhioSchoolDistricts, OhioLibraries, \
-    OhioHouseDistricts, OhioSenateDistricts
+from models import OhioLibraries
 
 class OhioCountiesAdmin(admin.GeoModelAdmin):
     list_display = ('name', 'cnty_num', 'cnty_code')
@@ -39,9 +38,5 @@ class OhioHouseDistrictsAdmin(admin.GeoModelAdmin):
 
 class OhioSenateDistrictsAdmin(admin.GeoModelAdmin):
     exclude = ['gid']
-    
-admin.site.register(OhioCounties, OhioCountiesAdmin)
-admin.site.register(OhioSchoolDistricts, OhioSchoolDistrictsAdmin)
+
 admin.site.register(OhioLibraries, admin.GeoModelAdmin)
-admin.site.register(OhioHouseDistricts, OhioHouseDistrictsAdmin)
-admin.site.register(OhioSenateDistricts, OhioSenateDistrictsAdmin)

@@ -1,7 +1,7 @@
 @import <Foundation/CPObject.j>
 
 @import "GiseduFilter.j"
-
+@import "GiseduFilterDescription.j"
 @import "GiseduFilterRequest.j"
 @import "GiseduFilterChain.j"
 
@@ -14,12 +14,11 @@ var g_FilterManagerInstance = nil;
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
     CPArray m_FilterChains;                                             //Cached Filter Chains
 
-    id m_Delegate                   @accessors(property=delegate);
+    id m_Delegate                       @accessors(property=delegate);
 
-    var m_FilterRequestModifierMap  @accessors(property=filterRequestModifiers);
-    var m_FilterOptionsMap          @accessors(property=filterOptions);
+    CPDictionary m_FilterDescriptions   @accessors(getter=filterDescriptions);
 
-    var m_ExclusionFilterMap        @accessors(getter=filterExclusionMap);
+    CPURLConnection m_FilterDescriptionConn;
 }
 
 - (void)init
@@ -32,128 +31,69 @@ var g_FilterManagerInstance = nil;
         m_UserFilters = [CPArray array];
         m_FilterChains = [CPArray array];
 
-        [self addFilter:[self createFilter:'county'] parent:nil];
+        m_FilterDescriptions = [CPDictionary dictionary];
 
-        m_FilterRequestModifierMap = {
-                                        'county' : "county",
-                                        'house_district' : "house_district",
-                                        'senate_district' : "senate_district",
-                                        'school_district' : "school_district",
-                                        'joint_voc_sd' : "joint_voc_sd",
-                                        'connectivity_less' : "broadband_less",
-                                        'connectivity_greater' : "broadband_greater",
-                                        'school_itc' : "itc",
-                                        'ode_class' : "ode_class",
-                                        'organization' : "organization_by_type",
-                                        'school' : "school_by_type",
-                                        'comcast_coverage' : "comcast",
-                                        'atomic_learning' : "atomic_learning",
-                                    }
-
-        m_FilterOptionsMap = {
-                                'school' : ['school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater'],
-                                'school_district' : ['comcast_coverage', 'atomic_learning'],
-                                'joint_voc_sd' : ['atomic_learning']
-                             }
-
-        m_ExclusionFilterMap = {
-                           'county': ['county', 'school_district', 'house_district', 'senate_district'],
-                           'school_district': ['county', 'school_district', 'house_district', 'senate_district'],
-                           'house_district': ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                           'senate_district' : ['county', 'school_district', 'house_district', 'senate_district', 'comcast_coverage'],
-                           'comcast_coverage' : ['comcast_coverage', 'county', 'house_district', 'senate_district'],
-                           'school_itc' : ['school_itc', 'organization'],
-                           'ode_class' : ['ode_class', 'organization'],
-                           'school' : ['school', 'organization'],
-                           'connectivity_less' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                           'connectivity_greater' : ['connectivity_less', 'connectivity_greater', 'organization'],
-                           'organization' : ['organization', 'school_itc', 'ode_class', 'school', 'connectivity_less', 'connectivity_greater',
-                                            'atomic_learning', 'joint_voc_sd'],
-                           'atomic_learning' : ['county', 'house_district', 'senate_district', 'school_itc', 'ode_class', 'school', 'connectivity_less',
-                                            'connectivity_greater', 'organization'],
-                           'joint_voc_sd' : ['organization', 'school', 'school_itc', 'ode_class', 'connectivity_less', 'connectivity_greater']
-                           }
+        //[self addFilter:[self createFilter:'county'] parent:nil];
     }
 
     return self;
 }
 
-- (id)pointFilterTypes
+- (void)loadFilterDescriptions
 {
-    return ['school', 'organization', 'joint_voc_sd'];
+    m_FilterDescriptionConn = [CPURLConnection connectionWithRequest:[CPURLRequest requestWithURL:g_UrlPrefix + "/filter_list"] delegate:self];
 }
 
-- (id)polygonalFilterTypes
+- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
 {
-    return ['county', 'school_district', 'house_district', 'senate_district'];
+    if (aConnection == m_FilterDescriptionConn)
+    {
+        alert('Could not load filter list from server! ' + anError);
+        m_FilterListConnection = nil;
+    }
+    else
+    {
+        alert('Save failed! ' + anError);
+    }
 }
 
-- (id)reduceFilterTypes
+- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)aData
 {
-    return ['school_itc', 'ode_class', 'connectivity_greater', 'connectivity_less',
-            'comcast_coverage', 'atomic_learning'];
-}
+    if (aConnection == m_FilterDescriptionConn)
+    {
+        var aData = aData.replace('while(1);', '');
 
-- (id)baseFilterTypes
-{
-    var filterTypes = [];
-    return filterTypes.concat([self pointFilterTypes], [self polygonalFilterTypes]);
-}
+        filterList = JSON.parse(aData);
 
-- (id)allFilterTypes
-{
-    var filterTypes = [];
-    return filterTypes.concat([self pointFilterTypes], [self polygonalFilterTypes], [self reduceFilterTypes]);
+        for(var filterId in filterList)
+        {
+            var newDescription = [[GiseduFilterDescription alloc] init];
+
+            [newDescription fromJson:filterList[filterId]];
+
+            [m_FilterDescriptions setObject:newDescription forKey:filterId];
+        }
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterDescriptionsLoaded)])
+                [m_Delegate onFilterDescriptionsLoaded];
+
+        console.log(filterList);
+    }
+
+    console.log("Finished loading filter list");
 }
 
 - (id)filterFlagMap
 {
-    return {    'county': YES, 'school_district': YES, 'house_district': YES, 'senate_district' : YES,
-                'comcast_coverage' : YES, 'school_itc' : YES, 'ode_class' : YES, 'school' : YES,
-                'connectivity_less' : YES, 'connectivity_greater' : YES, 'organization' : YES,
-                'atomic_learning' : YES, 'joint_voc_sd' : YES }
-}
+    var flagMap = {};
+    var allFilters = [[self filterDescriptions] allKeys];
 
-- (id)filterNameToTypeMap
-{
-    return {
-                'County' : 'county',
-                'School District' : 'school_district',
-                'House District' : 'house_district',
-                'Senate District' : 'senate_district',
-                'School ITC' : 'school_itc',
-                'ODE Income Classification' : 'ode_class',
-                'Public School' : 'school',
-                'Organization' : 'organization',
-                'Connectivity Greater Than' : 'connectivity_greater',
-                'Connectivity Less Than' : 'connectivity_less',
-                'Comcast Coverage' : 'comcast_coverage',
-                'Atomic Learning Participant' : 'atomic_learning',
-                'Joint Vocational School District' : 'joint_voc_sd'
-    };
-}
+    for(var i=0; i < [allFilters count]; i++)
+    {
+        flagMap[[allFilters objectAtIndex:i]] = YES;
+    }
 
-- (id)filterTypeToNameMap
-{
-    var filterNameMap = [self filterNameToTypeMap];
-    var filterMap = {}
-
-    for(var key in filterNameMap)
-        filterMap[filterNameMap[key]] = key;
-
-    return filterMap;
-}
-
-/*These are used for dialogs*/
-- (id)listBasedFilterTypes
-{
-    return ['county', 'school_district', 'house_district', 'senate_district', 'joint_voc_sd',
-                'school_itc', 'ode_class', 'organization', 'school'];
-}
-
-- (id)booleanFilterTypes
-{
-     return ['comcast_coverage', 'atomic_learning'];
+    return flagMap;
 }
 
 - (BOOL)containsFilter:(CPTreeNode)filter
@@ -195,27 +135,33 @@ var g_FilterManagerInstance = nil;
 }
 
 - (CPTreeNode)createFilter:(CPString)type
- {
+{
+    console.log("FilterManager::createFilter called");
     var newFilter = nil;
+    var filterDesc = [m_FilterDescriptions objectForKey:type];
 
-    var listBasedFilterTypes = [self listBasedFilterTypes];
-    var boolFilterTypes = [self booleanFilterTypes];
-
-    if(listBasedFilterTypes.indexOf(type) != -1)
+    if([filterDesc filterType] == "LIST")
         newFilter = [[GiseduFilter alloc] initWithValue:'All'];
-    else if(type == 'connectivity_less' || type == 'connectivity_greater')
-        newFilter = [[GiseduFilter alloc] initWithValue:100];
-    else if(boolFilterTypes.indexOf(type) != -1)
+    else if([filterDesc filterType] == "DICT")
+        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
+    else if([filterDesc filterType] == "INTEGER")
+        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
+    else if([filterDesc filterType] == "CHAR")
+        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
+    else if([filterDesc filterType] == "BOOL")
         newFilter = [[GiseduFilter alloc] initWithValue:YES];
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
     [newFilter setType:type];
+    [newFilter setDescription:filterDesc];
 
     return newFilter;
- }
+}
 
 - (void)addFilter:(CPTreeNode)filter parent:(CPTreeNode)parent
 {
+    console.log("Adding Filter = "); console.log(filter);
+    
     if(!parent)
     {
         [m_UserFilters addObject:filter];
@@ -263,10 +209,18 @@ var g_FilterManagerInstance = nil;
 
 - (void)_triggerFilters:(CPArray)filters
 {
+    console.log("Trigger Filters Called");
+
+    console.log("Filters count = "); console.log([filters count]);
+
+    console.log("Filters = "); console.log(filters);
+
+    console.log("Filters at 0 = "); console.log([filters objectAtIndex:0]);
+    
     for(var i=0; i < [filters count]; i++)
     {
-        curFilter = [filters objectAtIndex:i];
-        console.log("triggerFilters curFilter is " + curFilter);
+        var curFilter = [filters objectAtIndex:i];
+        console.log("triggerFilters curFilter = "); console.log(curFilter);
 
         if(![curFilter isLeaf])
         {
@@ -344,7 +298,7 @@ var g_FilterManagerInstance = nil;
 - (void)fromJson:(id)jsonObject
 {
     [m_UserFilters removeAllObjects];
-    
+
     for(var i=0; i < jsonObject.length; i++)
     {
         var curJsonFilter = jsonObject[i];

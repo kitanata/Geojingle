@@ -1,0 +1,37 @@
+-- ALTER TABLE ohio_counties ADD COLUMN filter_id integer;
+-- UPDATE ohio_counties SET filter_id = 1 WHERE filter_id is null;
+-- SELECT updategeometrysrid('gisedu_polygon_item', 'the_geom', 4326);
+-- SELECT updategeometrysrid('ohio_counties', 'the_geom', 4326);
+-- INSERT INTO gisedu_polygon_item (filter_id, item_name, the_geom) SELECT filter_id, name, the_geom FROM ohio_counties;
+-- INSERT INTO gisedu_polygon_item_integer_field (polygon_id, field_value) SELECT id, fips_num FROM gisedu_polygon_item JOIN ohio_counties ON (gisedu_polygon_item.item_name = ohio_counties.name);
+-- UPDATE gisedu_polygon_item_integer_field SET field_name = 'fips_number' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_integer_field (polygon_id, field_value) SELECT id, cnty_num FROM gisedu_polygon_item JOIN ohio_counties ON (gisedu_polygon_item.item_name = ohio_counties.name);
+-- UPDATE gisedu_polygon_item_integer_field SET field_name = 'county_number' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_char_field (polygon_id, field_value) SELECT id, abbrev FROM gisedu_polygon_item JOIN ohio_counties ON (gisedu_polygon_item.item_name = ohio_counties.name);
+-- UPDATE gisedu_polygon_item_char_field SET field_name = 'county_abbreviation' WHERE field_name is null;
+
+-- SELECT * FROM gisedu_polygon_item_char_field WHERE field_name is null;
+
+-- SELECT * FROM gisedu_polygon_item JOIN ohio_counties ON (gisedu_polygon_item.item_name = ohio_counties.name);
+
+-- DROP TABLE ohio_counties;
+
+-- ALTER TABLE ohio_school_districts ADD COLUMN filter_id integer;
+-- UPDATE ohio_school_districts SET filter_id = 4 WHERE filter_id is null;
+-- UPDATE ohio_school_districts SET filter_id = 4 WHERE filter_id =1;
+-- SELECT updategeometrysrid('ohio_school_districts', 'the_geom', 4326);
+-- INSERT INTO gisedu_polygon_item (filter_id, item_name, the_geom) SELECT filter_id, name, the_geom FROM ohio_school_districts;
+-- INSERT INTO gisedu_polygon_item_char_field (polygon_id, field_value) SELECT gisedu_polygon_item.id, beg_grade FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_char_field SET field_name = 'beg_grade' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_char_field (polygon_id, field_value) SElECT gisedu_polygon_item.id, end_grade FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_char_field SET field_name = 'end_grade' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_char_field (polygon_id, field_value) SElECT gisedu_polygon_item.id, taxid FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_char_field SET field_name = 'taxid' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_integer_field (polygon_id, field_value) SElECT gisedu_polygon_item.id, district_irn FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_integer_field SET field_name = 'district_irn' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_boolean_field (polygon_id, field_value) SElECT gisedu_polygon_item.id, comcast_coverage FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_boolean_field SET field_name = 'comcast_coverage' WHERE field_name is null;
+-- INSERT INTO gisedu_polygon_item_boolean_field (polygon_id, field_value) SElECT gisedu_polygon_item.id, has_atomic_learning FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);
+-- UPDATE gisedu_polygon_item_boolean_field SET field_name = 'has_atomic_learning' WHERE field_name is null;
+
+SELECT * FROM gisedu_polygon_item JOIN ohio_school_districts ON (gisedu_polygon_item.item_name = ohio_school_districts.name);

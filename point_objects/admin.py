@@ -3,10 +3,7 @@ from django.contrib import admin
 from django.forms.widgets import CheckboxSelectMultiple
 from django.db.models import ManyToManyField
 
-from models import GiseduOrgType, GiseduOrgAddress, GiseduOrg, \
-                    SchoolAreaClassification, SchoolItc, Grade, \
-                    GiseduSchoolType, GiseduSchoolInfo, GiseduSchool, \
-                    GiseduJointVocationalSchoolDistrict
+from models import GiseduJointVocationalSchoolDistrict
 
 class GiseduOrgTypeAdmin(admin.ModelAdmin):
     list_display = ('org_type_name',)
@@ -91,16 +88,5 @@ class GiseduJointVocationalSchoolDistrictAdmin(gis_admin.GeoModelAdmin):
 
     atomic_learning_true.short_description = "Mark selected JVSDs as participants in atomic learning."
     atomic_learning_false.short_description = "Un-mark selected JVSDs as participants in atomic learning."
-
-admin.site.register(GiseduOrgType, GiseduOrgTypeAdmin)
-admin.site.register(GiseduOrgAddress, GiseduOrgAddressAdmin)
-admin.site.register(GiseduOrg, GiseduOrgAdmin)
-
-admin.site.register(SchoolAreaClassification, SchoolAreaClassificationAdmin)
-admin.site.register(SchoolItc, SchoolItcAdmin)
-admin.site.register(Grade, GradeAdmin)
-admin.site.register(GiseduSchoolType, GiseduSchoolTypeAdmin)
-admin.site.register(GiseduSchoolInfo, GiseduSchoolInfoAdmin)
-admin.site.register(GiseduSchool, GiseduSchoolAdmin)
 
 admin.site.register(GiseduJointVocationalSchoolDistrict, GiseduJointVocationalSchoolDistrictAdmin)

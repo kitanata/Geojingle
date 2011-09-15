@@ -23,19 +23,18 @@ urlpatterns = patterns('',
 
     (r'^cloud/project_list/', 'cloud.views.project_list'),
     (r'^cloud/project/(?P<project_name>(\w+\s?\W*)*\w+\W*)', 'cloud.views.project'),
-    
-    (r'^county/(?P<county_id>\d+)/', 'gisedu.views.county'),
-    (r'^school_district/(?P<district_id>\d+)/', 'gisedu.views.school_district'),
-    (r'^house_district/(?P<district_id>\d+)/', 'gisedu.views.house_district'),
-    (r'^senate_district/(?P<district_id>\d+)/', 'gisedu.views.senate_district'),
 
     #Point Data
-    (r'^point_geom/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_geom_by_type'),
+    (r'^point_geom/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_geom'),
+    (r'^point_geom/(?P<data_type>\w+)/list/', 'point_objects.views.point_geom_list'),
     (r'^point_info/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_info_by_type'),
     (r'^point_infobox/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_infobox_by_type'),
 
-    (r'^list/(?P<list_type>\w+)/type/(?P<type_id>\d+)', 'gisedu.views.list_by_type'),
-    (r'^list/(?P<list_type>\w+)', 'gisedu.views.list'),
+    #Polygon Data
+    (r'^polygon_geom/(?P<data_type>\w+)/id/(?P<polygon_id>\d+)/', 'gisedu.views.polygon_geom'),
+    (r'^polygon_geom/(?P<data_type>\w+)/list/', 'gisedu.views.polygon_geom_list'),
 
-    (r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filter.views.parse_filter'),
+    #Filter Data
+    (r'^filter_list', 'filters.views.filter_list'),
+    (r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filters.views.parse_filter'),
 )

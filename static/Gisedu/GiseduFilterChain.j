@@ -16,15 +16,12 @@
     CPArray             m_Filters              @accessors(property=filters);
     CPArray             m_DataTypes;           //m_OverlayIds Keys
     CPDictionary        m_OverlayIds;          //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
-    
+
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
     OverlayManager m_OverlayManager;
 
-    var m_PointDataTypes;
-    var m_PolygonDataTypes;
-    
     id m_Delegate                       @accessors(property=delegate);
 }
 
@@ -39,9 +36,6 @@
 
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
-
-        m_PointDataTypes = [m_FilterManager pointFilterTypes];
-        m_PolygonDataTypes = [m_FilterManager polygonalFilterTypes]; 
     }
 
     return self;
@@ -77,11 +71,7 @@
 {
     var filterChain = [m_Filters copy];
 
-    var filterRequestModifiers = [m_FilterManager filterRequestModifiers];
-    var filterOptionsMap = [m_FilterManager filterOptions];
-
-    var baseFilterItemList = [m_FilterManager baseFilterTypes];
-    var keyFilterItemList = [m_FilterManager pointFilterTypes];
+    var filterDescriptions = [m_FilterManager filterDescriptions];
 
     var keyFilterType = nil;
     var filterChainBuffer = [CPArray array];
@@ -104,30 +94,31 @@
         var curFilter = [filterChain lastObject];
         [filterChain removeLastObject];
 
-        console.log("Current Filter is " + curFilter);
+        console.log("Current Filter = "); console.log(curFilter);
 
         if(!curFilter)
             break;
 
         var curFilterType = [curFilter type];
+        var curFilterDescription = [filterDescriptions objectForKey:[curFilter type]];
 
         console.log("Current Filter Type is " + curFilterType);
 
-        if(baseFilterItemList.indexOf(curFilterType) != -1)
+        if([curFilterDescription dataType] == "POINT" || [curFilterDescription dataType] == "POLYGON")
         {
             //curFilter is a base for a filter query
 
-            if(keyFilterItemList.indexOf(curFilterType) != -1)
+            if([curFilterDescription dataType] == "POINT")
             {
                 //curFilter is a key base filter
                 keyFilterType = curFilterType;
-                filterRequestStrings[curFilterType] = "/" + filterRequestModifiers[curFilterType] + "=" + [curFilter value];
+                filterRequestStrings[curFilterType] = "/" + [curFilterDescription requestModifier] + "=" + [curFilter value];
 
                 console.log("Built KeyFilter Request String: " + filterRequestStrings[curFilterType]);
             }
             else
             {
-                filterRequestStrings[curFilterType] = "/" + filterRequestModifiers[curFilterType] + "=" + [curFilter value];
+                filterRequestStrings[curFilterType] = "/" + [curFilterDescription requestModifier] + "=" + [curFilter value];
 
                 console.log("Built BaseFilter Request String: " + filterRequestStrings[curFilterType]);
             }
@@ -135,26 +126,30 @@
             [filterChain addObjectsFromArray:filterChainBuffer];
             [filterChainBuffer removeAllObjects];
         }
-        else
+        else if([curFilterDescription dataType] == "REDUCE")
         {
             var bNoBase = true;
 
+            console.log("filterRequestStrings = "); console.log(filterRequestStrings);
+
             for(baseFilterType in filterRequestStrings)
             {
-                if(baseFilterType in filterOptionsMap)
+                console.log("baseFilterType = "); console.log(baseFilterType);
+                
+                var baseFilterDescription = [filterDescriptions objectForKey:baseFilterType];
+
+                console.log("baseFilterDesc = "); console.log(baseFilterDescription);
+
+                if([[baseFilterDescription optionFilters] containsObject:curFilterType])
                 {
-                    var filterOptions = filterOptionsMap[baseFilterType];
+                    //add to the base filter
+                    if([curFilterDescription filterType] == "INTEGER" && [curFilter requestOption] != "")
+                        filterRequestStrings[baseFilterType] += ":" + [curFilterDescription requestModifier] + "__" + [curFilter requestOption] + "=" + [curFilter value];
+                    else
+                        filterRequestStrings[baseFilterType] += ":" + [curFilterDescription requestModifier] + "=" + [curFilter value];
 
-                    console.log("filterOptions = " + filterOptions);
-
-                    if(filterOptions.indexOf(curFilterType) != -1)
-                    {
-                        //add to the base filter
-                        filterRequestStrings[baseFilterType] += ":" + filterRequestModifiers[curFilterType] + "=" + [curFilter value];
-
-                        console.log("Updated BaseFilter Request String To: " + filterRequestStrings[curFilterType]);
-                        bNoBase = false;
-                    }
+                    console.log("Updated BaseFilter Request String To: " + filterRequestStrings[curFilterType]);
+                    bNoBase = false;
                 }
             }
 
@@ -195,8 +190,12 @@
 
 - (void)onFilterRequestSuccessful:(id)sender
 {
+    console.log("onFilterRequestSuccessful");
     var filterResult = [CPSet setWithArray:[sender resultSet]]; //to remove duplicates dummy. Array->Set->Array
     var resultSet = [filterResult allObjects];
+
+    /* console.log("resultSet = "); console.log(resultSet);
+    console.log("overlayIds = "); console.log(m_OverlayIds); */
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
@@ -205,7 +204,7 @@
         typeIdPair = [resultSet objectAtIndex:i];
         items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
 
-        itemType = [items objectAtIndex:0];
+        itemType = parseInt([items objectAtIndex:0]);
         itemId = [items objectAtIndex:1];
 
         if(![m_OverlayIds objectForKey:itemType])
@@ -224,6 +223,10 @@
 - (void)updateOverlays
 {
     var overlayOptions = {}
+    var loadPointOverlayList = {}
+    var loadPolygonOverlayList = {}
+
+    var filterDescriptions = [m_FilterManager filterDescriptions];
 
     for(var i=0; i < [m_Filters count]; i++)
     {
@@ -239,13 +242,20 @@
         var curOptions = overlayOptions[curType];
         var curIds = [m_OverlayIds objectForKey:curType];
 
+        var curFilterDescription = [filterDescriptions objectForKey:curType];
+
+        //console.log(curType);
+
         for(var j=0; j < [curIds count]; j++)
         {
             var curItemId = [curIds objectAtIndex:j];
             var dataObj = [m_OverlayManager getOverlayObject:curType objId:curItemId];
 
-            if(m_PointDataTypes.indexOf(curType) != -1)
+            //console.log(dataObj);
+
+            if([curFilterDescription dataType] == "POINT")
             {
+               // console.log("UpdateOverlay processing pointDataType");
                 var overlay = [dataObj overlay];
 
                 if(overlay)
@@ -262,13 +272,17 @@
                 }
                 else
                 {
-                    [m_OverlayManager loadPointOverlay:curType withId:curItemId withDisplayOptions:curOptions];
-                }
+                    if(!loadPointOverlayList[curType])
+                        loadPointOverlayList[curType] = new Array();
 
+                    loadPointOverlayList[curType].push(curItemId);
+                }
             }
-            else if(m_PolygonDataTypes.indexOf(curType) != -1)
+            else if([curFilterDescription dataType] == "POLYGON")
             {
+                //console.log("UpdateOverlay processing polygonDataType");
                 var overlay = dataObj;
+                //console.log(overlay);
 
                 if(overlay)
                 {
@@ -279,10 +293,25 @@
                 }
                 else
                 {
-                    [m_OverlayManager loadPolygonOverlay:curType withId:curItemId withDisplayOptions:curOptions];
+                    if(!loadPolygonOverlayList[curType])
+                        loadPolygonOverlayList[curType] = new Array();
+
+                    loadPolygonOverlayList[curType].push(curItemId);
                 }
             }
         }
+    }
+
+    for(curType in loadPointOverlayList)
+    {
+        var curItemIds = loadPointOverlayList[curType];
+        [m_OverlayManager loadPointOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
+    }
+
+    for(curType in loadPolygonOverlayList)
+    {
+        var curItemIds = loadPolygonOverlayList[curType];
+        [m_OverlayManager loadPolygonOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
     }
 }
 

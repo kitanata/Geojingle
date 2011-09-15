@@ -47,10 +47,7 @@
 
     if (aConnection == m_Connection)
     {
-        for(var key in listData)
-        {
-            [m_Dictionary setObject:listData[key] forKey:key];
-        }
+        m_Dictionary = [self parseObjectIntoDictionary:listData];
 
         console.log("Finished loading dictionary");
 
@@ -59,6 +56,44 @@
             [self sendAction:_action to:_target];
         }
     }
+}
+
+- (CPDictionary)parseObjectIntoDictionary:(id)data
+{
+    var retDict = [CPDictionary dictionary];
+
+    for(var key in data)
+    {
+        var curDataItem = data[key];
+
+        if(Array.isArray(curDataItem))
+            [retDict setObject:[self parseObjectIntoArray:curDataItem] forKey:key];
+        else if(typeof(curDataItem) === "object")
+            [retDict setObject:[self parseObjectIntoDictionary:curDataItem] forKey:key];
+        else
+            [retDict setObject:curDataItem forKey:key];
+    }
+
+    return retDict;
+}
+
+- (CPArray)parseObjectIntoArray:(id)data
+{
+    var retArr = [CPArray array];
+
+    for(var i=0; i < data.length; i++)
+    {
+        var curDataItem = data[key];
+
+        if(Array.isArray(curDataItem))
+            [retArr addObject:[self parseObjectIntoArray:curDataItem]];
+        else if(typeof(retArr[key]) === "object")
+            [retArr addObject:[self parseObjectIntoDictionary:curDataItem]];
+        else
+            [retArr addObject:curDataItem];
+    }
+
+    return retArr;
 }
 
 @end
