@@ -25,14 +25,12 @@ urlpatterns = patterns('',
     (r'^cloud/project/(?P<project_name>(\w+\s?\W*)*\w+\W*)', 'cloud.views.project'),
 
     #Point Data
-    (r'^point_geom/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_geom'),
     (r'^point_geom/(?P<data_type>\w+)/list/', 'point_objects.views.point_geom_list'),
     (r'^point_info/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_info_by_type'),
     (r'^point_infobox/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_infobox_by_type'),
 
     #Polygon Data
-    (r'^polygon_geom/(?P<data_type>\w+)/id/(?P<polygon_id>\d+)/', 'gisedu.views.polygon_geom'),
-    (r'^polygon_geom/(?P<data_type>\w+)/list/', 'gisedu.views.polygon_geom_list'),
+    (r'^polygon_geom/(?P<data_type>\w+)/list/', 'polygon_objects.views.polygon_geom_list'),
 
     #Filter Data
     (r'^filter_list', 'filters.views.filter_list'),

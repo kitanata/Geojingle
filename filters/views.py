@@ -5,10 +5,9 @@ import string
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from models import GiseduFilters
-from gisedu.models import GiseduPolygonItem, GiseduPolygonItemCharField, GiseduPolygonItemBooleanField, \
-    GiseduPolygonItemIntegerField, GiseduPointItem, GiseduPointItemBooleanField, GiseduPointItemCharField, \
-    GiseduPointItemIntegerField, GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanField
-from point_objects.models import GiseduJointVocationalSchoolDistrict
+from gisedu.models import GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanField
+from point_objects.models import GiseduPointItem, GiseduPointItemIntegerField, GiseduPointItemCharField, GiseduPointItemBooleanField
+from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemIntegerField, GiseduPolygonItemCharField, GiseduPolygonItemBooleanField
 
 def filter_list(request):
     filter_objects = GiseduFilters.objects.all()
@@ -117,8 +116,6 @@ def parse_filter(request, filter_chain):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
         elif isinstance(result, GiseduPointItem):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
-        elif isinstance(result, GiseduJointVocationalSchoolDistrict):
-            typeId_results.append("joint_voc_sd:" + str(result.gid))
 
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
 

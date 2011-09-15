@@ -1,0 +1,58 @@
+[
+  {
+    "pk": 1, 
+    "model": "gisedu.giseduorgaddress", 
+    "fields": {
+      "city": "Elyria", 
+      "mail_stop": "",
+      "street_name": "Lake", 
+      "zip10": "44035-2551", 
+      "state": "OH", 
+      "street_num": 1885, 
+      "address_line_one": "1885 Lake Ave", 
+      "address_line_two": ""
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "gisedu.giseduorgaddress", 
+    "fields": {
+      "city": "Medina", 
+      "mail_stop": "",
+      "street_name": "Elmwood", 
+      "zip10": "44256-2210", 
+      "state": "OH", 
+      "street_num": 238, 
+      "address_line_one": "238 S Elmwood St", 
+      "address_line_two": ""
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "gisedu.giseduorgaddress", 
+    "fields": {
+      "city": "Sandusky", 
+      "mail_stop": "",
+      "street_name": "Hayes", 
+      "zip10": "44870-4740", 
+      "state": "OH", 
+      "street_num": 2130, 
+      "address_line_one": "2130 Hayes Ave", 
+      "address_line_two": ""
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "gisedu.giseduorgaddress", 
+    "fields": {
+      "city": "Mansfield", 
+      "mail_stop": "",
+      "street_name": "Longview", 
+      "zip10": "44906-1872", 
+      "state": "OH", 
+      "street_num": 1495, 
+      "address_line_one": "1495 W Longview Ave", 
+      "address_line_two": ""
+    }
+  }
+]

@@ -5,23 +5,7 @@ from django.template.context import RequestContext
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from filters.models import GiseduFilters
-from gisedu.models import GiseduPointItem
-from models import GiseduJointVocationalSchoolDistrict
-
-
-def point_geom(request, data_type, point_id):
-
-    object_result = None
-
-#    if data_type == "organization":
-#        object_result = GiseduOrg.objects.get(pk=point_id).the_geom.json
-#    elif data_type == "school":
-#        object_result = GiseduSchool.objects.get(pk=point_id).the_geom.json
-#    el\
-    if data_type == "joint_voc_sd":
-        object_result = GiseduJointVocationalSchoolDistrict.objects.get(pk=point_id).the_geom.json
-
-    return render_to_response('json/base.json', {'json': object_result}, context_instance=RequestContext(request))
+from point_objects.models import GiseduPointItem
 
 @csrf_exempt
 def point_geom_list(request, data_type):
