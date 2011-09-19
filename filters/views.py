@@ -4,6 +4,7 @@ import json
 import string
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
+from django.db.models import Q
 from models import GiseduFilters
 from gisedu.models import GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanField
 from point_objects.models import GiseduPointItem, GiseduPointItemIntegerField, GiseduPointItemCharField, GiseduPointItemBooleanField
@@ -86,28 +87,46 @@ def parse_filter(request, filter_chain):
 
     query_results = []
 
-    key_filter = queries[0]
-    queries = queries[1:]
-
     print("Queries = " + str(queries))
 
-    key_filter_options = {k : v for k, v in [string.split(x, '=') for x in string.split(key_filter, ':')]}
+    queries = [{k : v for k, v in [string.split(x, '=') for x in string.split(query, ':')]}
+                    for query in queries]
 
+    print("Queries = " + str(queries))
+    
     polygon_filters = list(GiseduFilters.objects.filter(data_type="POLYGON"))
-
-    for poly_filter in polygon_filters:
-        if poly_filter.request_modifier in key_filter_options:
-            filter_polygon(poly_filter, key_filter_options, query_results)
-
     point_filters = list(GiseduFilters.objects.filter(data_type="POINT"))
 
-    for point_filter in point_filters:
-        if point_filter.request_modifier in key_filter_options:
-            if point_filter.filter_type == "LIST":
-                filter_point(point_filter, key_filter_options, query_results, queries)
-            elif point_filter.filter_type == "DICT":
-                filter_point_by_type(point_filter, key_filter_options, query_results, queries)
+    polygon_request_modifiers = [f.request_modifier for f in polygon_filters]
+    point_request_modifiers = [f.request_modifier for f in point_filters]
 
+    print(str(polygon_request_modifiers))
+    print(str(point_request_modifiers))
+
+    polygon_results = []
+    point_results = []
+    for q in queries:
+        for k, v in q.iteritems():
+            if k in polygon_request_modifiers:
+                poly_filter = GiseduFilters.objects.get(request_modifier=k)
+                polygon_results.extend(filter_polygon(poly_filter, q))
+            elif k in point_request_modifiers:
+                point_filter = GiseduFilters.objects.get(request_modifier=k)
+                if point_filter.filter_type == "LIST":
+                    point_results.extend(filter_point(point_filter, q))
+                elif point_filter.filter_type == "DICT":
+                    point_results.extend(filter_point_by_type(point_filter, q))
+
+    point_pks = [point.pk for point in point_results]
+    point_qs = GiseduPointItem.objects.filter(pk__in=point_pks)
+
+    q_obj = Q()
+    for polygon in polygon_results:
+        q_obj |= Q(the_geom__within=polygon.the_geom)
+    final_point_items = list(point_qs.filter(q_obj))
+
+    query_results.extend(polygon_results)
+    query_results.extend(final_point_items)
     print "Query Results " + str(query_results)
 
     typeId_results = []
@@ -119,14 +138,9 @@ def parse_filter(request, filter_chain):
 
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
 
-def process_point_in_filter(key_objects, object):
-    return key_objects.filter(the_geom__within=object.the_geom)
-
-def filter_polygon(poly_filter, options, query_results, key_objects=None, object_filter=None):
+def filter_polygon(poly_filter, options):
+    print("Polygon Options = " + str(options))
     polygon_id = options[poly_filter.request_modifier]
-    del options[poly_filter.request_modifier]
-    options = {k : v for k, v in options.iteritems() if v != "All"}
-    
     get_all = (polygon_id == "All")
 
     if get_all:
@@ -152,30 +166,22 @@ def filter_polygon(poly_filter, options, query_results, key_objects=None, object
     bool_options = GiseduBooleanField.objects.values('field_name').distinct()
     bool_options = [option['field_name'] for option in bool_options]
 
-    option_names = [name for name in options.iterkeys() if name in bool_options]
-    option_values = [value for value in options.itervalues()]
+    options = {k : v for k, v in options.iteritems() if k in bool_options }
 
-    if len(option_names) > 0:
-        boolean_fields = boolean_fields.filter(field__field_name__in=option_names)
-        boolean_fields = boolean_fields.filter(field__field_value__in=option_values)
-        filtered_poly_objects = [field.polygon for field in boolean_fields]
-        poly_objects = set(poly_objects).intersection(set(filtered_poly_objects))
-    #end reduce bool
+    print("Polygon boolean options = " + str(options))
+
+    filtered_poly_objects = []
+    for field_name, field_value in options.iteritems():
+        boolean_fields = boolean_fields.filter(field__field_name=field_name)
+        boolean_fields = boolean_fields.filter(field__field_value=field_value)
+        filtered_poly_objects.extend([field.polygon for field in boolean_fields])
+
+    poly_objects = set(poly_objects).intersection(set(filtered_poly_objects))
             
-    query_results.extend(poly_objects)
+    return poly_objects
 
-    #do spatial tests if needed
-    if key_objects is not None and object_filter is not None and not get_all:
-        key_objects_results = [object_filter(key_objects, item) for item in list(poly_objects)]
-        return reduce(lambda x, y: x | y, key_objects_results)
-    else:
-        return query_results
-
-def filter_point(point_filter, options, query_results, queries, key_objects=None, object_filter=None):
+def filter_point(point_filter, options):
     point_id = options[point_filter.request_modifier]
-    del options[point_filter.request_modifier]
-    options = {k : v for k, v in options.iteritems() if v != "All"}
-
     get_all = (point_id == "All")
 
     if get_all:
@@ -183,28 +189,30 @@ def filter_point(point_filter, options, query_results, queries, key_objects=None
     else:
         point_objects = [GiseduPointItem.objects.get(pk=point_id)]
 
-    point_objects = process_spatial_filters(point_objects, query_results, queries, process_point_in_filter)
+    point_objects = set(point_objects)
 
-    query_results.extend(process_point_reduce_filters(point_filter, point_objects, options))
+    point_objects = process_point_reduce_boolean_filters(point_filter, point_objects, options)
+    point_objects = process_point_reduce_char_filters(point_filter, point_objects, options)
+    point_objects = process_point_reduce_integer_filters(point_filter, point_objects, options)
 
-    return query_results
+    return list(point_objects)
 
-def filter_point_by_type(point_filter, options, query_results, queries, key_objects=None, object_filter=None):
+def filter_point_by_type(point_filter, options):
     point_subtype = options[point_filter.request_modifier]
-    del options[point_filter.request_modifier]
-    options = {k : v for k, v in options.iteritems() if v != "All"}
     get_all = (point_subtype == "All")
 
     if get_all:
         point_objects = GiseduPointItem.objects.filter(filter=point_filter)
     else:
         point_objects = GiseduPointItem.objects.filter(item_type=point_subtype)
-        
-    point_objects = process_spatial_filters(point_objects, query_results, queries, process_point_in_filter)
 
-    query_results.extend(process_point_reduce_filters(point_filter, point_objects, options))
+    point_objects = set(point_objects)
 
-    return query_results
+    point_objects = process_point_reduce_boolean_filters(point_filter, point_objects, options)
+    point_objects = process_point_reduce_char_filters(point_filter, point_objects, options)
+    point_objects = process_point_reduce_integer_filters(point_filter, point_objects, options)
+
+    return list(point_objects)
 
 def process_point_reduce_boolean_filters(point_filter, point_objects, options):
     boolean_fields = GiseduPointItemBooleanField.objects.filter(point__filter=point_filter)
@@ -218,7 +226,7 @@ def process_point_reduce_boolean_filters(point_filter, point_objects, options):
         boolean_fields = boolean_fields.filter(field__field_name__in=option_names)
         boolean_fields = boolean_fields.filter(field__field_value__in=option_values)
         filtered_point_objects = [field.point for field in boolean_fields]
-        point_objects = set(point_objects).intersection(set(filtered_point_objects))
+        point_objects = point_objects.intersection(set(filtered_point_objects))
 
     return point_objects
 
@@ -234,7 +242,7 @@ def process_point_reduce_char_filters(point_filter, point_objects, options):
         char_fields = char_fields.filter(field__field_name__in=option_names)
         char_fields = char_fields.filter(field__pk__in=option_values)
         filtered_point_objects = [field.point for field in char_fields]
-        point_objects = set(point_objects).intersection(set(filtered_point_objects))
+        point_objects = point_objects.intersection(set(filtered_point_objects))
 
     return point_objects
 
@@ -251,12 +259,9 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
     integer_options.extend(gt_integer_options)
     integer_options.extend(eq_integer_options)
 
-    for name, value in options.iteritems():
-        try:
-            value = int(value)
-        except ValueError as e:
-            continue
+    options = {k:v for k, v in options.iteritems() if k in integer_options}
 
+    for name, value in options.iteritems():
         integer_query_option = string.split(name, "__")
 
         if len(integer_query_option) > 1:
@@ -276,37 +281,6 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
 
     if len(options) > 0:
         filtered_point_objects = [field.point for field in integer_fields]
-        point_objects = set(point_objects).intersection(set(filtered_point_objects))
+        point_objects = point_objects.intersection(set(filtered_point_objects))
 
     return point_objects
-
-def process_point_reduce_filters(point_filter, point_objects, options):
-
-    point_objects = process_point_reduce_boolean_filters(point_filter, point_objects, options)
-    point_objects = process_point_reduce_char_filters(point_filter, point_objects, options)
-    point_objects = process_point_reduce_integer_filters(point_filter, point_objects, options)
-
-    return point_objects
-
-def process_spatial_filters(key_objects, query_results, queries, object_filter):
-    print("Process Spatial Filters Key Objects = " + str(key_objects))
-    print("Process Spatial Filters Query Results = " + str(query_results))
-
-    print(queries)
-    for query in queries:
-        query_options = {k : v for k, v in [string.split(x, '=') for x in string.split(query, ':')]}
-
-        print("Query Options " + str(query_options))
-        for name, value in query_options.iteritems():
-            if value == "All":
-                gis_filter = GiseduFilters.objects.get(request_modifier=name)
-                polygons = GiseduPolygonItem.objects.filter(filter=gis_filter)
-                query_results.extend(polygons)
-            else:
-                gis_polygon = GiseduPolygonItem.objects.get(pk=value)
-                query_results.append(gis_polygon)
-                key_objects = key_objects.filter(the_geom__within=gis_polygon.the_geom)
-
-    print("Process Spatial Filters Query Results Done = " + str(query_results))
-    print("Process Spatial Filters Key Objects Done = " + str(key_objects))
-    return key_objects
