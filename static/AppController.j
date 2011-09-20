@@ -678,6 +678,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     var successAlert = [CPAlert alertWithError:"Your project was saved successfully to the server."];
     [successAlert setAlertStyle:CPInformationalAlertStyle];
     [successAlert runModal];
+
+    [self updateMenuBarTitle];
 }
 
 - (void)onSaveFileRequestFailed:(id)sender

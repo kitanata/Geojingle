@@ -297,22 +297,20 @@ var g_FilterManagerInstance = nil;
 
         [self _buildFilterFromJson:curJsonFilter parent:nil];
     }
-
-    console.log("New User Filters are " + m_UserFilters);
 }
 
 - (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter
 {
-    var newFilter = [self createFilter:jsonFilter['type']];
-    [newFilter setValue:jsonFilter['value']];
+    var newFilter = [self createFilter:jsonFilter.type];
+    [newFilter setValue:jsonFilter.value];
     [self addFilter:newFilter parent:parentFilter];
 
-    var displayOptions = jsonFilter['display_options'];
+    var displayOptions = jsonFilter.display_options;
 
     if(displayOptions)
         [newFilter setDisplayOptions:displayOptions];
 
-    var children = jsonFilter['children'];
+    var children = jsonFilter.children;
 
     for(var i=0; i < children.length; i++)
     {

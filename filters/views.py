@@ -148,6 +148,10 @@ def filter_polygon(poly_filter, options):
     else:
         poly_objects = [GiseduPolygonItem.objects.get(pk=polygon_id)]
 
+    poly_objects = set(poly_objects)
+    print("Poly Objects = " + str(poly_objects))
+    print(str(options))
+
     #TODO implement Integer based Field Filters and Char based Field Filters
     #TODO Bool is done here for now
     #start reduce bool
@@ -174,11 +178,12 @@ def filter_polygon(poly_filter, options):
     for field_name, field_value in options.iteritems():
         boolean_fields = boolean_fields.filter(field__field_name=field_name)
         boolean_fields = boolean_fields.filter(field__field_value=field_value)
-        filtered_poly_objects.extend([field.polygon for field in boolean_fields])
 
-    poly_objects = set(poly_objects).intersection(set(filtered_poly_objects))
+    if len(options) > 0:
+        filtered_poly_objects = [field.polygon for field in boolean_fields]
+        poly_objects = poly_objects.intersection(set(filtered_poly_objects))
             
-    return poly_objects
+    return list(poly_objects)
 
 def filter_point(point_filter, options):
     point_id = options[point_filter.request_modifier]
