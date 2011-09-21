@@ -36,6 +36,35 @@ recreating the node. This gets around that."*/
     return self;
 }
 
+- (CPString) subTypeForOption:(CPString)optionName
+{
+    if(m_FilterType == "DICT")
+    {
+        var filterKeys = [m_FilterOptions allKeys];
+
+        for(var i=0; i < [filterKeys count]; i++)
+        {
+            var curKey = [filterKeys objectAtIndex:i];
+
+            var nameValues = [[m_FilterOptions objectForKey:curKey] allValues];
+
+            for(var j=0; j < [nameValues count]; j++)
+            {
+                if([nameValues objectAtIndex:j] == optionName)
+                {
+                    return curKey;
+                }
+            }
+        }
+
+        return m_Name;
+    }
+    else
+    {
+        return m_Name;
+    }
+}
+
 - (void)fromJson:(id)jsonData
 {
     m_Id = jsonData.id;

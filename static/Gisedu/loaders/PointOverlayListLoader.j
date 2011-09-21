@@ -5,7 +5,7 @@
 @implementation PointOverlayListLoader : CPControl
 {
     id m_DisplayOptions             @accessors(property=displayOptions);
-    id m_PointIdList                @accessors(property=idList);
+    CPArray m_PointIdList           @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PointOverlays    @accessors(property=pointOverlays);
 
@@ -28,7 +28,14 @@
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
-    var requestJson     = {'point_ids' : m_PointIdList};
+    
+    var pointIds = [];
+    for(var i=0; i < [m_PointIdList count]; i++)
+        pointIds.push([m_PointIdList objectAtIndex:i]);
+
+    var requestJson     = {'point_ids' : pointIds};
+
+    console.log(requestJson);
 
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

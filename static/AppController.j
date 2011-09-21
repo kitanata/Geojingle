@@ -127,6 +127,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
 
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
+    [m_LeftSideTabView setDelegate:self];
     [[m_LeftSideTabView filtersView] setOptionsView:m_OverlayOptionsView];
     [m_ContentView addSubview:m_LeftSideTabView];
 
@@ -164,8 +165,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     console.log("AppController:-mapViewIsReady() called");
 
     [m_LeftSideTabView mapViewIsReady:mapView];
-    [[m_LeftSideTabView outlineView] setAction:@selector(onOutlineItemSelected:)];
-    [[m_LeftSideTabView outlineView] setTarget:self];
+
+    [[m_LeftSideTabView outlineView] setDelegate:self];
 
     console.log("AppController:-mapViewIsReady() finished");
 }
@@ -332,83 +333,103 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [self showOverlayOptionsView];
 }
 
-- (void)onOrgOverlaySelected:(id)organization
+- (void)onPointOverlaySelected:(id)pointDataObject
 {
-    console.log("AppController::onOrgOverlaySelected Called");
-    [m_OverlayOptionsView setPointOverlayTarget:[organization overlay]];
+    console.log("AppController::onPointOverlaySelected Called");
+    [m_OverlayOptionsView setPointOverlayTarget:[pointDataObject overlay]];
 
-    [[m_LeftSideTabView outlineView] selectItem:[organization name]];
-}
-
-- (void)onSchoolOverlaySelected:(id)school
-{
-    console.log("AppController:onSchoolOverlaySelected Called");
-    [m_OverlayOptionsView setPointOverlayTarget:[school overlay]];
-
-    [[m_LeftSideTabView outlineView] selectItem:[school name]];
+    [[m_LeftSideTabView outlineView] selectItem:[pointDataObject name]];
 }
 
 - (void) onOutlineItemSelected:(id)sender
 {
-    //TODO: This needs to be updated
-    sender = [sender outline];
-    
     var item = [sender itemAtRow:[sender selectedRow]];
+    var itemParent = [sender parentForItem:item];
 
-    if([sender parentForItem:item] == nil)
+    var filterDesc = [[m_FilterManager filterDescriptions] allValues];
+
+    if(itemParent == nil)
         return;
-            
-    if([sender parentForItem:item] == "Counties")
+
+    var theItemId = -1;
+
+    for(var i=0; i < [filterDesc count]; i++)
     {
-        counties = [m_OverlayManager basicDataTypeMap:"county"];
-        countyOverlays = [m_OverlayManager basicDataOverlayMap:"county"];
+        var curFilterDesc = [filterDesc objectAtIndex:i];
 
-        itemPk = [counties objectForKey:item];
+        var itemId = [self findItemIdOfItem:item withParent:itemParent inFilterDesc:curFilterDesc];
 
-        [m_OverlayOptionsView setPolygonOverlayTarget:[countyOverlays objectForKey:itemPk]];
-
-        [self showOverlayOptionsView];
-    }
-    else if([sender parentForItem:item] == "School Districts")
-    {
-        schoolDistrictOverlays = [m_OverlayManager basicDataOverlayMap:"school_district"];
-        schoolDistricts = [m_OverlayManager basicDataTypeMap:"school_district"];
-
-        itemPk = [schoolDistricts objectForKey:item];
-
-        if([schoolDistrictOverlays objectForKey:itemPk] == nil)
+        if(itemId != -1)
         {
-            schoolDistOverlayLoader = [[PolygonOverlayLoader alloc] initWithIdentifier:itemPk andUrl:(g_UrlPrefix + "/school_district")];
-            [schoolDistOverlayLoader setAction:@selector(onSchoolDistrictGeometryLoaded:)];
-            [schoolDistOverlayLoader setTarget:self];
-            [schoolDistOverlayLoader loadAndShow:YES];
-        }
-        else
-        {
-            [m_OverlayOptionsView setPolygonOverlayTarget:[schoolDistrictOverlays objectForKey:itemPk]];
-        }
+            var curDataType = [curFilterDesc dataType];
 
-        [self showOverlayOptionsView];
-    }//Organizations
-    else
-    {
-        var parentValue = [sender parentForItem:item];
-        var orgTypeList = [[m_OverlayManager pointDataTypes:"organization"] allValues]
+            if(curDataType == "POINT")
+            {
+                var pointDataObject = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
 
-        if([orgTypeList indexOfObject:parentValue] != CPNotFound)
-        {
-            orgNames = [m_OverlayManager orgNames];
-            var orgId = [orgNames objectForKey:item];
-            var curOrg = [m_OverlayManager getOverlayObject:"organization" objId:orgId];
+                [pointDataObject toggleInfoWindow];
+                [m_OverlayOptionsView setPointOverlayTarget:[pointDataObject overlay]];
 
-            [[curOrg overlay] toggleInfoWindow];
-            [m_OverlayOptionsView setPointOverlayTarget:[curOrg overlay]];
+                [self showOverlayOptionsView];
+            }
+            else if(curDataType == "POLYGON")
+            {
+                var overlay = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
 
-            [self showOverlayOptionsView];
+                [m_OverlayOptionsView setPolygonOverlayTarget:overlay];
+
+                [self showOverlayOptionsView];
+            }
+
+            m_CurSelectedItem = item;
+            return;
         }
     }
+}
 
-    m_CurSelectedItem = item;
+- (id) findItemIdOfItem:(id)item withParent:(id)itemParent inFilterDesc:(id)desc
+{
+    var filterDesc = [[m_FilterManager filterDescriptions] allValues];
+
+    if(itemParent == nil)
+        return -1;
+
+    var curFilterType = [desc filterType];
+
+    var filterOptions = [[desc options] allKeys];
+
+    if(curFilterType == "LIST" && [desc name] == itemParent)
+    {
+        for(var j=0; j < [filterOptions count]; j++)
+        {
+            var curItemId = [filterOptions objectAtIndex:j];
+            var curItemName = [[desc options] objectForKey:curItemId];
+
+            if(curItemName == item)
+                return curItemId;
+        }
+    }
+    else if(curFilterType == "DICT")
+    {
+        for(var j=0; j < [filterOptions count]; j++)
+        {
+            var curFilterSubType = [filterOptions objectAtIndex:j];
+            var curFilterDict = [[desc options] objectForKey:curFilterSubType];
+
+            var curFilterDictKeys = [curFilterDict allKeys];
+
+            for(var k=0; k < [curFilterDictKeys count]; k++)
+            {
+                var curItemId = [curFilterDictKeys objectAtIndex:k];
+                var curItemName = [curFilterDict objectForKey:curItemId];
+
+                if(curItemName == item)
+                    return curItemId;
+            }
+        }
+    }
+
+    return -1;
 }
 
 - (void)showOverlayOptionsView
@@ -469,9 +490,14 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onOverlayListLoaded:(CPArray)overlays dataType:(CPString)dataType
 {
+    var filterDesc = [[m_FilterManager filterDescriptions] objectForKey:dataType];
+
     for(var i=0; i < [overlays count]; i++)
     {
-        [[m_LeftSideTabView outlineView] addItem:[[overlays objectAtIndex:i] name] forCategory:dataType];
+        var curOverlayName = [[overlays objectAtIndex:i] name];
+        var dataTypeName = [filterDesc subTypeForOption:curOverlayName];
+
+        [[m_LeftSideTabView outlineView] addItem:curOverlayName forCategory:dataTypeName];
     }
 }
 

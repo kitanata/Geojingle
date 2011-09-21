@@ -21,8 +21,6 @@
 
 - (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPArray)acceptedValues
 {
-    console.log("Initializing Integer Filter View");
-    
     self = [super initWithFrame:aFrame];
     
     if(self)
@@ -59,8 +57,8 @@
         [m_IntegerFilterOption addItemsWithTitles:["Equal", "Greater Than", "Less Than"]];
 
         [m_IntegerFilterOption sizeToFit];
-        [m_IntegerFilterOption setFrameOrigin:CGPointMake(20, 60)];
-        [m_IntegerFilterOption setFrameSize:CGSizeMake(260, CGRectGetHeight([m_SelectionControl bounds]))];
+        [m_IntegerFilterOption setFrameOrigin:CGPointMake(20, 65)];
+        [m_IntegerFilterOption setFrameSize:CGSizeMake(260, CGRectGetHeight([m_IntegerFilterOption bounds]))];
 
         var intFilterOpt = [m_Filter requestOption];
         if(intFilterOpt == "eq" || intFilterOpt == "")
@@ -72,7 +70,7 @@
 
         m_UpdateButton = [CPButton buttonWithTitle:"Update Filter"];
         [m_UpdateButton sizeToFit];
-        [m_UpdateButton setFrameOrigin:CGPointMake(20, 95)];
+        [m_UpdateButton setFrameOrigin:CGPointMake(20, 105)];
         [m_UpdateButton setAction:@selector(onFilterUpdateButton:)];
         [m_UpdateButton setTarget:self];
 

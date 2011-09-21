@@ -6,7 +6,9 @@
     CPScrollView m_OverlayFeaturesScrollView;
     CPOutlineView m_OutlineView @accessors(property=outline);
 
-    CPDictionary m_Items @accessors(property=items);
+    CPDictionary m_Items        @accessors(property=items);
+
+    id m_Delegate               @accessors(property=delegate);
 }
 
 - (id) initWithFrame:(CGRect)aFrame
@@ -53,13 +55,9 @@
     var itemArray = [m_Items objectForKey:category];
 
     if(!itemArray)
-    {
         [m_Items setObject:[CPArray arrayWithObject:item] forKey:category];
-    }
     else
-    {
         [itemArray addObject:item];
-    }
 
     [m_OutlineView reloadItem:nil reloadChildren:YES];
 }
@@ -68,15 +66,10 @@
 {
     parentItem = [m_OutlineView parentForItem:item];
 
-    console.log(m_Items);
-
-    console.log("Parent Item is " + parentItem);
-
     if(parentItem)
         [m_OutlineView expandItem:parentItem];
 
     var itemIndex = [m_OutlineView rowForItem:item];
-    console.log("Selecting Item item is: " + item + " and it's index is: " + itemIndex);
     [m_OutlineView selectRowIndexes:[CPIndexSet indexSetWithIndex:itemIndex] byExtendingSelection:NO];
 }
 
@@ -115,6 +108,7 @@
     //CPLog("outlineView:%@ isItemExpandable:%@", outlineView, item);
 
     var values = [m_Items objectForKey:item];
+
     return ([values count] > 0);
 }
 
@@ -123,9 +117,7 @@
     //CPLog("outlineView:%@ numberOfChildrenOfItem:%@", outlineView, item);
 
     if (item === nil)
-    {
         return [m_Items count];
-    }
     else
     {
         var values = [m_Items objectForKey:item];
@@ -136,14 +128,11 @@
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
 {
     //CPLog("outlineView:%@ objectValueForTableColumn:%@ byItem:%@", outlineView, tableColumn, item);
-
     return item;
 }
 
 - (void) onOutlineItemSelected:(id)sender
 {
-    if(_action != nil && _target != nil)
-    {
-        [self sendAction:_action to:_target];
-    }
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOutlineItemSelected:)])
+        [m_Delegate onOutlineItemSelected:sender];
 }

@@ -49,7 +49,7 @@
 - (void)onIconTypeChanged:(CPString)newType
 {
     if(newType != "education")
-        [m_OverlayTarget setIcon:newType];
+        [m_OverlayTarget setDisplayOption:"icon" value:newType];
 
     [self updateTarget];
 }

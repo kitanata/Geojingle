@@ -17,6 +17,9 @@
     CPArray             m_DataTypes;           //m_OverlayIds Keys
     CPDictionary        m_OverlayIds;          //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
 
+    var m_LoadPointOverlayList;
+    var m_LoadPolygonOverlayList;
+
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
@@ -36,6 +39,9 @@
 
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
+
+        m_LoadPointOverlayList = {}
+        m_LoadPolygonOverlayList = {}
     }
 
     return self;
@@ -214,7 +220,6 @@
     }
 
     m_DataTypes = [m_OverlayIds allKeys];
-    [self updateOverlays];
 
     if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
         [m_Delegate onFilterRequestProcessed:self];
@@ -223,8 +228,9 @@
 - (void)updateOverlays
 {
     var overlayOptions = {}
-    var loadPointOverlayList = {}
-    var loadPolygonOverlayList = {}
+
+    m_LoadPointOverlayList = {}
+    m_LoadPolygonOverlayList = {}
 
     var filterDescriptions = [m_FilterManager filterDescriptions];
 
@@ -272,10 +278,10 @@
                 }
                 else
                 {
-                    if(!loadPointOverlayList[curType])
-                        loadPointOverlayList[curType] = new Array();
+                    if(!m_LoadPointOverlayList[curType])
+                        m_LoadPointOverlayList[curType] = new Array();
 
-                    loadPointOverlayList[curType].push(curItemId);
+                    m_LoadPointOverlayList[curType].push(curItemId);
                 }
             }
             else if([curFilterDescription dataType] == "POLYGON")
@@ -293,25 +299,27 @@
                 }
                 else
                 {
-                    if(!loadPolygonOverlayList[curType])
-                        loadPolygonOverlayList[curType] = new Array();
+                    if(!m_LoadPolygonOverlayList[curType])
+                        m_LoadPolygonOverlayList[curType] = new Array();
 
-                    loadPolygonOverlayList[curType].push(curItemId);
+                    m_LoadPolygonOverlayList[curType].push(curItemId);
                 }
             }
         }
     }
 
-    for(curType in loadPointOverlayList)
+    for(curType in m_LoadPointOverlayList)
     {
-        var curItemIds = loadPointOverlayList[curType];
-        [m_OverlayManager loadPointOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
+        var curItemIds = m_LoadPointOverlayList[curType];
+        var curOptions = overlayOptions[curType];
+        [m_OverlayManager queuePointOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
     }
 
-    for(curType in loadPolygonOverlayList)
+    for(curType in m_LoadPolygonOverlayList)
     {
-        var curItemIds = loadPolygonOverlayList[curType];
-        [m_OverlayManager loadPolygonOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
+        var curItemIds = m_LoadPolygonOverlayList[curType];
+        var curOptions = overlayOptions[curType];
+        [m_OverlayManager queuePolygonOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
     }
 }
 

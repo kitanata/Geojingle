@@ -13,6 +13,7 @@ var g_FilterManagerInstance = nil;
 
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
     CPArray m_FilterChains;                                             //Cached Filter Chains
+    CPArray m_FilterChainsWaitingResponse;                              //Chains waiting a response from the server
 
     id m_Delegate                       @accessors(property=delegate);
 
@@ -30,6 +31,7 @@ var g_FilterManagerInstance = nil;
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
         m_FilterChains = [CPArray array];
+        m_FilterChainsWaitingResponse = [CPArray array];
 
         m_FilterDescriptions = [CPDictionary dictionary];
 
@@ -203,6 +205,7 @@ var g_FilterManagerInstance = nil;
     [m_OverlayManager removeAllOverlaysFromMapView];
 
     [self _triggerFilters:m_UserFilters];
+    [self sendFilterRequests];
 }
 
 - (void)_triggerFilters:(CPArray)filters
@@ -212,24 +215,50 @@ var g_FilterManagerInstance = nil;
     for(var i=0; i < [filters count]; i++)
     {
         var curFilter = [filters objectAtIndex:i];
-        console.log("triggerFilters curFilter = "); console.log(curFilter);
 
         if(![curFilter isLeaf])
         {
-            console.log("curFilter is not a leaf");
             [self _triggerFilters:[curFilter childNodes]];
         }
         else//leaf and has a parent
         {
-            console.log("Current Filter is leaf and has parent");
-
             var filterChain = [GiseduFilterChain filterChain];
             [self _buildFilterChain:curFilter withChain:filterChain];
-            [filterChain setDelegate:m_Delegate];
+            [filterChain setDelegate:self];
             [m_FilterChains addObject:filterChain];
-
-            [filterChain sendFilterRequest];
         }
+    }
+}
+
+- (void)sendFilterRequests
+{
+    [m_FilterChainsWaitingResponse removeAllObjects];
+
+    while([m_FilterChains count] != 0)
+    {
+        var curChain = [m_FilterChains lastObject];
+        [m_FilterChains removeLastObject];
+
+        [curChain sendFilterRequest];
+        [m_FilterChainsWaitingResponse addObject:curChain];
+    }
+}
+
+- (void)onFilterRequestProcessed:(id)sender
+{
+    [m_FilterChainsWaitingResponse removeObject:sender];
+    [m_FilterChains addObject:sender];
+
+    if([m_FilterChainsWaitingResponse count] == 0)
+    {
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [[m_FilterChains objectAtIndex:i] updateOverlays];
+
+        [m_OverlayManager loadPointOverlayQueue];
+        [m_OverlayManager loadPolygonOverlayQueue];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
+            [m_Delegate onFilterRequestProcessed:self];
     }
 }
 
@@ -239,8 +268,6 @@ var g_FilterManagerInstance = nil;
         [self _buildFilterChain:[filter parentNode] withChain:filterChain];
 
     [filterChain addFilter:filter];
-
-    console.log("Filter Chain = " + filterChain);
 }
 
 - (void)updateAllFilterChains
@@ -261,7 +288,7 @@ var g_FilterManagerInstance = nil;
         var curFilter = [m_UserFilters objectAtIndex:i];
 
         filterJson.push([self _buildFilterJson:curFilter]);
-        //[{'type': theType, 'value': theValue, 'children' : [filter, filter, filter]}]
+        //[{'type': theType, 'value': theValue, 'request_option': theOption, 'children' : [filter, filter, filter]}]
     }
 
     console.log(filterJson);
@@ -274,6 +301,7 @@ var g_FilterManagerInstance = nil;
     var curFilterType = [curFilter type];
     var curFilterValue = [curFilter value];
     var curFilterDisplayOptions = [curFilter displayOptions];
+    var curFilterRequestOption = [curFilter requestOption];
 
     var childNodes = [curFilter childNodes];
 
@@ -284,7 +312,13 @@ var g_FilterManagerInstance = nil;
         childJson.push([self _buildFilterJson:[childNodes objectAtIndex:i]]);
     }
 
-    return {"type" : curFilterType, "value" : curFilterValue, "display_options" : curFilterDisplayOptions, "children" : childJson};
+    return {
+        "type" : curFilterType,
+        "value" : curFilterValue,
+        "request_option" : curFilterRequestOption,
+        "display_options" : curFilterDisplayOptions,
+        "children" : childJson
+    };
 }
 
 - (void)fromJson:(id)jsonObject
@@ -309,6 +343,8 @@ var g_FilterManagerInstance = nil;
 
     if(displayOptions)
         [newFilter setDisplayOptions:displayOptions];
+
+    [newFilter setRequestOption:jsonFilter.request_option];
 
     var children = jsonFilter.children;
 

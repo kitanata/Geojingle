@@ -46,8 +46,8 @@
 {
     [self toggleInfoWindow];
 
-    if([m_Delegate respondsToSelector:@selector(onOrgOverlaySelected:)])
-        [m_Delegate onOrgOverlaySelected:self];
+    if([m_Delegate respondsToSelector:@selector(onPointOverlaySelected:)])
+        [m_Delegate onPointOverlaySelected:self];
 }
 
 - (void)loadWithDisplayOptions:(id)displayOptions

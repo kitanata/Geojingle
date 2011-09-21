@@ -7,8 +7,8 @@
 
 @implementation PolygonOverlay : CPControl
 {
-    CPString m_szName               @accessors(property=name);
     CPInteger m_nPk                 @accessors(property=pk);
+    CPString m_szName               @accessors(property=name);
 
     Polygon m_GooglePolygon         @accessors(property=googlePolygon);
 
@@ -25,6 +25,7 @@
     if (self = [super init])
     {
         m_Paths = [CPArray array];
+        m_szName = "Unknown";
 
         m_DisplayOptions = {
             strokeColor: "#ff0000",

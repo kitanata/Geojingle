@@ -5,7 +5,7 @@
 @implementation PolygonOverlayListLoader : CPControl
 {
     id m_DisplayOptions             @accessors(property=displayOptions);
-    id m_PolygonIdList              @accessors(property=idList);
+    CPArray m_PolygonIdList         @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PolygonOverlays  @accessors(property=polygonOverlays);
 
@@ -28,7 +28,12 @@
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
-    var requestJson     = {'polygon_ids' : m_PolygonIdList};
+
+    var polyIds = [];
+    for(var i=0; i < [m_PolygonIdList count]; i++)
+        polyIds.push([m_PolygonIdList objectAtIndex:i]);
+
+    var requestJson     = {'polygon_ids' : polyIds};
 
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];

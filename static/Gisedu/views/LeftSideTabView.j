@@ -9,6 +9,8 @@
 
     CPTabViewItem m_OverlayOutlineTabItem;
     OverlayOutlineView m_OverlayOutlineView @accessors(property=outlineView);
+
+    id m_Delegate                           @accessors(property=delegate);
 }
 
 - (id) initWithContentView:(CPView)contentView
