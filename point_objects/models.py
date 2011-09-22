@@ -20,80 +20,90 @@ class GiseduPointItemAddress(models.Model):
         db_table = u'gisedu_point_item_address'
         verbose_name_plural = "Educational Organization Addresses"
 
-class GiseduPointItem(models.Model):
+class GiseduPointItemNew(models.Model):
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
     item_address = models.ForeignKey(GiseduPointItemAddress)
-    the_geom = models.PointField(null=True)
+    integer_fields = models.ManyToManyField(GiseduIntegerField)
+    string_fields = models.ManyToManyField(GiseduCharField)
+    boolean_fields = models.ManyToManyField(GiseduBooleanField)
+    
+    the_geom = models.PointField()
     objects = models.GeoManager()
 
     def __str__(self):
         return str(self.item_name) + " " + str(self.item_type)
 
     class Meta:
-        db_table = u'gisedu_point_item'
+        db_table = u'gisedu_point_item_new'
         verbose_name_plural = "Point Items"
 
-class GiseduPointItemCharField(models.Model):
-    point = models.ForeignKey(GiseduPointItem)
-    field = models.ForeignKey(GiseduCharField)
-
-    def point__item_name(self):
-        return str(self.point.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-
-    def __str__(self):
-        return str(self.point.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_point_item_char_field'
-        verbose_name_plural = "Point Character Fields"
-
-class GiseduPointItemIntegerField(models.Model):
-    point = models.ForeignKey(GiseduPointItem)
-    field = models.ForeignKey(GiseduIntegerField)
-
-    def point__item_name(self):
-        return str(self.point.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-
-    def __str__(self):
-        return str(self.point.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_point_item_integer_field'
-        verbose_name_plural = "Point Integer Fields"
-
-class GiseduPointItemBooleanField(models.Model):
-    point = models.ForeignKey(GiseduPointItem)
-    field = models.ForeignKey(GiseduBooleanField)
-
-    def point__item_name(self):
-        return str(self.point.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-    
-    def __str__(self):
-        return str(self.point.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_point_item_boolean_field'
-        verbose_name_plural = "Point Boolean Fields"
+#class GiseduPointItemCharField(models.Model):
+#    point = models.ForeignKey(GiseduPointItem)
+#    field = models.ForeignKey(GiseduCharField)
+#
+#    def point__filter_name(self):
+#        return str(self.point.filter.filter_name)
+#
+#    def point__item_name(self):
+#        return str(self.point.item_name)
+#
+#    def field__field_name(self):
+#        return str(self.field.field_name)
+#
+#    def field__field_value(self):
+#        return str(self.field.field_value)
+#
+#    def __str__(self):
+#        return str(self.point.item_name) + ": " + str(self.field)
+#
+#    class Meta:
+#        db_table = u'gisedu_point_item_char_field'
+#        verbose_name_plural = "Point Character Fields"
+#
+#class GiseduPointItemIntegerField(models.Model):
+#    point = models.ForeignKey(GiseduPointItem)
+#    field = models.ForeignKey(GiseduIntegerField)
+#
+#    def point__item_name(self):
+#        return str(self.point.item_name)
+#
+#    def field__field_name(self):
+#        return str(self.field.field_name)
+#
+#    def field__field_value(self):
+#        return str(self.field.field_value)
+#
+#    def __str__(self):
+#        return str(self.point.item_name) + ": " + str(self.field)
+#
+#    class Meta:
+#        db_table = u'gisedu_point_item_integer_field'
+#        verbose_name_plural = "Point Integer Fields"
+#
+#class GiseduPointItemBooleanField(models.Model):
+#    point = models.ForeignKey(GiseduPointItem)
+#    field = models.ForeignKey(GiseduBooleanField)
+#
+#    def point__filter_name(self):
+#        return str(self.point.filter.filter_name)
+#
+#    def point__item_name(self):
+#        return str(self.point.item_name)
+#
+#    def field__field_name(self):
+#        return str(self.field.field_name)
+#
+#    def field__field_value(self):
+#        return str(self.field.field_value)
+#
+#    def __str__(self):
+#        return str(self.point.item_name) + ": " + str(self.field)
+#
+#    class Meta:
+#        db_table = u'gisedu_point_item_boolean_field'
+#        verbose_name_plural = "Point Boolean Fields"
 
 class OhioLibraries(models.Model):
     gid = models.IntegerField(primary_key=True)

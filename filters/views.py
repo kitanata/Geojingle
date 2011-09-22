@@ -7,7 +7,7 @@ from django.template.context import RequestContext
 from django.db.models import Q
 from models import GiseduFilters
 from gisedu.models import GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanField
-from point_objects.models import GiseduPointItem, GiseduPointItemIntegerField, GiseduPointItemCharField, GiseduPointItemBooleanField
+from point_objects.models import GiseduPointItemNew
 from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemIntegerField, GiseduPolygonItemCharField, GiseduPolygonItemBooleanField
 
 def filter_list(request):
@@ -37,7 +37,7 @@ def filter_options(gis_filter):
         list_data = dict([(item.pk, item.item_name) for item in polygon_items])
 
     elif gis_filter.data_type == "POINT":
-        point_items = GiseduPointItem.objects.filter(filter=gis_filter)
+        point_items = GiseduPointItemNew.objects.filter(filter=gis_filter)
 
         if gis_filter.filter_type == "LIST":
             list_data = dict([(item.pk, item.item_name) for item in point_items])
@@ -51,8 +51,8 @@ def filter_options(gis_filter):
     elif gis_filter.data_type == "REDUCE":
         reduce_items = list(GiseduReduceItem.objects.filter(reduce_filter=gis_filter))
 
-        point_types = dict(INTEGER=GiseduPointItemIntegerField, CHAR=GiseduPointItemCharField,
-                           BOOL=GiseduPointItemBooleanField)
+        point_types = dict(INTEGER=GiseduIntegerField, CHAR=GiseduCharField,
+                           BOOL=GiseduBooleanField)
 
         polygon_types = dict(INTEGER=GiseduPolygonItemIntegerField, CHAR=GiseduPolygonItemCharField,
                              BOOL=GiseduPolygonItemBooleanField)
@@ -66,15 +66,19 @@ def filter_options(gis_filter):
 
             if target_filter.data_type == "POINT":
                 field_manager = point_types[gis_filter.filter_type]
+                point_objects = GiseduPointItemNew.objects.filter(filter=target_filter)
+
                 if field_manager is not None:
-                    reduce_fields = field_manager.objects.filter(point__filter=target_filter)
+                    reduce_fields = field_manager.objects.filter(gisedupointitemnew__in=point_objects)
+
+                reduce_fields = reduce_fields.filter(field_name=item_field)
+                list_data = dict([(item.pk, str(item.field_value)) for item in reduce_fields])
 
             elif target_filter.data_type == "POLYGON":
                 field_manager = polygon_types[gis_filter.filter_type]
                 if field_manager is not None:
                     reduce_fields = field_manager.objects.filter(polygon__filter=target_filter)
 
-            if reduce_fields is not None:
                 reduce_fields = reduce_fields.values('field_id').distinct()
                 reduce_fields = field_types[gis_filter.filter_type].objects.filter(pk__in=reduce_fields)
                 reduce_fields = reduce_fields.filter(field_name=item_field)
@@ -118,7 +122,7 @@ def parse_filter(request, filter_chain):
                     point_results.extend(filter_point_by_type(point_filter, q))
 
     point_pks = [point.pk for point in point_results]
-    point_qs = GiseduPointItem.objects.filter(pk__in=point_pks)
+    point_qs = GiseduPointItemNew.objects.filter(pk__in=point_pks)
 
     q_obj = Q()
     for polygon in polygon_results:
@@ -133,7 +137,7 @@ def parse_filter(request, filter_chain):
     for result in query_results:
         if isinstance(result, GiseduPolygonItem):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
-        elif isinstance(result, GiseduPointItem):
+        elif isinstance(result, GiseduPointItemNew):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
 
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
@@ -190,11 +194,9 @@ def filter_point(point_filter, options):
     get_all = (point_id == "All")
 
     if get_all:
-        point_objects = GiseduPointItem.objects.filter(filter=point_filter)
+        point_objects = GiseduPointItemNew.objects.filter(filter=point_filter)
     else:
-        point_objects = [GiseduPointItem.objects.get(pk=point_id)]
-
-    point_objects = set(point_objects)
+        point_objects = [GiseduPointItemNew.objects.get(pk=point_id)]
 
     point_objects = process_point_reduce_boolean_filters(point_filter, point_objects, options)
     point_objects = process_point_reduce_char_filters(point_filter, point_objects, options)
@@ -207,11 +209,9 @@ def filter_point_by_type(point_filter, options):
     get_all = (point_subtype == "All")
 
     if get_all:
-        point_objects = GiseduPointItem.objects.filter(filter=point_filter)
+        point_objects = GiseduPointItemNew.objects.filter(filter=point_filter)
     else:
-        point_objects = GiseduPointItem.objects.filter(item_type=point_subtype)
-
-    point_objects = set(point_objects)
+        point_objects = GiseduPointItemNew.objects.filter(item_type=point_subtype)
 
     point_objects = process_point_reduce_boolean_filters(point_filter, point_objects, options)
     point_objects = process_point_reduce_char_filters(point_filter, point_objects, options)
@@ -220,40 +220,34 @@ def filter_point_by_type(point_filter, options):
     return list(point_objects)
 
 def process_point_reduce_boolean_filters(point_filter, point_objects, options):
-    boolean_fields = GiseduPointItemBooleanField.objects.filter(point__filter=point_filter)
-    bool_options = GiseduBooleanField.objects.values('field_name').distinct()
+    boolean_fields = GiseduBooleanField.objects.filter(gisedupointitemnew__in=point_objects)
+    bool_options = boolean_fields.values('field_name').distinct()
     bool_options = [option['field_name'] for option in bool_options]
 
-    option_names = [name for name in options.iterkeys() if name in bool_options]
-    option_values = [True if value.upper() == "TRUE" or value.upper() == "T" else False for value in options.itervalues()]
+    options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
-    if len(option_names) > 0:
-        boolean_fields = boolean_fields.filter(field__field_name__in=option_names)
-        boolean_fields = boolean_fields.filter(field__field_value__in=option_values)
-        filtered_point_objects = [field.point for field in boolean_fields]
-        point_objects = point_objects.intersection(set(filtered_point_objects))
+    for name, value in options.iteritems():
+        point_objects = point_objects.filter(boolean_fields__field_name=name, boolean_fields__field_value=value)
 
     return point_objects
 
 def process_point_reduce_char_filters(point_filter, point_objects, options):
-    char_fields = GiseduPointItemCharField.objects.filter(point__filter=point_filter)
-    char_options = GiseduCharField.objects.values('field_name').distinct()
+    char_fields = GiseduCharField.objects.filter(gisedupointitemnew__in=point_objects)
+    char_options = char_fields.values('field_name').distinct()
     char_options = [option['field_name'] for option in char_options]
 
-    option_names = [name for name in options.iterkeys() if name in char_options]
-    option_values = [value for value in options.itervalues()]
+    options = {k : v for k, v in options.iteritems() if k in char_options}
 
-    if len(option_names) > 0:
-        char_fields = char_fields.filter(field__field_name__in=option_names)
-        char_fields = char_fields.filter(field__pk__in=option_values)
-        filtered_point_objects = [field.point for field in char_fields]
-        point_objects = point_objects.intersection(set(filtered_point_objects))
+    print("Process Char Filters")
+    for name, value in options.iteritems():
+        print("Name = " + str(name) + " Value = " + str(value))
+        point_objects = point_objects.filter(string_fields__field_name=name, string_fields__pk=value)
 
     return point_objects
 
 def process_point_reduce_integer_filters(point_filter, point_objects, options):
-    integer_fields = GiseduPointItemIntegerField.objects.filter(point__filter=point_filter)
-    integer_options = GiseduIntegerField.objects.values('field_name').distinct()
+    integer_fields = GiseduIntegerField.objects.filter(gisedupointitemnew__in=point_objects)
+    integer_options = integer_fields.values('field_name').distinct()
     integer_options = [option['field_name'] for option in integer_options]
 
     lt_integer_options = [option + "__lt" for option in integer_options]
@@ -266,7 +260,9 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
 
     options = {k:v for k, v in options.iteritems() if k in integer_options}
 
+    print("Process Integer Filters")
     for name, value in options.iteritems():
+        print("Name = " + str(name) + " Value = " + str(value))
         integer_query_option = string.split(name, "__")
 
         if len(integer_query_option) > 1:
@@ -275,17 +271,11 @@ def process_point_reduce_integer_filters(point_filter, point_objects, options):
         else:
             integer_query_option = ""
 
-        integer_fields = integer_fields.filter(field__field_name=name)
-
         if integer_query_option == "lt":
-            integer_fields = integer_fields.filter(field__field_value__lt=value)
+            point_objects = point_objects.filter(integer_fields__field_name=name, integer_fields__field_value__lt=value)
         elif integer_query_option == "gt":
-            integer_fields = integer_fields.filter(field__field_value__gt=value)
+            point_objects = point_objects.filter(integer_fields__field_name=name, integer_fields__field_value__gt=value)
         else:
-            integer_fields = integer_fields.filter(field__field_value=value)
-
-    if len(options) > 0:
-        filtered_point_objects = [field.point for field in integer_fields]
-        point_objects = point_objects.intersection(set(filtered_point_objects))
+            point_objects = point_objects.filter(integer_fields__field_name=name, integer_fields__field_value=value)
 
     return point_objects

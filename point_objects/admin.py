@@ -2,8 +2,7 @@ from django.contrib.gis import admin as gis_admin
 from django.contrib import admin
 from django.forms.widgets import CheckboxSelectMultiple
 from django.db.models import ManyToManyField
-from point_objects.models import GiseduPointItemAddress, GiseduPointItem, GiseduPointItemCharField, \
-                                GiseduPointItemIntegerField, GiseduPointItemBooleanField, OhioLibraries
+from point_objects.models import GiseduPointItemAddress, GiseduPointItemNew, OhioLibraries
 
 class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_display = ('address_line_one', 'city', 'state', 'zip10')
@@ -12,8 +11,35 @@ class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
 
     list_filter = ('state',)
 
-class GiseduPointItemFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point__item_name', 'field__field_name', 'field__field_value')
+class GiseduPointItemBooleanFieldAdmin(gis_admin.GeoModelAdmin):
+    list_display = ('point__item_name', 'point__filter_name', 'field__field_name', 'field__field_value')
+    list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
+    
+    search_fields = ['point__item_name']
+
+    actions = ['set_field_true', 'set_field_false']
+
+    def set_field_true(self, request, queryset):
+        rows_updated = queryset.update(has_atomic_learning=True)
+        if rows_updated == 1:
+            message_bit = "1 Item was"
+        else:
+            message_bit = "%s Items were" % rows_updated
+        self.message_user(request, "%s successfully marked. (Set to True)" % message_bit)
+
+    def set_field_false(self, request, queryset):
+        rows_updated = queryset.update(has_atomic_learning=False)
+        if rows_updated == 1:
+            message_bit = "1 Item was"
+        else:
+            message_bit = "%s Items were" % rows_updated
+        self.message_user(request, "%s successfully un-marked. (Set to False)" % message_bit)
+
+    set_field_true.short_description = "Mark selected Items. (Set to True)"
+    set_field_false.short_description = "Un-mark selected Items. (Set to False)"
+
+class GiseduPointItemCharFieldAdmin(gis_admin.GeoModelAdmin):
+    list_display = ('point__item_name', 'point__filter_name', 'field__field_name', 'field__field_value')
     list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
 
 class GiseduPointItemIntegerFieldAdmin(gis_admin.GeoModelAdmin):
@@ -25,10 +51,10 @@ class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_filter = ('filter__filter_name', 'item_type')
 
 admin.site.register(GiseduPointItemAddress, GiseduPointItemAddressAdmin)
-admin.site.register(GiseduPointItem, GiseduPointItemAdmin)
-admin.site.register(GiseduPointItemCharField, GiseduPointItemFieldAdmin)
-admin.site.register(GiseduPointItemIntegerField, GiseduPointItemIntegerFieldAdmin)
-admin.site.register(GiseduPointItemBooleanField, GiseduPointItemFieldAdmin)
+admin.site.register(GiseduPointItemNew, GiseduPointItemAdmin)
+#admin.site.register(GiseduPointItemCharField, GiseduPointItemCharFieldAdmin)
+#admin.site.register(GiseduPointItemIntegerField, GiseduPointItemIntegerFieldAdmin)
+#admin.site.register(GiseduPointItemBooleanField, GiseduPointItemBooleanFieldAdmin)
 admin.site.register(OhioLibraries, gis_admin.GeoModelAdmin)
 
 #class GiseduOrgTypeAdmin(admin.ModelAdmin):
