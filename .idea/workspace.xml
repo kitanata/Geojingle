@@ -26,25 +26,34 @@
       <file leaf-file-name="admin.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="53" column="38" selection-start="2493" selection-end="2493" vertical-scroll-proportion="0.0">
+            <state line="53" column="38" selection-start="2443" selection-end="2466" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/point_objects/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="45" selection-start="974" selection-end="974" vertical-scroll-proportion="0.42070118">
+            <state line="21" column="0" selection-start="888" selection-end="888" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/settings.py">
+      <file leaf-file-name="admin.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gisedu/admin.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="1" selection-start="916" selection-end="916" vertical-scroll-proportion="0.0">
+            <state line="20" column="58" selection-start="856" selection-end="856" vertical-scroll-proportion="0.5">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="urls.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/urls.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="52" selection-start="242" selection-end="242" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -62,7 +71,16 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filters/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="269" column="58" selection-start="12101" selection-end="12101" vertical-scroll-proportion="0.0">
+            <state line="182" column="89" selection-start="7982" selection-end="7982" vertical-scroll-proportion="-10.535714">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="admin.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="62" selection-start="303" selection-end="303" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -71,7 +89,16 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/point_objects/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="0" selection-start="871" selection-end="871" vertical-scroll-proportion="-10.25">
+            <state line="33" column="34" selection-start="1343" selection-end="1343" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="28" column="44" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -100,9 +127,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/static/Gisedu/HashKit/Utf8.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/HashKit/Sha1Hash.j" />
-        <option value="$PROJECT_DIR$/static/Gisedu/loaders/PointOverlayListLoader.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/loaders/PolygonOverlayListLoader.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j" />
         <option value="$PROJECT_DIR$/static/Gisedu/PointOverlayOptionsController.j" />
@@ -113,9 +137,12 @@
         <option value="$PROJECT_DIR$/static/Gisedu/GiseduFilterDescription.j" />
         <option value="$PROJECT_DIR$/static/AppController.j" />
         <option value="$PROJECT_DIR$/point_objects/models.py" />
-        <option value="$PROJECT_DIR$/point_objects/admin.py" />
         <option value="$PROJECT_DIR$/point_objects/views.py" />
+        <option value="$PROJECT_DIR$/polygon_objects/admin.py" />
+        <option value="$PROJECT_DIR$/polygon_objects/models.py" />
         <option value="$PROJECT_DIR$/filters/views.py" />
+        <option value="$PROJECT_DIR$/point_objects/admin.py" />
+        <option value="$PROJECT_DIR$/gisedu/admin.py" />
       </list>
     </option>
   </component>
@@ -145,7 +172,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -264,16 +290,17 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Favorites" />
       <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PythonSdkConfigurable" />
     <property name="recentsLimit" value="5" />
-    <property name="options.searchVisible" value="true" />
+    <property name="options.lastSelected" value="com.jetbrains.python.configuration.PythonSdkConfigurable" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -439,17 +466,17 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="26" width="1672" height="1024" extended-state="1" />
-    <editor active="true" />
+    <frame x="0" y="26" width="1672" height="1024" extended-state="0" />
+    <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32756633" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19221412" sideWeight="0.7266436" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19221412" sideWeight="0.727797" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3979239" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2733564" sideWeight="0.99878347" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.272203" sideWeight="0.99878347" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -513,86 +540,72 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/LeftSideTabView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="74" selection-start="459" selection-end="459" vertical-scroll-proportion="0.08152174">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PointDataObject.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="54" selection-start="324" selection-end="324" vertical-scroll-proportion="0.19021739">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/PolygonOverlay.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="133" column="1" selection-start="3170" selection-end="3170" vertical-scroll-proportion="0.6938776">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/static/Gisedu/views/OverlayOutlineView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="113" column="0" selection-start="3376" selection-end="3376" vertical-scroll-proportion="1.0416666">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlayOptionsController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="24" selection-start="1007" selection-end="1007" vertical-scroll-proportion="0.46183205">
-          <folding />
-        </state>
+        <state line="53" column="24" selection-start="1007" selection-end="1007" vertical-scroll-proportion="0.46183205" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/PointOverlay.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="45" column="13" selection-start="1729" selection-end="1729" vertical-scroll-proportion="0.35326087">
-          <folding />
-        </state>
+        <state line="45" column="13" selection-start="1729" selection-end="1729" vertical-scroll-proportion="0.35326087" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="34" selection-start="5800" selection-end="5800" vertical-scroll-proportion="0.6335878">
-          <folding />
-        </state>
+        <state line="170" column="34" selection-start="5800" selection-end="5800" vertical-scroll-proportion="0.6335878" />
       </provider>
     </entry>
     <entry file="file:///usr/local/lib/python2.7/dist-packages/Django-1.3-py2.7.egg/django/contrib/admin/options.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="253" column="6" selection-start="11069" selection-end="11069" vertical-scroll-proportion="-16.570951">
-          <folding />
-        </state>
+        <state line="253" column="6" selection-start="11069" selection-end="11069" vertical-scroll-proportion="-16.570951" />
       </provider>
     </entry>
     <entry file="file:///usr/local/lib/python2.7/dist-packages/Django-1.3-py2.7.egg/django/contrib/admin/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="3" column="48" selection-start="227" selection-end="227" vertical-scroll-proportion="0.05342237">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filters/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="3" column="48" selection-start="227" selection-end="227" vertical-scroll-proportion="0.05342237" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="1" selection-start="916" selection-end="916" vertical-scroll-proportion="0.0">
+        <state line="27" column="1" selection-start="916" selection-end="916" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filters/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="62" selection-start="303" selection-end="303" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
+    <entry file="file://$PROJECT_DIR$/point_objects/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="53" column="38" selection-start="2493" selection-end="2493" vertical-scroll-proportion="0.0">
+        <state line="33" column="34" selection-start="1343" selection-end="1343" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="44" selection-start="1211" selection-end="1211" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filters/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="182" column="89" selection-start="7982" selection-end="7982" vertical-scroll-proportion="-10.535714">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="52" selection-start="242" selection-end="242" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -604,23 +617,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/views.py">
+    <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="0" selection-start="871" selection-end="871" vertical-scroll-proportion="-10.25">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/filters/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="269" column="58" selection-start="12101" selection-end="12101" vertical-scroll-proportion="0.0">
+        <state line="53" column="38" selection-start="2443" selection-end="2466" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/point_objects/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="45" selection-start="974" selection-end="974" vertical-scroll-proportion="0.42070118">
+        <state line="21" column="0" selection-start="888" selection-end="888" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/admin.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="58" selection-start="856" selection-end="856" vertical-scroll-proportion="0.5">
           <folding />
         </state>
       </provider>

@@ -15,6 +15,10 @@ class GiseduPolygonItem(models.Model):
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
+    integer_fields = models.ManyToManyField(GiseduIntegerField)
+    string_fields = models.ManyToManyField(GiseduCharField)
+    boolean_fields = models.ManyToManyField(GiseduBooleanField)
+
     the_geom = models.MultiPolygonField(null=True)
     objects = models.GeoManager()
 
@@ -22,65 +26,5 @@ class GiseduPolygonItem(models.Model):
         return str(self.item_name) + " " + str(self.item_type)
 
     class Meta:
-        db_table = u'gisedu_polygon_item'
+        db_table = u'gisedu_polygon_item_new'
         verbose_name_plural = "Polygon Items"
-
-class GiseduPolygonItemCharField(models.Model):
-    polygon = models.ForeignKey(GiseduPolygonItem)
-    field = models.ForeignKey(GiseduCharField)
-
-    def polygon__item_name(self):
-        return str(self.polygon.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-
-    def __str__(self):
-        return str(self.polygon.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_polygon_item_char_field'
-        verbose_name_plural = "Polygon Character Fields"
-
-class GiseduPolygonItemIntegerField(models.Model):
-    polygon = models.ForeignKey(GiseduPolygonItem)
-    field = models.ForeignKey(GiseduIntegerField)
-
-    def polygon__item_name(self):
-        return str(self.polygon.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-
-    def __str__(self):
-        return str(self.polygon.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_polygon_item_integer_field'
-        verbose_name_plural = "Polygon Integer Fields"
-
-class GiseduPolygonItemBooleanField(models.Model):
-    polygon = models.ForeignKey(GiseduPolygonItem)
-    field = models.ForeignKey(GiseduBooleanField)
-
-    def polygon__item_name(self):
-        return str(self.polygon.item_name)
-
-    def field__field_name(self):
-        return str(self.field.field_name)
-
-    def field__field_value(self):
-        return str(self.field.field_value)
-
-    def __str__(self):
-        return str(self.polygon.item_name) + ": " + str(self.field)
-
-    class Meta:
-        db_table = u'gisedu_polygon_item_boolean_field'
-        verbose_name_plural = "Polygon Boolean Fields"

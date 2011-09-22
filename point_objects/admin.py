@@ -2,7 +2,8 @@ from django.contrib.gis import admin as gis_admin
 from django.contrib import admin
 from django.forms.widgets import CheckboxSelectMultiple
 from django.db.models import ManyToManyField
-from point_objects.models import GiseduPointItemAddress, GiseduPointItemNew, OhioLibraries
+from gisedu.admin import PointBooleanFieldInline
+from point_objects.models import GiseduPointItemAddress, GiseduPointItem, OhioLibraries
 
 class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_display = ('address_line_one', 'city', 'state', 'zip10')
@@ -50,8 +51,12 @@ class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__filter_name', 'item_type')
 
+    inlines = [PointBooleanFieldInline]
+
+    exclude = ('boolean_fields', )
+
 admin.site.register(GiseduPointItemAddress, GiseduPointItemAddressAdmin)
-admin.site.register(GiseduPointItemNew, GiseduPointItemAdmin)
+admin.site.register(GiseduPointItem, GiseduPointItemAdmin)
 #admin.site.register(GiseduPointItemCharField, GiseduPointItemCharFieldAdmin)
 #admin.site.register(GiseduPointItemIntegerField, GiseduPointItemIntegerFieldAdmin)
 #admin.site.register(GiseduPointItemBooleanField, GiseduPointItemBooleanFieldAdmin)
