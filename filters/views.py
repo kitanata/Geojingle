@@ -6,9 +6,9 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.db.models import Q
 from models import GiseduFilters
-from gisedu.models import GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanField
-from point_objects.models import GiseduPointItem
-from polygon_objects.models import GiseduPolygonItem
+from gisedu.models import GiseduReduceItem, GiseduIntegerField, GiseduCharField, GiseduBooleanAttribute
+from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields
+from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields
 
 def filter_list(request):
     filter_objects = GiseduFilters.objects.all()
@@ -51,7 +51,7 @@ def filter_options(gis_filter):
     elif gis_filter.data_type == "REDUCE":
         reduce_items = list(GiseduReduceItem.objects.filter(reduce_filter=gis_filter))
 
-        field_types = dict(INTEGER=GiseduIntegerField, CHAR=GiseduCharField, BOOL=GiseduBooleanField)
+        field_types = dict(INTEGER=GiseduIntegerField, CHAR=GiseduCharField, BOOL=GiseduBooleanAttribute)
 
         for item in reduce_items:
             target_filter = item.target_filter
@@ -63,16 +63,26 @@ def filter_options(gis_filter):
             if target_filter.data_type == "POINT":
                 point_objects = GiseduPointItem.objects.filter(filter=target_filter)
                 if field_manager is not None:
-                    reduce_fields = field_manager.objects.filter(gisedupointitem__in=point_objects)
+                    if field_manager == GiseduBooleanAttribute:
+                        reduce_fields = GiseduPointItemBooleanFields.objects.filter(point__in=point_objects).values('value').distinct()
+                        list_data = [item['value'] for item in reduce_fields]
+                    else:
+                        reduce_fields = field_manager.objects.filter(gisedupointitem__in=point_objects)
+
+                        reduce_fields = reduce_fields.filter(field_name=item_field)
+                        list_data = dict([(item.pk, str(item.field_value)) for item in reduce_fields])
 
             elif target_filter.data_type == "POLYGON":
                 polygon_objects = GiseduPolygonItem.objects.filter(filter=target_filter)
                 if field_manager is not None:
-                    reduce_fields = field_manager.objects.filter(gisedupolygonitem__in=polygon_objects)
+                    if field_manager == GiseduBooleanAttribute:
+                        reduce_fields = GiseduPolygonItemBooleanFields.objects.filter(polygon__in=polygon_objects).values('value').distinct()
+                        list_data = [item['value'] for item in reduce_fields]
+                    else:
+                        reduce_fields = field_manager.objects.filter(gisedupolygonitem__in=polygon_objects)
 
-            if reduce_fields:
-                reduce_fields = reduce_fields.filter(field_name=item_field)
-                list_data = dict([(item.pk, str(item.field_value)) for item in reduce_fields])
+                        reduce_fields = reduce_fields.filter(field_name=item_field)
+                        list_data = dict([(item.pk, str(item.field_value)) for item in reduce_fields])
 
     return list_data
 
@@ -142,11 +152,11 @@ def filter_polygon(poly_filter, options):
     else:
         poly_objects = [GiseduPolygonItem.objects.get(pk=polygon_id)]
 
-    boolean_fields = GiseduBooleanField.objects.filter(gisedupolygonitem__in=poly_objects)
+    boolean_fields = GiseduPolygonItemBooleanFields.objects.filter(polygon__in=poly_objects)
     char_fields = GiseduCharField.objects.filter(gisedupolygonitem__in=poly_objects)
     integer_fields = GiseduIntegerField.objects.filter(gisedupolygonitem__in=poly_objects)
 
-    poly_objects = process_reduce_boolean_filters(boolean_fields, poly_objects, options)
+    poly_objects = process_reduce_boolean_filters(boolean_fields, poly_objects, options, geom_type="POLYGON")
     poly_objects = process_reduce_char_filters(char_fields, poly_objects, options)
     poly_objects = process_reduce_integer_filters(integer_fields, poly_objects, options)
 
@@ -161,7 +171,7 @@ def filter_point(point_filter, options):
     else:
         point_objects = [GiseduPointItem.objects.get(pk=point_id)]
 
-    boolean_fields = GiseduBooleanField.objects.filter(gisedupointitem__in=point_objects)
+    boolean_fields = GiseduPointItemBooleanFields.objects.filter(point__in=point_objects)
     char_fields = GiseduCharField.objects.filter(gisedupointitem__in=point_objects)
     integer_fields = GiseduIntegerField.objects.filter(gisedupointitem__in=point_objects)
 
@@ -180,7 +190,7 @@ def filter_point_by_type(point_filter, options):
     else:
         point_objects = GiseduPointItem.objects.filter(item_type=point_subtype)
 
-    boolean_fields = GiseduBooleanField.objects.filter(gisedupointitem__in=point_objects)
+    boolean_fields = GiseduPointItemBooleanFields.objects.filter(point__in=point_objects)
     char_fields = GiseduCharField.objects.filter(gisedupointitem__in=point_objects)
     integer_fields = GiseduIntegerField.objects.filter(gisedupointitem__in=point_objects)
 
@@ -190,14 +200,22 @@ def filter_point_by_type(point_filter, options):
 
     return list(point_objects)
 
-def process_reduce_boolean_filters(fields, objects, options):
-    bool_options = fields.values('field_name').distinct()
-    bool_options = [option['field_name'] for option in bool_options]
+def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
+    bool_options = GiseduBooleanAttribute.objects.all()
+    bool_options = [option.attribute_name for option in bool_options]
 
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
+    object_keys = []
     for name, value in options.iteritems():
-        objects = objects.filter(boolean_fields__field_name=name, boolean_fields__field_value=value)
+        filter_fields = fields.filter(attribute__attribute_name=name)
+        filter_fields = filter_fields.exclude(value=value)
+        if geom_type == "POINT":
+            object_keys.extend([item.point.pk for item in filter_fields])
+        elif geom_type == "POLYGON":
+            object_keys.extend([item.polygon.pk for item in filter_fields])
+
+    objects = objects.exclude(pk__in=object_keys)
 
     return objects
 

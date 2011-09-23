@@ -2,8 +2,7 @@ from django.contrib.gis import admin as gis_admin
 from django.contrib import admin
 from django.forms.widgets import CheckboxSelectMultiple
 from django.db.models import ManyToManyField
-from gisedu.admin import PointBooleanFieldInline
-from point_objects.models import GiseduPointItemAddress, GiseduPointItem, OhioLibraries
+from point_objects.models import GiseduPointItemAddress, GiseduPointItem, OhioLibraries, GiseduPointItemBooleanFields
 
 class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_display = ('address_line_one', 'city', 'state', 'zip10')
@@ -13,8 +12,8 @@ class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_filter = ('state',)
 
 class GiseduPointItemBooleanFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point__item_name', 'point__filter_name', 'field__field_name', 'field__field_value')
-    list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
+    list_display = ('point', 'point__filter', 'attribute', 'value')
+    list_filter = ('point__filter__filter_name', 'attribute', 'value')
     
     search_fields = ['point__item_name']
 
@@ -39,6 +38,9 @@ class GiseduPointItemBooleanFieldAdmin(gis_admin.GeoModelAdmin):
     set_field_true.short_description = "Mark selected Items. (Set to True)"
     set_field_false.short_description = "Un-mark selected Items. (Set to False)"
 
+class GiseduPointItemBooleanFieldsInline(admin.TabularInline):
+    model = GiseduPointItemBooleanFields
+
 class GiseduPointItemCharFieldAdmin(gis_admin.GeoModelAdmin):
     list_display = ('point__item_name', 'point__filter_name', 'field__field_name', 'field__field_value')
     list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
@@ -51,12 +53,13 @@ class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__filter_name', 'item_type')
 
-    inlines = [PointBooleanFieldInline]
+    inlines = [GiseduPointItemBooleanFieldsInline]
 
-    exclude = ('boolean_fields', )
+    #exclude = ('boolean_fields', )
 
 admin.site.register(GiseduPointItemAddress, GiseduPointItemAddressAdmin)
 admin.site.register(GiseduPointItem, GiseduPointItemAdmin)
+admin.site.register(GiseduPointItemBooleanFields, GiseduPointItemBooleanFieldAdmin)
 #admin.site.register(GiseduPointItemCharField, GiseduPointItemCharFieldAdmin)
 #admin.site.register(GiseduPointItemIntegerField, GiseduPointItemIntegerFieldAdmin)
 #admin.site.register(GiseduPointItemBooleanField, GiseduPointItemBooleanFieldAdmin)

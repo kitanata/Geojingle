@@ -32,16 +32,16 @@ class GiseduCharField(models.Model):
         db_table = u'gisedu_char_field'
         verbose_name_plural = "Character Fields"
 
-class GiseduBooleanField(models.Model):
-    field_name = models.CharField(max_length=254, null=True)
-    field_value = models.BooleanField(default=False)
+class GiseduBooleanAttribute(models.Model):
+    id = models.IntegerField(primary_key=True)
+    attribute_name = models.CharField(max_length=254)
 
     def __str__(self):
-        return str(self.field_name) + " = " + str(self.field_value)
+        return str(self.attribute_name)
 
     class Meta:
-        db_table = u'gisedu_boolean_field'
-        verbose_name_plural = "Boolean Fields"
+        db_table = u'gisedu_boolean_attribute'
+        verbose_name_plural = "Boolean Attributes"
 
 class GiseduReduceItem(models.Model):
     reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')
