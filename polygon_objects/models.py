@@ -9,13 +9,12 @@
 
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
-from gisedu.models import GiseduCharField, GiseduBooleanAttribute, GiseduIntegerAttribute
+from gisedu.models import GiseduBooleanAttribute, GiseduIntegerAttribute, GiseduStringAttribute, GiseduStringAttributeOption
 
 class GiseduPolygonItem(models.Model):
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
-    string_fields = models.ManyToManyField(GiseduCharField)
 
     the_geom = models.MultiPolygonField(null=True)
     objects = models.GeoManager()
@@ -56,3 +55,19 @@ class GiseduPolygonItemIntegerFields(models.Model):
     class Meta:
         db_table = u'gisedu_polygon_item_integer_fields'
         verbose_name_plural = "Polygon Integer Attributes"
+
+class GiseduPolygonItemStringFields(models.Model):
+    polygon = models.ForeignKey(GiseduPolygonItem)
+    attribute = models.ForeignKey(GiseduStringAttribute)
+    #value = models.CharField(max_length=254)
+    option = models.ForeignKey(GiseduStringAttributeOption)
+
+    def polygon__filter(self):
+        return str(self.polygon.filter)
+
+    def __str__(self):
+        return str(self.polygon)
+
+    class Meta:
+        db_table = u'gisedu_polygon_item_string_fields_new'
+        verbose_name_plural = "Polygon String Attributes"

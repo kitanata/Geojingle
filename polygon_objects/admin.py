@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields
+from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields, GiseduPolygonItemStringFields
 
 class GiseduPolygonItemBooleanFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemBooleanFields
@@ -40,12 +40,24 @@ class GiseduPolygonItemIntegerFieldAdmin(admin.GeoModelAdmin):
 
     search_fields = ['polygon__item_name']
 
+class GiseduPolygonItemStringFieldsInline(admin.TabularInline):
+    model = GiseduPolygonItemStringFields
+
+class GiseduPolygonItemStringFieldAdmin(admin.GeoModelAdmin):
+    list_display = ('polygon', 'polygon__filter', 'attribute', 'option')
+    list_filter = ('polygon__filter__filter_name', 'attribute', 'option')
+
+    search_fields = ['polygon__item_name']
+
 class GiseduPolygonItemAdmin(admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter', 'item_type')
 
-    inlines = [GiseduPolygonItemBooleanFieldsInline, GiseduPolygonItemIntegerFieldsInline]
+    inlines = [GiseduPolygonItemBooleanFieldsInline,
+               GiseduPolygonItemIntegerFieldsInline,
+               GiseduPolygonItemStringFieldsInline]
 
 admin.site.register(GiseduPolygonItem, GiseduPolygonItemAdmin)
 admin.site.register(GiseduPolygonItemBooleanFields, GiseduPolygonItemBooleanFieldAdmin)
 admin.site.register(GiseduPolygonItemIntegerFields, GiseduPolygonItemIntegerFieldAdmin)
+admin.site.register(GiseduPolygonItemStringFields, GiseduPolygonItemStringFieldAdmin)

@@ -2,7 +2,7 @@ from django.contrib.gis import admin as gis_admin
 from django.contrib import admin
 from django.forms.widgets import CheckboxSelectMultiple
 from django.db.models import ManyToManyField
-from point_objects.models import GiseduPointItemAddress, GiseduPointItem, OhioLibraries, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields
+from point_objects.models import GiseduPointItemAddress, GiseduPointItem, OhioLibraries, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 
 class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_display = ('address_line_one', 'city', 'state', 'zip10')
@@ -50,21 +50,28 @@ class GiseduPointItemIntegerFieldAdmin(gis_admin.GeoModelAdmin):
 class GiseduPointItemIntegerFieldsInline(admin.TabularInline):
     model = GiseduPointItemIntegerFields
 
-class GiseduPointItemCharFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point__item_name', 'point__filter_name', 'field__field_name', 'field__field_value')
-    list_filter = ('point__filter__filter_name', 'field__field_name', 'field__field_value')
+class GiseduPointItemStringFieldAdmin(gis_admin.GeoModelAdmin):
+    list_display = ('point', 'point__filter', 'attribute', 'option')
+    list_filter = ('point__filter__filter_name', 'attribute', 'option')
+
+    search_fields = ['point__item_name']
+
+class GiseduPointItemStringFieldsInline(admin.TabularInline):
+    model = GiseduPointItemStringFields
 
 class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__filter_name', 'item_type')
 
-    inlines = [GiseduPointItemBooleanFieldsInline, GiseduPointItemIntegerFieldsInline]
+    inlines = [GiseduPointItemBooleanFieldsInline,
+               GiseduPointItemIntegerFieldsInline,
+               GiseduPointItemStringFieldsInline]
 
 admin.site.register(GiseduPointItemAddress, GiseduPointItemAddressAdmin)
 admin.site.register(GiseduPointItem, GiseduPointItemAdmin)
 admin.site.register(GiseduPointItemBooleanFields, GiseduPointItemBooleanFieldAdmin)
 admin.site.register(GiseduPointItemIntegerFields, GiseduPointItemIntegerFieldAdmin)
-#admin.site.register(GiseduPointItemCharField, GiseduPointItemCharFieldAdmin)
+admin.site.register(GiseduPointItemStringFields, GiseduPointItemStringFieldAdmin)
 admin.site.register(OhioLibraries, gis_admin.GeoModelAdmin)
 
 #class GiseduOrgTypeAdmin(admin.ModelAdmin):

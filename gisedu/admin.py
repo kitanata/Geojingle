@@ -1,12 +1,12 @@
 from django.contrib.gis import admin
-from gisedu.models import GiseduIntegerAttribute, GiseduCharField, GiseduReduceItem, GiseduBooleanAttribute
-from point_objects.models import GiseduPointItem
+from gisedu.models import GiseduIntegerAttribute, GiseduStringAttribute, GiseduReduceItem, GiseduBooleanAttribute, GiseduStringAttributeOption
 
-class GiseduFieldAdmin(admin.GeoModelAdmin):
-    list_display = ('field_name', 'field_value')
-    list_filter = ('field_name', 'field_value')
+class GiseduStringAttributeOptionAdmin(admin.ModelAdmin):
+    list_display = ['option', 'attribute']
+    list_filter = ['attribute']
 
 admin.site.register(GiseduBooleanAttribute, admin.ModelAdmin)
 admin.site.register(GiseduIntegerAttribute, admin.ModelAdmin)
-admin.site.register(GiseduCharField, GiseduFieldAdmin)
+admin.site.register(GiseduStringAttribute, admin.ModelAdmin)
+admin.site.register(GiseduStringAttributeOption, GiseduStringAttributeOptionAdmin)
 admin.site.register(GiseduReduceItem, admin.GeoModelAdmin)

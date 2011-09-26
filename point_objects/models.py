@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
-from gisedu.models import GiseduCharField, GiseduBooleanAttribute, GiseduIntegerAttribute
+from gisedu.models import GiseduBooleanAttribute, GiseduIntegerAttribute, GiseduStringAttribute, GiseduStringAttributeOption
 
 class GiseduPointItemAddress(models.Model):
     gid = models.IntegerField(primary_key=True)
@@ -25,7 +25,6 @@ class GiseduPointItem(models.Model):
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
     item_address = models.ForeignKey(GiseduPointItemAddress)
-    string_fields = models.ManyToManyField(GiseduCharField)
     
     the_geom = models.PointField()
     objects = models.GeoManager()
@@ -66,6 +65,23 @@ class GiseduPointItemIntegerFields(models.Model):
     class Meta:
         db_table = u'gisedu_point_item_integer_fields'
         verbose_name_plural = "Point Integer Attributes"
+
+
+class GiseduPointItemStringFields(models.Model):
+    point = models.ForeignKey(GiseduPointItem)
+    attribute = models.ForeignKey(GiseduStringAttribute)
+    #value = models.CharField(max_length=254)
+    option = models.ForeignKey(GiseduStringAttributeOption)
+
+    def point__filter(self):
+        return str(self.point.filter)
+
+    def __str__(self):
+        return str(self.point)
+
+    class Meta:
+        db_table = u'gisedu_point_item_string_fields_new'
+        verbose_name_plural = "Point String Attributes"
 
 class OhioLibraries(models.Model):
     gid = models.IntegerField(primary_key=True)

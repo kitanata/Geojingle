@@ -20,17 +20,6 @@ class GiseduIntegerAttribute(models.Model):
         db_table = u'gisedu_integer_attribute'
         verbose_name_plural = "Integer Attributes"
 
-class GiseduCharField(models.Model):
-    field_name = models.CharField(max_length=254, null=True)
-    field_value = models.CharField(max_length=254, null=True)
-
-    def __str__(self):
-        return str(self.field_name) + " = " + str(self.field_value)
-
-    class Meta:
-        db_table = u'gisedu_char_field'
-        verbose_name_plural = "Character Fields"
-
 class GiseduBooleanAttribute(models.Model):
     attribute_name = models.CharField(max_length=254)
 
@@ -40,6 +29,27 @@ class GiseduBooleanAttribute(models.Model):
     class Meta:
         db_table = u'gisedu_boolean_attribute'
         verbose_name_plural = "Boolean Attributes"
+
+class GiseduStringAttribute(models.Model):
+    attribute_name = models.CharField(max_length=254, null=True)
+
+    def __str__(self):
+        return str(self.attribute_name)
+
+    class Meta:
+        db_table = u'gisedu_string_attribute'
+        verbose_name_plural = "String Attributes"
+
+class GiseduStringAttributeOption(models.Model):
+    attribute = models.ForeignKey(GiseduStringAttribute)
+    option = models.CharField(max_length=254)
+
+    def __str__(self):
+        return str(self.option)
+
+    class Meta:
+        db_table = u'gisedu_string_attribute_option'
+        verbose_name_plural = "String Attribute Options"
 
 class GiseduReduceItem(models.Model):
     reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')
