@@ -10,16 +10,15 @@
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
 
-class GiseduIntegerField(models.Model):
-    field_name = models.CharField(max_length=254, null=True)
-    field_value = models.IntegerField(null=True)
+class GiseduIntegerAttribute(models.Model):
+    attribute_name = models.CharField(max_length=254, null=True)
 
     def __str__(self):
-        return str(self.field_name) + " = " + str(self.field_value)
+        return str(self.attribute_name)
 
     class Meta:
-        db_table = u'gisedu_integer_field'
-        verbose_name_plural = "Integer Fields"
+        db_table = u'gisedu_integer_attribute'
+        verbose_name_plural = "Integer Attributes"
 
 class GiseduCharField(models.Model):
     field_name = models.CharField(max_length=254, null=True)
@@ -33,7 +32,6 @@ class GiseduCharField(models.Model):
         verbose_name_plural = "Character Fields"
 
 class GiseduBooleanAttribute(models.Model):
-    id = models.IntegerField(primary_key=True)
     attribute_name = models.CharField(max_length=254)
 
     def __str__(self):

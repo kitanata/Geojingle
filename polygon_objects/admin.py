@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields
+from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields
 
 class GiseduPolygonItemBooleanFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemBooleanFields
@@ -31,11 +31,21 @@ class GiseduPolygonItemBooleanFieldAdmin(admin.GeoModelAdmin):
     set_field_true.short_description = "Mark selected Items. (Set to True)"
     set_field_false.short_description = "Un-mark selected Items. (Set to False)"
 
+class GiseduPolygonItemIntegerFieldsInline(admin.TabularInline):
+    model = GiseduPolygonItemIntegerFields
+
+class GiseduPolygonItemIntegerFieldAdmin(admin.GeoModelAdmin):
+    list_display = ('polygon', 'polygon__filter', 'attribute', 'value')
+    list_filter = ('polygon__filter__filter_name', 'attribute', 'value')
+
+    search_fields = ['polygon__item_name']
+
 class GiseduPolygonItemAdmin(admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter', 'item_type')
 
-    inlines = [GiseduPolygonItemBooleanFieldsInline]
+    inlines = [GiseduPolygonItemBooleanFieldsInline, GiseduPolygonItemIntegerFieldsInline]
 
 admin.site.register(GiseduPolygonItem, GiseduPolygonItemAdmin)
 admin.site.register(GiseduPolygonItemBooleanFields, GiseduPolygonItemBooleanFieldAdmin)
+admin.site.register(GiseduPolygonItemIntegerFields, GiseduPolygonItemIntegerFieldAdmin)

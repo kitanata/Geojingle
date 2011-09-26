@@ -367,7 +367,7 @@
         else if([filterDescription filterType] == "INTEGER")
         {
             m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[[filterDescription options] allValues]];
+                andFilter:filter andAcceptedValues:[filterDescription options]];
         }
         else if([filterDescription filterType] == "CHAR")
         {

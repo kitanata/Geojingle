@@ -9,13 +9,12 @@
 
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
-from gisedu.models import GiseduCharField, GiseduIntegerField, GiseduBooleanAttribute
+from gisedu.models import GiseduCharField, GiseduBooleanAttribute, GiseduIntegerAttribute
 
 class GiseduPolygonItem(models.Model):
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
-    integer_fields = models.ManyToManyField(GiseduIntegerField)
     string_fields = models.ManyToManyField(GiseduCharField)
 
     the_geom = models.MultiPolygonField(null=True)
@@ -32,7 +31,6 @@ class GiseduPolygonItem(models.Model):
         verbose_name_plural = "Polygon Items"
 
 class GiseduPolygonItemBooleanFields(models.Model):
-    id = models.IntegerField(primary_key=True)
     polygon = models.ForeignKey(GiseduPolygonItem)
     attribute = models.ForeignKey(GiseduBooleanAttribute)
     value = models.BooleanField()
@@ -43,3 +41,18 @@ class GiseduPolygonItemBooleanFields(models.Model):
     class Meta:
         db_table = u'gisedu_polygon_item_boolean_fields'
         verbose_name_plural = "Polygon Boolean Attributes"
+
+class GiseduPolygonItemIntegerFields(models.Model):
+    polygon = models.ForeignKey(GiseduPolygonItem)
+    attribute = models.ForeignKey(GiseduIntegerAttribute)
+    value = models.IntegerField()
+
+    def polygon__filter(self):
+        return str(self.polygon.filter)
+
+    def __str__(self):
+        return str(self.polygon)
+
+    class Meta:
+        db_table = u'gisedu_polygon_item_integer_fields'
+        verbose_name_plural = "Polygon Integer Attributes"
