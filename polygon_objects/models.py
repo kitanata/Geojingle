@@ -26,7 +26,7 @@ class GiseduPolygonItem(models.Model):
             return str(self.item_name)
 
     class Meta:
-        db_table = u'gisedu_polygon_item_new'
+        db_table = u'gisedu_polygon_item'
         verbose_name_plural = "Polygon Items"
 
 class GiseduPolygonItemBooleanFields(models.Model):
@@ -59,7 +59,6 @@ class GiseduPolygonItemIntegerFields(models.Model):
 class GiseduPolygonItemStringFields(models.Model):
     polygon = models.ForeignKey(GiseduPolygonItem)
     attribute = models.ForeignKey(GiseduStringAttribute)
-    #value = models.CharField(max_length=254)
     option = models.ForeignKey(GiseduStringAttributeOption)
 
     def polygon__filter(self):
@@ -69,5 +68,5 @@ class GiseduPolygonItemStringFields(models.Model):
         return str(self.polygon)
 
     class Meta:
-        db_table = u'gisedu_polygon_item_string_fields_new'
+        db_table = u'gisedu_polygon_item_string_fields'
         verbose_name_plural = "Polygon String Attributes"

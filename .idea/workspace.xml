@@ -32,19 +32,19 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="models.py" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/point_objects/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="48" selection-start="2413" selection-end="2413" vertical-scroll-proportion="1.725">
+            <state line="34" column="15" selection-start="1390" selection-end="1390" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/filters/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="48" selection-start="756" selection-end="756" vertical-scroll-proportion="0.0">
+            <state line="52" column="0" selection-start="2612" selection-end="2612" vertical-scroll-proportion="-2.6">
               <folding />
             </state>
           </provider>
@@ -98,7 +98,7 @@
       <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="0" selection-start="2217" selection-end="2262" vertical-scroll-proportion="0.0">
+            <state line="27" column="15" selection-start="1105" selection-end="1105" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -128,12 +128,12 @@
         <option value="$PROJECT_DIR$/point_objects/views.py" />
         <option value="$PROJECT_DIR$/static/Gisedu/views/OverlayFiltersView.j" />
         <option value="$PROJECT_DIR$/gisedu/models.py" />
-        <option value="$PROJECT_DIR$/polygon_objects/models.py" />
-        <option value="$PROJECT_DIR$/filters/views.py" />
         <option value="$PROJECT_DIR$/point_objects/admin.py" />
         <option value="$PROJECT_DIR$/polygon_objects/admin.py" />
         <option value="$PROJECT_DIR$/gisedu/admin.py" />
         <option value="$PROJECT_DIR$/point_objects/models.py" />
+        <option value="$PROJECT_DIR$/polygon_objects/models.py" />
+        <option value="$PROJECT_DIR$/filters/views.py" />
       </list>
     </option>
   </component>
@@ -629,20 +629,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filters/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="48" selection-start="756" selection-end="756" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="0" selection-start="2217" selection-end="2262" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/polygon_objects/admin.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="39" column="0" selection-start="1776" selection-end="1776" vertical-scroll-proportion="0.0">
@@ -666,7 +652,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/point_objects/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="48" selection-start="2413" selection-end="2413" vertical-scroll-proportion="1.725">
+        <state line="34" column="15" selection-start="1390" selection-end="1390" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="27" column="15" selection-start="1105" selection-end="1105" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filters/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="52" column="0" selection-start="2612" selection-end="2612" vertical-scroll-proportion="-2.6">
           <folding />
         </state>
       </provider>

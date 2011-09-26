@@ -51,44 +51,36 @@ def filter_options(gis_filter):
     elif gis_filter.data_type == "REDUCE":
         reduce_items = list(GiseduReduceItem.objects.filter(reduce_filter=gis_filter))
 
-        field_types = dict(INTEGER=GiseduIntegerAttribute, CHAR=GiseduStringAttribute, BOOL=GiseduBooleanAttribute)
+        polygon_field_managers = dict(INTEGER=GiseduPolygonItemIntegerFields, CHAR=GiseduStringAttributeOption, BOOL=GiseduPolygonItemBooleanFields)
+        point_field_managers = dict(INTEGER=GiseduPointItemIntegerFields, CHAR=GiseduStringAttributeOption, BOOL=GiseduPointItemBooleanFields)
 
         for item in reduce_items:
             target_filter = item.target_filter
             item_field = item.item_field
-            reduce_fields = None
-
-            field_manager = field_types[gis_filter.filter_type]
 
             if target_filter.data_type == "POINT":
                 point_objects = GiseduPointItem.objects.filter(filter=target_filter)
-                if field_manager is not None:
-                    if field_manager == GiseduBooleanAttribute:
-                        reduce_fields = GiseduPointItemBooleanFields.objects.filter(point__in=point_objects)
-                        reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                        list_data = [item['value'] for item in reduce_fields]
-                    elif field_manager == GiseduIntegerAttribute:
-                        reduce_fields = GiseduPointItemIntegerFields.objects.filter(point__in=point_objects)
-                        reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                        list_data = [str(item['value']) for item in reduce_fields]
-                    elif field_manager == GiseduStringAttribute:
-                        reduce_fields = GiseduStringAttributeOption.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
-                        list_data = {item.pk : item.option for item in reduce_fields}
+                field_manager = point_field_managers[gis_filter.filter_type]
+                
+                if field_manager == GiseduStringAttributeOption:
+                    reduce_fields = field_manager.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
+                    list_data = {item.pk : item.option for item in reduce_fields}
+                else:
+                    reduce_fields = field_manager.objects.filter(point__in=point_objects)
+                    reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
+                    list_data = [item['value'] for item in reduce_fields]
 
             elif target_filter.data_type == "POLYGON":
                 polygon_objects = GiseduPolygonItem.objects.filter(filter=target_filter)
-                if field_manager is not None:
-                    if field_manager == GiseduBooleanAttribute:
-                        reduce_fields = GiseduPolygonItemBooleanFields.objects.filter(polygon__in=polygon_objects)
-                        reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                        list_data = [item['value'] for item in reduce_fields]
-                    elif field_manager == GiseduIntegerAttribute:
-                        reduce_fields = GiseduPolygonItemIntegerFields.objects.filter(polygon__in=polygon_objects)
-                        reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                        list_data = [str(item['value']) for item in reduce_fields]
-                    elif field_manager == GiseduStringAttribute:
-                        reduce_fields = GiseduStringAttributeOption.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
-                        list_data = {item.pk : item.option for item in reduce_fields}
+                field_manager = polygon_field_managers[gis_filter.filter_type]
+
+                if field_manager == GiseduStringAttributeOption:
+                    reduce_fields = field_manager.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
+                    list_data = {item.pk : item.option for item in reduce_fields}
+                else:
+                    reduce_fields = field_manager.objects.filter(polygon__in=polygon_objects)
+                    reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
+                    list_data = [item['value'] for item in reduce_fields]
 
     return list_data
 

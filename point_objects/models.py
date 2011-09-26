@@ -33,7 +33,7 @@ class GiseduPointItem(models.Model):
         return str(self.item_name) + " " + str(self.item_type)
 
     class Meta:
-        db_table = u'gisedu_point_item_new'
+        db_table = u'gisedu_point_item'
         verbose_name_plural = "Point Items"
 
 class GiseduPointItemBooleanFields(models.Model):
@@ -70,7 +70,6 @@ class GiseduPointItemIntegerFields(models.Model):
 class GiseduPointItemStringFields(models.Model):
     point = models.ForeignKey(GiseduPointItem)
     attribute = models.ForeignKey(GiseduStringAttribute)
-    #value = models.CharField(max_length=254)
     option = models.ForeignKey(GiseduStringAttributeOption)
 
     def point__filter(self):
@@ -80,7 +79,7 @@ class GiseduPointItemStringFields(models.Model):
         return str(self.point)
 
     class Meta:
-        db_table = u'gisedu_point_item_string_fields_new'
+        db_table = u'gisedu_point_item_string_fields'
         verbose_name_plural = "Point String Attributes"
 
 class OhioLibraries(models.Model):

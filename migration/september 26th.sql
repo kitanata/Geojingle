@@ -59,4 +59,23 @@ DROP TABLE gisedu_point_item_string_fields;
 DROP TABLE gisedu_polygon_item_string_fields;
 */
 
+-- DO NEW SYNCDB - REMOVE NOT NULL CONSTAINT on point item address_id
 
+/*
+
+INSERT INTO gisedu_polygon_item SELECT * FROM gisedu_polygon_item_new;
+INSERT INTO gisedu_point_item SELECT * FROM gisedu_point_item_new;
+INSERT INTO gisedu_point_item_string_fields SELECT * FROM gisedu_point_item_string_fields_new;
+INSERT INTO gisedu_polygon_item_string_fields SELECT * FROM gisedu_polygon_item_string_fields_new;
+
+*/
+
+/*
+DROP TABLE gisedu_point_item_string_fields_new;
+DROP TABLE gisedu_polygon_item_string_fields_new;
+*/
+
+-- FIX FKEYS on attribute objects
+
+/*DROP TABLE gisedu_polygon_item_new;
+DROP TABLE gisedu_point_item_new;*/
