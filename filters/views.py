@@ -68,7 +68,7 @@ def filter_options(gis_filter):
                 else:
                     reduce_fields = field_manager.objects.filter(point__in=point_objects)
                     reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                    list_data = [item['value'] for item in reduce_fields]
+                    list_data = [str(item['value']) for item in reduce_fields]
 
             elif target_filter.data_type == "POLYGON":
                 polygon_objects = GiseduPolygonItem.objects.filter(filter=target_filter)
@@ -80,7 +80,7 @@ def filter_options(gis_filter):
                 else:
                     reduce_fields = field_manager.objects.filter(polygon__in=polygon_objects)
                     reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
-                    list_data = [item['value'] for item in reduce_fields]
+                    list_data = [str(item['value']) for item in reduce_fields]
 
     return list_data
 
@@ -207,13 +207,15 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     object_keys = []
     for name, value in options.iteritems():
         filter_fields = fields.filter(attribute__attribute_name=name)
-        filter_fields = filter_fields.exclude(value=value)
+        filter_fields = filter_fields.filter(value=value)
+
         if geom_type == "POINT":
             object_keys.extend([item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
             object_keys.extend([item.polygon.pk for item in filter_fields])
 
-    objects = objects.exclude(pk__in=object_keys)
+    if len(options) > 0:
+        objects = objects.filter(pk__in=object_keys)
 
     return objects
 
@@ -226,13 +228,15 @@ def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
     object_keys = []
     for name, value in options.iteritems():
         filter_fields = fields.filter(attribute__attribute_name=name)
-        filter_fields = filter_fields.exclude(option__pk=value)
+        filter_fields = filter_fields.filter(option__pk=value)
+
         if geom_type == "POINT":
             object_keys.extend([item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
             object_keys.extend([item.polygon.pk for item in filter_fields])
 
-    objects = objects.exclude(pk__in=object_keys)
+    if len(options) > 0:
+        objects = objects.filter(pk__in=object_keys)
 
     return objects
 
@@ -261,17 +265,18 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
         filter_fields = fields.filter(attribute__attribute_name=name)
 
         if integer_query_option == "lt":
-            filter_fields = filter_fields.exclude(value__lt=value)
+            filter_fields = filter_fields.filter(value__lt=value)
         elif integer_query_option == "gt":
-            filter_fields = filter_fields.exclude(value__gt=value)
+            filter_fields = filter_fields.filter(value__gt=value)
         else:
-            filter_fields = filter_fields.exclude(value=value)
+            filter_fields = filter_fields.filter(value=value)
 
         if geom_type == "POINT":
             object_keys.extend([item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
             object_keys.extend([item.polygon.pk for item in filter_fields])
 
-    objects = objects.exclude(pk__in=object_keys)
+    if len(options) > 0:
+        objects = objects.filter(pk__in=object_keys)
 
     return objects
