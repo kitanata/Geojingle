@@ -6,7 +6,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.db.models import Q
 from models import GiseduFilters
-from gisedu.models import GiseduReduceItem, GiseduIntegerAttribute, GiseduStringAttribute, GiseduBooleanAttribute, GiseduStringAttributeOption
+from gisedu.models import GiseduReduceItem, GiseduFieldAttribute, GiseduStringAttributeOption
 from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields, GiseduPolygonItemStringFields
 
@@ -199,7 +199,7 @@ def filter_point_by_type(point_filter, options):
     return list(point_objects)
 
 def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
-    bool_options = GiseduBooleanAttribute.objects.all()
+    bool_options = GiseduFieldAttribute.objects.filter(type="BOOL")
     bool_options = [option.attribute_name for option in bool_options]
 
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
@@ -220,7 +220,7 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     return objects
 
 def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
-    string_options = GiseduStringAttribute.objects.all()
+    string_options = GiseduFieldAttribute.objects.filter(type="CHAR")
     string_options = [option.attribute_name for option in string_options]
 
     options = {k : v for k, v in options.iteritems() if k in string_options}
@@ -242,7 +242,7 @@ def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
 
 #Integer Filters
 def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
-    integer_options = GiseduIntegerAttribute.objects.all()
+    integer_options = GiseduFieldAttribute.objects.filter(type="INTEGER")
     integer_options = [option.attribute_name for option in integer_options]
 
     integer_options.extend([option + "__lt" for option in integer_options])

@@ -5,7 +5,7 @@ from django.template.context import RequestContext
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
 from filters.models import GiseduFilters
-from point_objects.models import GiseduPointItem
+from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 
 @csrf_exempt
 def point_geom_list(request, data_type):
@@ -32,6 +32,21 @@ def point_info_by_type(request, data_type, point_id):
 
 def point_infobox_by_type(request, data_type, point_id):
     point_object = GiseduPointItem.objects.get(pk=point_id)
-    response = {'org_name' : point_object.item_name, 'address' : point_object.item_address}
-    #TODO: You can make this pull all the fields for this object really easily and show them to the user
+
+    boolean_fields = GiseduPointItemBooleanFields.objects.filter(point=point_object)
+    boolean_fields = {str(field.attribute.attribute_name) : str(field.value) for field in boolean_fields}
+
+    integer_fields = GiseduPointItemIntegerFields.objects.filter(point=point_object)
+    integer_fields = {str(field.attribute.attribute_name) : str(field.value) for field in integer_fields}
+
+    string_fields = GiseduPointItemStringFields.objects.filter(point=point_object)
+    string_fields = {str(field.attribute.attribute_name) : str(field.option.option) for field in string_fields}
+
+    response = {
+        'org_name' : point_object.item_name,
+        'address' : point_object.item_address,
+        'boolean_fields' : boolean_fields,
+        'integer_fields' : integer_fields,
+        'string_fields' : string_fields }
+    
     return render_to_response('edu_org_info.html', response, context_instance=RequestContext(request))

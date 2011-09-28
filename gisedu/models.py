@@ -10,38 +10,20 @@
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
 
-class GiseduIntegerAttribute(models.Model):
-    attribute_name = models.CharField(max_length=254, null=True)
+class GiseduFieldAttribute(models.Model):
+    name = models.CharField(max_length=254, null=True)
+    description = models.CharField(max_length=254)
+    type = models.CharField(max_length=254)
 
     def __str__(self):
-        return str(self.attribute_name)
+        return str(self.name)
 
     class Meta:
-        db_table = u'gisedu_integer_attribute'
-        verbose_name_plural = "Integer Attributes"
-
-class GiseduBooleanAttribute(models.Model):
-    attribute_name = models.CharField(max_length=254)
-
-    def __str__(self):
-        return str(self.attribute_name)
-
-    class Meta:
-        db_table = u'gisedu_boolean_attribute'
-        verbose_name_plural = "Boolean Attributes"
-
-class GiseduStringAttribute(models.Model):
-    attribute_name = models.CharField(max_length=254, null=True)
-
-    def __str__(self):
-        return str(self.attribute_name)
-
-    class Meta:
-        db_table = u'gisedu_string_attribute'
-        verbose_name_plural = "String Attributes"
+        db_table = u'gisedu_field_attributes'
+        verbose_name_plural = "Field Attributes"
 
 class GiseduStringAttributeOption(models.Model):
-    attribute = models.ForeignKey(GiseduStringAttribute)
+    attribute = models.ForeignKey(GiseduFieldAttribute)
     option = models.CharField(max_length=254)
 
     def __str__(self):
