@@ -11,9 +11,9 @@ from django.contrib.gis.db import models
 from filters.models import GiseduFilters
 
 class GiseduFieldAttribute(models.Model):
-    name = models.CharField(max_length=254, null=True)
-    description = models.CharField(max_length=254)
-    type = models.CharField(max_length=254)
+    name = models.CharField(max_length=254)
+    description = models.CharField(max_length=254, null=True)
+    type = models.CharField(max_length=254, null=True)
 
     def __str__(self):
         return str(self.name)
