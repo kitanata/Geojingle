@@ -63,11 +63,11 @@ def filter_options(gis_filter):
                 field_manager = point_field_managers[gis_filter.filter_type]
                 
                 if field_manager == GiseduStringAttributeOption:
-                    reduce_fields = field_manager.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
+                    reduce_fields = field_manager.objects.filter(attribute__name=gis_filter.request_modifier)
                     list_data = {item.pk : item.option for item in reduce_fields}
                 else:
                     reduce_fields = field_manager.objects.filter(point__in=point_objects)
-                    reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
+                    reduce_fields = reduce_fields.filter(attribute__name=item_field).values('value').distinct()
                     list_data = [str(item['value']) for item in reduce_fields]
 
             elif target_filter.data_type == "POLYGON":
@@ -75,11 +75,11 @@ def filter_options(gis_filter):
                 field_manager = polygon_field_managers[gis_filter.filter_type]
 
                 if field_manager == GiseduStringAttributeOption:
-                    reduce_fields = field_manager.objects.filter(attribute__attribute_name=gis_filter.request_modifier)
+                    reduce_fields = field_manager.objects.filter(attribute__name=gis_filter.request_modifier)
                     list_data = {item.pk : item.option for item in reduce_fields}
                 else:
                     reduce_fields = field_manager.objects.filter(polygon__in=polygon_objects)
-                    reduce_fields = reduce_fields.filter(attribute__attribute_name=item_field).values('value').distinct()
+                    reduce_fields = reduce_fields.filter(attribute__name=item_field).values('value').distinct()
                     list_data = [str(item['value']) for item in reduce_fields]
 
     return list_data
