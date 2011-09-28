@@ -200,13 +200,13 @@ def filter_point_by_type(point_filter, options):
 
 def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     bool_options = GiseduFieldAttribute.objects.filter(type="BOOL")
-    bool_options = [option.attribute_name for option in bool_options]
+    bool_options = [option.name for option in bool_options]
 
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
     object_keys = []
     for name, value in options.iteritems():
-        filter_fields = fields.filter(attribute__attribute_name=name)
+        filter_fields = fields.filter(attribute__name=name)
         filter_fields = filter_fields.filter(value=value)
 
         if geom_type == "POINT":
@@ -221,13 +221,13 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
 
 def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
     string_options = GiseduFieldAttribute.objects.filter(type="CHAR")
-    string_options = [option.attribute_name for option in string_options]
+    string_options = [option.name for option in string_options]
 
     options = {k : v for k, v in options.iteritems() if k in string_options}
 
     object_keys = []
     for name, value in options.iteritems():
-        filter_fields = fields.filter(attribute__attribute_name=name)
+        filter_fields = fields.filter(attribute__name=name)
         filter_fields = filter_fields.filter(option__pk=value)
 
         if geom_type == "POINT":
@@ -243,7 +243,7 @@ def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
 #Integer Filters
 def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
     integer_options = GiseduFieldAttribute.objects.filter(type="INTEGER")
-    integer_options = [option.attribute_name for option in integer_options]
+    integer_options = [option.name for option in integer_options]
 
     integer_options.extend([option + "__lt" for option in integer_options])
     integer_options.extend([option + "__gt" for option in integer_options])
@@ -262,7 +262,7 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
         else:
             integer_query_option = ""
 
-        filter_fields = fields.filter(attribute__attribute_name=name)
+        filter_fields = fields.filter(attribute__name=name)
 
         if integer_query_option == "lt":
             filter_fields = filter_fields.filter(value__lt=value)
