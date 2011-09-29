@@ -12,8 +12,8 @@ class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_filter = ('state',)
 
 class GiseduPointItemBooleanFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point', 'point__filter', 'attribute', 'value')
-    list_filter = ('point__filter__filter_name', 'attribute', 'value')
+    list_display = ('point', 'point__filter', 'attribute_filter', 'value')
+    list_filter = ('point__filter__description', 'attribute_filter', 'value')
     
     search_fields = ['point__item_name']
 
@@ -42,8 +42,8 @@ class GiseduPointItemBooleanFieldsInline(admin.TabularInline):
     model = GiseduPointItemBooleanFields
 
 class GiseduPointItemIntegerFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point', 'point__filter', 'attribute', 'value')
-    list_filter = ('point__filter__filter_name', 'attribute', 'value')
+    list_display = ('point', 'point__filter', 'attribute_filter', 'value')
+    list_filter = ('point__filter__description', 'attribute_filter', 'value')
 
     search_fields = ['point__item_name']
 
@@ -51,8 +51,8 @@ class GiseduPointItemIntegerFieldsInline(admin.TabularInline):
     model = GiseduPointItemIntegerFields
 
 class GiseduPointItemStringFieldAdmin(gis_admin.GeoModelAdmin):
-    list_display = ('point', 'point__filter', 'attribute', 'option')
-    list_filter = ('point__filter__filter_name', 'attribute', 'option')
+    list_display = ('point', 'point__filter', 'attribute_filter', 'option')
+    list_filter = ('point__filter__description', 'attribute_filter', 'option')
 
     search_fields = ['point__item_name']
 
@@ -61,7 +61,7 @@ class GiseduPointItemStringFieldsInline(admin.TabularInline):
 
 class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
-    list_filter = ('filter__filter_name', 'item_type')
+    list_filter = ('filter__description', 'item_type')
 
     inlines = [GiseduPointItemBooleanFieldsInline,
                GiseduPointItemIntegerFieldsInline,

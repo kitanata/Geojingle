@@ -5,8 +5,8 @@ class GiseduPolygonItemBooleanFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemBooleanFields
 
 class GiseduPolygonItemBooleanFieldAdmin(admin.GeoModelAdmin):
-    list_display = ('polygon', 'polygon__filter', 'attribute', 'value')
-    list_filter = ('polygon__filter__filter_name', 'attribute', 'value')
+    list_display = ('polygon', 'polygon__filter', 'attribute_filter', 'value')
+    list_filter = ('polygon__filter__description', 'attribute_filter', 'value')
     
     search_fields = ['polygon__item_name']
 
@@ -35,8 +35,8 @@ class GiseduPolygonItemIntegerFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemIntegerFields
 
 class GiseduPolygonItemIntegerFieldAdmin(admin.GeoModelAdmin):
-    list_display = ('polygon', 'polygon__filter', 'attribute', 'value')
-    list_filter = ('polygon__filter__filter_name', 'attribute', 'value')
+    list_display = ('polygon', 'polygon__filter', 'attribute_filter', 'value')
+    list_filter = ('polygon__filter__description', 'attribute_filter', 'value')
 
     search_fields = ['polygon__item_name']
 
@@ -44,8 +44,8 @@ class GiseduPolygonItemStringFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemStringFields
 
 class GiseduPolygonItemStringFieldAdmin(admin.GeoModelAdmin):
-    list_display = ('polygon', 'polygon__filter', 'attribute', 'option')
-    list_filter = ('polygon__filter__filter_name', 'attribute', 'option')
+    list_display = ('polygon', 'polygon__filter', 'attribute_filter', 'option')
+    list_filter = ('polygon__filter__description', 'attribute_filter', 'option')
 
     search_fields = ['polygon__item_name']
 

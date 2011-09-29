@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
-from gisedu.models import GiseduFieldAttribute, GiseduStringAttributeOption
+from gisedu.models import GiseduStringAttributeOption
 
 class GiseduPointItemAddress(models.Model):
     gid = models.IntegerField(primary_key=True)
@@ -38,7 +38,7 @@ class GiseduPointItem(models.Model):
 
 class GiseduPointItemBooleanFields(models.Model):
     point = models.ForeignKey(GiseduPointItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.BooleanField()
 
     def point__filter(self):
@@ -53,7 +53,7 @@ class GiseduPointItemBooleanFields(models.Model):
 
 class GiseduPointItemIntegerFields(models.Model):
     point = models.ForeignKey(GiseduPointItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.IntegerField()
 
     def point__filter(self):
@@ -69,7 +69,7 @@ class GiseduPointItemIntegerFields(models.Model):
 
 class GiseduPointItemStringFields(models.Model):
     point = models.ForeignKey(GiseduPointItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.ForeignKey(GiseduStringAttributeOption)
 
     def point__filter(self):

@@ -9,7 +9,7 @@
 
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
-from gisedu.models import GiseduFieldAttribute, GiseduStringAttributeOption
+from gisedu.models import GiseduStringAttributeOption
 
 class GiseduPolygonItem(models.Model):
     filter = models.ForeignKey(GiseduFilters)
@@ -31,7 +31,7 @@ class GiseduPolygonItem(models.Model):
 
 class GiseduPolygonItemBooleanFields(models.Model):
     polygon = models.ForeignKey(GiseduPolygonItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.BooleanField()
 
     def polygon__filter(self):
@@ -43,7 +43,7 @@ class GiseduPolygonItemBooleanFields(models.Model):
 
 class GiseduPolygonItemIntegerFields(models.Model):
     polygon = models.ForeignKey(GiseduPolygonItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.IntegerField()
 
     def polygon__filter(self):
@@ -58,7 +58,7 @@ class GiseduPolygonItemIntegerFields(models.Model):
 
 class GiseduPolygonItemStringFields(models.Model):
     polygon = models.ForeignKey(GiseduPolygonItem)
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.ForeignKey(GiseduStringAttributeOption)
 
     def polygon__filter(self):

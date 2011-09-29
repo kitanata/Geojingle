@@ -10,20 +10,8 @@
 from django.contrib.gis.db import models
 from filters.models import GiseduFilters
 
-class GiseduFieldAttribute(models.Model):
-    name = models.CharField(max_length=254)
-    description = models.CharField(max_length=254, null=True)
-    type = models.CharField(max_length=254, null=True)
-
-    def __str__(self):
-        return str(self.name)
-
-    class Meta:
-        db_table = u'gisedu_field_attributes'
-        verbose_name_plural = "Field Attributes"
-
 class GiseduStringAttributeOption(models.Model):
-    attribute = models.ForeignKey(GiseduFieldAttribute)
+    attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.CharField(max_length=254)
 
     def __str__(self):
@@ -36,10 +24,9 @@ class GiseduStringAttributeOption(models.Model):
 class GiseduReduceItem(models.Model):
     reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')
     target_filter = models.ForeignKey(GiseduFilters, related_name='target_filter')
-    item_field = models.CharField(max_length=254, null=True)
 
     def __str__(self):
-        return str(self.item_field)
+        return str(self.reduce_filter.description)
 
     class Meta:
         db_table = u'gisedu_reduce_item'

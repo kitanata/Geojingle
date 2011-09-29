@@ -34,13 +34,13 @@ def point_infobox_by_type(request, data_type, point_id):
     point_object = GiseduPointItem.objects.get(pk=point_id)
 
     boolean_fields = GiseduPointItemBooleanFields.objects.filter(point=point_object)
-    boolean_fields = {str(field.attribute.description) : str(field.value) for field in boolean_fields}
+    boolean_fields = {str(field.attribute_filter.description) : str(field.value) for field in boolean_fields}
 
     integer_fields = GiseduPointItemIntegerFields.objects.filter(point=point_object)
-    integer_fields = {str(field.attribute.description) : str(field.value) for field in integer_fields}
+    integer_fields = {str(field.attribute_filter.description) : str(field.value) for field in integer_fields}
 
     string_fields = GiseduPointItemStringFields.objects.filter(point=point_object)
-    string_fields = {str(field.attribute.description) : str(field.option.option) for field in string_fields}
+    string_fields = {str(field.attribute_filter.description) : str(field.option.option) for field in string_fields}
 
     response = {
         'org_name' : point_object.item_name,
