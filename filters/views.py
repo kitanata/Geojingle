@@ -11,7 +11,7 @@ from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, 
 from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields, GiseduPolygonItemStringFields
 
 def filter_list(request):
-    filter_objects = GiseduFilters.objects.all()
+    filter_objects = GiseduFilters.objects.filter(enabled=True)
 
     filter_data = {}
 
