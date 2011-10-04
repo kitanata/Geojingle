@@ -23,14 +23,14 @@ recreating the node. This gets around that."*/
         m_FilterRequestOption = "";
 
         m_DisplayOptions = {
-            "icon" : "marker-dot",
+            "icon" : "circle",
             "iconColor" : "red",
-            "strokeColor" : "#ff0000",
+            "strokeColor" : "#000000",
             "strokeOpacity" : 1.0,
-            "strokeWeight" : 3.0,
+            "strokeWeight" : 1.5,
             "fillColor" : "#000000",
             "fillOpacity" : 0.3,
-            "radius" : 100,
+            "radius" : 1000,
             "visible" : YES
         };
     }
