@@ -28,9 +28,9 @@
         m_szName = "Unknown";
 
         m_DisplayOptions = {
-            strokeColor: "#ff0000",
-            strokeOpacity: 1.0,
-            strokeWeight: 3.0,
+            strokeColor: "#000000",
+            strokeOpacity: 0.8,
+            strokeWeight: 1.5,
             fillColor: "#000000",
             fillOpacity: 0.3,
             visible: NO

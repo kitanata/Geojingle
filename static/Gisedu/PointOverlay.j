@@ -59,14 +59,14 @@ var METERS_TO_DEG = 0.000008999;
         m_Point = nil;
 
         m_DisplayOptions = {
-            icon: "marker-dot",
+            icon: "circle",
             iconColor : "red",
-            strokeColor: "#FF0000",
+            strokeColor: "#000000",
             strokeOpacity: 0.8,
             strokeWeight: 2,
             fillColor: "#FF0000",
             fillOpacity: 0.35,
-            radius: 100,
+            radius: 1000,
             visible: YES
         };
     }
