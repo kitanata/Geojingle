@@ -73,6 +73,8 @@ MEDIA_URL = ''
 # Examples: "http://foo.com/media/", "/media/".
 ADMIN_MEDIA_PREFIX = '/media/'
 
+STATIC_URL = 'SongBook/static/'
+
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '+vv1enoa8ffz$8n6h&&t0s_$bj2mg5*!n-2(@fo*)b61apb(qw'
 
@@ -98,7 +100,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'Gisedu.urls'
 
 TEMPLATE_DIRS = (
-    '/home/raymond/Projects/Python/Django/Gisedu/templates'
+    '/home/raymond/Projects/survey/Gisedu/templates'
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.

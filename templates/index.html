@@ -1,3 +1,4 @@
+{% get_{{ STATIC_PREFIX }}_prefix as STATIC_PREFIX %}
 <!doctype html>
 <html>
     <head>
@@ -6,14 +7,14 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-        <link rel="apple-touch-icon" href="static/Resources/icon.png" />
-        <link rel="apple-touch-startup-image" href="static/Resources/default.png" />
+        <link rel="apple-touch-icon" href="{{ {{ STATIC_PREFIX }}_PREFIX }/Resources/icon.png" />
+        <link rel="apple-touch-startup-image" href="{{ STATIC_PREFIX }}/Resources/default.png" />
 
         <title>Project Gisedu (GIS:Ed:You)</title>
 
         <script type="text/javascript">
             OBJJ_AUTO_BOOTSTRAP = false;
-            OBJJ_MAIN_FILE = "static/main.j";
+            OBJJ_MAIN_FILE = "{{ STATIC_PREFIX }}/main.j";
 
             function getInternetExplorerVersion() {
                 var rv = -1; // Return value assumes failure.
@@ -76,14 +77,14 @@
                 console.log("Load Gisedu Called");
                 var gis_loader = document.getElementById('loadingcontainer');
                 gis_loader.innerHTML = "<div id='container'><p id='content'>" +
-                       "<img id='loadgraphic' width='16' height='16' src='static/Resources/spinner.gif' /> " +
+                       "<img id='loadgraphic' width='16' height='16' src='{{ STATIC_PREFIX }}/Resources/spinner.gif' /> " +
                        "Loading Gisedu (GIS:ed:you)...</p></div>";
                 
                 ObjectiveJ.bootstrap();
             }
         </script>
 
-        <script type="text/javascript" src="static/Frameworks/Objective-J/Objective-J.js" charset="UTF-8"></script>
+        <script type="text/javascript" src="{{ STATIC_PREFIX }}/Frameworks/Objective-J/Objective-J.js" charset="UTF-8"></script>
 
         <style type="text/css">
             body{margin:0; padding:0;}
