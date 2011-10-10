@@ -1,4 +1,4 @@
-{% get_{{ STATIC_PREFIX }}_prefix as STATIC_PREFIX %}
+{% get_static_prefix as STATIC_PREFIX %}
 <!doctype html>
 <html>
     <head>
@@ -7,7 +7,7 @@
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
 
-        <link rel="apple-touch-icon" href="{{ {{ STATIC_PREFIX }}_PREFIX }/Resources/icon.png" />
+        <link rel="apple-touch-icon" href="{{ STATIC_PREFIX }}/Resources/icon.png" />
         <link rel="apple-touch-startup-image" href="{{ STATIC_PREFIX }}/Resources/default.png" />
 
         <title>Project Gisedu (GIS:Ed:You)</title>
