@@ -26,16 +26,16 @@
       <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/filters/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="31" selection-start="1792" selection-end="1792" vertical-scroll-proportion="0.0">
+            <state line="222" column="43" selection-start="10709" selection-end="10709" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="settings.py" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="79" column="23" selection-start="2860" selection-end="2860" vertical-scroll-proportion="0.0">
+            <state line="101" column="52" selection-start="3668" selection-end="3668" vertical-scroll-proportion="0.725">
               <folding />
             </state>
           </provider>
@@ -68,10 +68,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="OverlayFiltersView.j" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="OverlayFiltersView.j" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="160" column="56" selection-start="5347" selection-end="5347" vertical-scroll-proportion="0.54195803">
+            <state line="160" column="56" selection-start="5347" selection-end="5347" vertical-scroll-proportion="-11.071428">
               <folding />
             </state>
           </provider>
@@ -129,11 +129,11 @@
         <option value="$PROJECT_DIR$/point_objects/admin.py" />
         <option value="$PROJECT_DIR$/polygon_objects/admin.py" />
         <option value="$PROJECT_DIR$/gisedu/models.py" />
-        <option value="$PROJECT_DIR$/filters/views.py" />
         <option value="$PROJECT_DIR$/templates/index.html" />
-        <option value="$PROJECT_DIR$/settings.py" />
         <option value="$PROJECT_DIR$/urls.py" />
         <option value="$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j" />
+        <option value="$PROJECT_DIR$/filters/views.py" />
+        <option value="$PROJECT_DIR$/settings.py" />
       </list>
     </option>
   </component>
@@ -565,13 +565,6 @@
         <state line="61" column="59" selection-start="2196" selection-end="2196" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filters/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="31" selection-start="1792" selection-end="1792" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/templates/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="11" column="50" selection-start="487" selection-end="487" vertical-scroll-proportion="-2.3461537">
@@ -582,13 +575,6 @@
     <entry file="file://$PROJECT_DIR$/templates/map.html">
       <provider selected="true" editor-type-id="text-editor">
         <state line="3" column="56" selection-start="83" selection-end="83" vertical-scroll-proportion="-1.875">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="79" column="23" selection-start="2860" selection-end="2860" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -644,7 +630,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="160" column="56" selection-start="5347" selection-end="5347" vertical-scroll-proportion="0.54195803">
+        <state line="160" column="56" selection-start="5347" selection-end="5347" vertical-scroll-proportion="-11.071428">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/filters/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="222" column="43" selection-start="10709" selection-end="10709" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="101" column="52" selection-start="3668" selection-end="3668" vertical-scroll-proportion="0.725">
           <folding />
         </state>
       </provider>
