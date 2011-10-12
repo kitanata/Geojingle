@@ -70,6 +70,11 @@ var SCDefaultSessionManager = nil;
     return [self userIdentifier];
 }
 
+- (BOOL)userIsLoggedIn
+{
+    return ([self status] == CPUserSessionLoggedInStatus);
+}
+
 - (void)onLoginPanelFinished:(id)panel
 {
     var username = [panel username];

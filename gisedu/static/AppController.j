@@ -27,9 +27,12 @@
 
 @import "Gisedu/FileKit/FKFileController.j"
 
+var m_NewProjectToolbarId = 'newProject';
+var m_SaveProjectToolbarId = 'saveProject';
+var m_SaveProjectAsToolbarId = 'saveProjectAs';
+var m_OpenProjectToolbarId = 'openProject';
+
 var m_OverlayOptionsToolbarId = 'overlayOptions';
-var m_AddFilterToolbarId = 'addFilter';
-var m_DeleteFilterToolbarId = 'deleteFilter';
 var m_UpdateMapToolbarId = 'updateMap';
 
 g_UrlPrefix = 'http://127.0.0.1:8000';
@@ -158,6 +161,23 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     m_ProjectCloudManager = [FKFileController getInstance];
     [m_ProjectCloudManager setDelegate:self];
+
+    //ALERT CONFIGURATION
+    m_ExitAlert = [[CPAlert alloc] init];
+    [m_ExitAlert setTitle:"Are you sure?"];
+    [m_ExitAlert setAlertStyle:CPInformationalAlertStyle];
+    [m_ExitAlert setMessageText:"Are you sure you want to close gisedu?"];
+    [m_ExitAlert addButtonWithTitle:@"No"];
+    [m_ExitAlert addButtonWithTitle:@"Yes"];
+    [m_ExitAlert setDelegate:self];
+
+    m_NewProjectAlert = [[CPAlert alloc] init];
+    [m_NewProjectAlert setTitle:"Are you sure?"];
+    [m_NewProjectAlert setAlertStyle:CPInformationalAlertStyle];
+    [m_NewProjectAlert setMessageText:"Are you sure. All unsaved progress will be lost."];
+    [m_NewProjectAlert addButtonWithTitle:"No, not yet."];
+    [m_NewProjectAlert addButtonWithTitle:"Yes"];
+    [m_NewProjectAlert setDelegate:self];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -174,13 +194,15 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 // Return an array of toolbar item identifier (all the toolbar items that may be present in the toolbar)
 - (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
+   return [m_NewProjectToolbarId, m_OpenProjectToolbarId, m_SaveProjectToolbarId, m_SaveProjectAsToolbarId,
+            CPToolbarSeparatorItemIdentifier, m_OverlayOptionsToolbarId, m_UpdateMapToolbarId];
 }
 
 // Return an array of toolbar item identifier (the default toolbar items that are present in the toolbar)
 - (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar
 {
-   return [m_OverlayOptionsToolbarId, m_AddFilterToolbarId, m_DeleteFilterToolbarId, m_UpdateMapToolbarId];
+   return [m_NewProjectToolbarId, m_OpenProjectToolbarId, m_SaveProjectToolbarId, m_SaveProjectAsToolbarId,
+            CPToolbarSeparatorItemIdentifier, m_OverlayOptionsToolbarId, m_UpdateMapToolbarId];
 }
 
 // Create the toolbar item that is requested by the toolbar.
@@ -191,10 +213,70 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     var mainBundle = [CPBundle mainBundle];
 
-    if(m_OverlayOptionsToolbarId == anItemIdentifier)
+    if(m_NewProjectToolbarId == anItemIdentifier)
     {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"overlay_options_highlighted.png"] size:CPSizeMake(48, 48)];
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/new.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/new.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onNewProject:)];
+        [toolbarItem setLabel:"New Project"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_OpenProjectToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/open.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/open.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onOpenProject:)];
+        [toolbarItem setLabel:"Open Project"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_SaveProjectToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/save.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/save.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onSaveProject:)];
+        [toolbarItem setLabel:"Save Project"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_SaveProjectAsToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/save_as.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/save_as.png"] size:CPSizeMake(48, 48)];
+
+        [toolbarItem setImage:image];
+        [toolbarItem setAlternateImage:highlighted];
+
+        [toolbarItem setTarget:self];
+        [toolbarItem setAction:@selector(onSaveProjectAs:)];
+        [toolbarItem setLabel:"Save Project As"];
+
+        [toolbarItem setMinSize:CGSizeMake(32, 32)];
+        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
+    }
+    else if(m_OverlayOptionsToolbarId == anItemIdentifier)
+    {
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/overlay_options.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/overlay_options.png"] size:CPSizeMake(48, 48)];
 
         [toolbarItem setImage:image];
         [toolbarItem setAlternateImage:highlighted];
@@ -206,40 +288,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
     }
-    else if(m_AddFilterToolbarId == anItemIdentifier)
-    {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"add_filter.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"add_filter_highlighted.png"] size:CPSizeMake(48, 48)];
-
-        [toolbarItem setImage:image];
-        [toolbarItem setAlternateImage:highlighted];
-
-        [toolbarItem setTarget:[m_LeftSideTabView filtersView]];
-        [toolbarItem setAction:@selector(onAddFilter:)];
-        [toolbarItem setLabel:"Add Filter"];
-
-        [toolbarItem setMinSize:CGSizeMake(32, 32)];
-        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
-    }
-    else if(m_DeleteFilterToolbarId == anItemIdentifier)
-    {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"delete_filter.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"delete_filter_highlighted.png"] size:CPSizeMake(48, 48)];
-
-        [toolbarItem setImage:image];
-        [toolbarItem setAlternateImage:highlighted];
-
-        [toolbarItem setTarget:[m_LeftSideTabView filtersView]];
-        [toolbarItem setAction:@selector(onDeleteFilter:)];
-        [toolbarItem setLabel:"Delete Filter"];
-
-        [toolbarItem setMinSize:CGSizeMake(32, 32)];
-        [toolbarItem setMaxSize:CGSizeMake(32, 32)];
-    }
     else if(m_UpdateMapToolbarId == anItemIdentifier)
     {
-        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"update_map.png"] size:CPSizeMake(48, 48)];
-        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"update_map_highlighted.png"] size:CPSizeMake(48, 48)];
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/update_map.png"] size:CPSizeMake(48, 48)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/update_map.png"] size:CPSizeMake(48, 48)];
 
         [toolbarItem setImage:image];
         [toolbarItem setAlternateImage:highlighted];
@@ -251,6 +303,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         [toolbarItem setMinSize:CGSizeMake(32, 32)];
         [toolbarItem setMaxSize:CGSizeMake(32, 32)];
     }
+
 
     return toolbarItem;
 }
@@ -282,23 +335,22 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
   	[menu addItem:fileMenuItem];
   	//END FILE MENU
 
-  	var menuItem2 = [[CPMenuItem alloc] initWithTitle:@"Edit" action:nil keyEquivalent:@"4"];
-  	[menu addItem:menuItem2];
+  	//BEGIN EDIT MENU
+  	var editMenuItem = [[CPMenuItem alloc] initWithTitle:@"Edit" action:nil keyEquivalent:@"E"];
+  	m_EditMenu = [[CPMenu alloc] initWithTitle:@"edit_menu"];
+  	    m_EditMenuAddPointFilter = [[CPMenuItem alloc] initWithTitle:@"Add Point Filter" action:@selector(onAddPointFilter:) keyEquivalent:@"p"];
+  	    m_EditMenuAddPolygonFilter = [[CPMenuItem alloc] initWithTitle:@"Add Polygon Filter" action:@selector(onAddPolygonFilter:) keyEquivalent:@"P"];
+  	    m_EditMenuAddReduceFilter = [[CPMenuItem alloc] initWithTitle:@"Add Reduce Filter" action:@selector(onAddReduceFilter:) keyEquivalent:@"R"];
+  	    m_EditMenuDeleteFilter = [[CPMenuItem alloc] initWithTitle:@"Delete Filter" action:@selector(onDeleteFilter:) keyEquivalent:@"D"];
 
-  	var menu2 = [[CPMenu alloc] initWithTitle:@"dummy"];
-  	var menuItem3 = [[CPMenuItem alloc] initWithTitle:@"CCC" action:@selector(showAlert:) keyEquivalent:@"3"];
-  	[menu2 addItem:menuItem3];
-  	[menu2 addItem:[CPMenuItem separatorItem]];
+        [m_EditMenu addItem:m_EditMenuAddPointFilter];
+        [m_EditMenu addItem:m_EditMenuAddPolygonFilter];
+        [m_EditMenu addItem:m_EditMenuAddReduceFilter];
+        [m_EditMenu addItem:m_EditMenuDeleteFilter];
 
-  	var menuItem4 = [[CPMenuItem alloc] initWithTitle:@"DDD" action:nil keyEquivalent:@"2"];
-  	[menu2 addItem:menuItem4];
-	[menu2 addItem:[[CPMenuItem alloc] initWithTitle:@"EEE" action:nil keyEquivalent:@"2"]];
-
-  	var menu3 = [[CPMenu alloc] initWithTitle:@"Phil"];
-  	[menu3 addItem:[[CPMenuItem alloc] initWithTitle:@"GGG" action:@selector(showAlert:) keyEquivalent:@"2"]];
-	[menuItem4 setSubmenu:menu3];
-
-	[menuItem2 setSubmenu:menu2];
+    [editMenuItem setSubmenu:m_EditMenu];
+  	[menu addItem:editMenuItem];
+  	//END EDIT MENU
 
 	var sharedApplication = [CPApplication sharedApplication];
 	[sharedApplication setMainMenu:menu];
@@ -626,7 +678,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onNewProject:(id)sender
 {
-    location.reload(true);
+    [m_NewProjectAlert runModal];
 }
 
 - (void)onOpenProject:(id)sender
@@ -645,16 +697,28 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 }
 
 - (void)onExitGisedu:(id)sender
-{
-    m_ExitAlert = [[CPAlert alloc] init];
-    [m_ExitAlert setTitle:"Are you sure?"];
-    [m_ExitAlert setAlertStyle:CPInformationalAlertStyle];
-    [m_ExitAlert setMessageText:"Are you sure you want to close gisedu?"];
-    [m_ExitAlert addButtonWithTitle:@"No"];
-    [m_ExitAlert addButtonWithTitle:@"Yes"];
-    [m_ExitAlert setDelegate:self];
-    
+{     
     [m_ExitAlert runModal];
+}
+
+- (void)onAddPointFilter:(id)sender
+{
+    [[m_LeftSideTabView filtersView] onAddPointFilter:sender];
+}
+
+- (void)onAddPolygonFilter:(id)sender
+{
+    [[m_LeftSideTabView filtersView] onAddPolygonFilter:sender];
+}
+
+- (void)onAddReduceFilter:(id)sender
+{
+    [[m_LeftSideTabView filtersView] onAddReduceFilter:sender];
+}
+
+- (void)onDeleteFilter:(id)sender
+{
+    [[m_LeftSideTabView filtersView] onDeleteFilter:sender];
 }
 
 - (void)alertDidEnd:(CPAlert)theAlert returnCode:(int)returnCode
@@ -673,6 +737,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
         var badAlert = [CPAlert alertWithError:"Sorry. I could not close the window."];
         [badAlert runModal];
+    }
+    else if(theAlert == m_NewProjectAlert && returnCode == 1)
+    {
+        location.reload(true);
     }
 }
 

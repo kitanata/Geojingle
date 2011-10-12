@@ -9,6 +9,11 @@
 @import "../FilterManager.j"
 @import "../OverlayManager.j"
 
+var m_AddPointFilterToolbarId = 'addPointFilter';
+var m_AddPolygonFilterToolbarId = 'addPolygonFilter';
+var m_AddReduceFilterToolbarId = 'addReduceFilter';
+var m_DeleteFilterToolbarId = 'deleteFilter';
+
 @implementation OverlayFiltersView : CPView
 {
     OverlayOptionsView m_OverlayOptionsView @accessors(property=optionsView);
@@ -46,8 +51,59 @@
         height = (CGRectGetHeight([self bounds]) - 30) / 3;
         m_PropertiesView = [[CPView alloc] initWithFrame:CGRectMake(10, height, 280, height)];
 
-        m_ScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(10, height * 2, 280, height * 2)];
+        m_ScrollContainerView = [[CPView alloc] initWithFrame:CGRectMake(10, height * 2, 280, height * 2)];
+        m_ScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 24, 300, CGRectGetHeight([m_ScrollContainerView bounds]) - 24)];
         m_OutlineView = [[CPOutlineView alloc] initWithFrame:[m_ScrollView bounds]];
+
+        m_ButtonBar = [[CPButtonBar alloc] initWithFrame:CGRectMake(0, 0, 300, 24)];
+        [m_ButtonBar setBoundsSize:CGSizeMake(300, 24)];
+        [m_ButtonBar setHasResizeControl:NO];
+        [m_ButtonBar setResizeControlIsLeftAligned:NO];
+
+        var mainBundle = [CPBundle mainBundle];
+
+        m_AddPointFilterButton = [CPButton buttonWithTitle:""];
+        var image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/point_filter.png"] size:CPSizeMake(24, 24)];
+        var highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/point_filter.png"] size:CPSizeMake(24, 24)];
+        [m_AddPointFilterButton setImage:image];
+        [m_AddPointFilterButton setAlternateImage:highlighted];
+        [m_AddPointFilterButton setTarget:self];
+        [m_AddPointFilterButton setAction:@selector(onAddPointFilter:)];
+        [m_AddPointFilterButton sizeToFit];
+
+        m_AddPolygonFilterButton = [CPButton buttonWithTitle:""];
+        image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/polygon_filter.png"] size:CPSizeMake(24, 24)];
+        highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/polygon_filter.png"] size:CPSizeMake(24, 24)];
+        [m_AddPolygonFilterButton setImage:image];
+        [m_AddPolygonFilterButton setAlternateImage:highlighted];
+        [m_AddPolygonFilterButton setTarget:self];
+        [m_AddPolygonFilterButton setAction:@selector(onAddPolygonFilter:)];
+        [m_AddPolygonFilterButton sizeToFit];
+
+        m_AddReduceFilterButton = [CPButton buttonWithTitle:""];
+        image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/reduce_filter.png"] size:CPSizeMake(24, 24)];
+        highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/reduce_filter.png"] size:CPSizeMake(24, 24)];
+        [m_AddReduceFilterButton setImage:image];
+        [m_AddReduceFilterButton setAlternateImage:highlighted];
+        [m_AddReduceFilterButton setTarget:self];
+        [m_AddReduceFilterButton setAction:@selector(onAddReduceFilter:)];
+        [m_AddReduceFilterButton sizeToFit];
+
+        m_DeleteFilterButton = [CPButton buttonWithTitle:""];
+        image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/delete_filter.png"] size:CPSizeMake(24, 24)];
+        highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/delete_filter.png"] size:CPSizeMake(24, 24)];
+        [m_DeleteFilterButton setImage:image];
+        [m_DeleteFilterButton setAlternateImage:highlighted];
+        [m_DeleteFilterButton setTarget:self];
+        [m_DeleteFilterButton setAction:@selector(onDeleteFilter:)];
+        [m_DeleteFilterButton sizeToFit];
+
+        [m_ButtonBar setButtons:[m_AddPointFilterButton, m_AddPolygonFilterButton, m_AddReduceFilterButton, m_DeleteFilterButton]];
+
+        [m_ScrollContainerView addSubview:m_ButtonBar];
+        [m_ScrollContainerView addSubview:m_ScrollView];
+        [m_ScrollContainerView setAutoresizingMask:CPViewHeightSizable];
+        [m_ScrollView setAutoresizingMask:CPViewHeightSizable];
 
         var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"Filters"];
         [layerNameCol setWidth:260];
@@ -65,7 +121,7 @@
 
         [m_SplitView setVertical:NO];
         [m_SplitView addSubview:m_PropertiesView];
-        [m_SplitView addSubview:m_ScrollView];
+        [m_SplitView addSubview:m_ScrollContainerView];
 
         [self setBackgroundColor:[CPColor colorWithHexString:"EDEDED"]];
         [self addSubview:m_SplitView];
@@ -400,27 +456,112 @@
     }
 }
 
-- (void) onAddFilter:(id)sender
+- (void)onAddPointFilter:(id)sender
 {
-    curSelRow = [m_OutlineView selectedRow];
-    parentFilter = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+    [self showAddFilterPanel:"POINT"];
+}
 
-    m_AddFilterPanel = [[AddFilterPanel alloc] initWithParentFilter:parentFilter];
+- (void)onAddPolygonFilter:(id)sender
+{
+    [self showAddFilterPanel:"POLYGON"];
+}
 
-    if(m_AddFilterPanel)
+- (void)onAddReduceFilter:(id)sender
+{
+    [self showAddFilterPanel:"REDUCE"];
+}
+
+- (void)showAddFilterPanel:(CPString)dataType
+{
+    var addFilterList = [self buildAddFilterList:dataType];
+
+    if(addFilterList)
     {
+        m_AddFilterPanel = [[AddFilterPanel alloc] initWithFilterNames:addFilterList];
         [m_AddFilterPanel setDelegate:self];
         [m_AddFilterPanel orderFront:self];
     }
     else
     {
-        theAlert = [CPAlert alertWithError:"No more filters can legally be added to this filter."];
+        m_AddFilterPanel = nil;
+        theAlert = [CPAlert alertWithError:"No more " + [dataType lowercaseString] + " filters can legally be added to this filter."];
         [theAlert addButtonWithTitle:"Ok"];
         [theAlert runModal];
     }
 }
 
-- (void) onDeleteFilter:(id)sender
+- (CPArray)buildAddFilterList:(CPString)dataType
+{
+    var parentFilter = [self curSelectedFilter];
+    var parentType = [parentFilter type];
+
+    var filterDescriptions = [m_FilterManager filterDescriptions];
+    var excludedFilterIds = [CPArray array];
+
+    if(parentFilter && parentType)
+    {
+        var parentTypes = [];
+        var parentIter = parentFilter;
+
+        while(parentIter != nil)
+        {
+            var parentDesc = [parentIter description];
+
+            //console.log("parentDesc excludedFilters ="); console.log([parentDesc excludeFilters]);
+
+            [excludedFilterIds addObjectsFromArray:[parentDesc excludeFilters]];
+
+            parentIter = [parentIter parentNode];
+        }
+    }
+
+    //console.log("excludedFilterIds = "); console.log(excludedFilterIds);
+
+    var itemList = [CPArray array];
+    var filterIds = [filterDescriptions allKeys];
+
+    for(var i=0; i < [filterIds count]; i++)
+    {
+        var curFilterId = [filterIds objectAtIndex:i];
+        var curDesc = [filterDescriptions objectForKey:curFilterId];
+
+        if([curDesc dataType] == dataType)
+            [itemList addObject:curFilterId];
+    }
+
+    //console.log("itemList = "); console.log(itemList);
+
+    for(var i=0; i < [excludedFilterIds count]; i++)
+    {
+        var excludedId = [excludedFilterIds objectAtIndex:i].toString();
+
+        //console.log("excludedId = "); console.log(excludedId);
+
+        [itemList removeObject:excludedId];
+
+        //console.log("itemList ="); console.log(itemList);
+    }
+
+    if(itemList.length == 0)
+        return null;
+
+    var addFilterList = [CPArray array];
+
+    for(var i=0; i < [itemList count]; i++)
+    {
+        [addFilterList addObject:[[filterDescriptions objectForKey:[itemList objectAtIndex:i]] name]];
+    }
+
+    return addFilterList;
+}
+
+- (id)curSelectedFilter
+{
+    var curSelRow = [m_OutlineView selectedRow];
+    return [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+}
+
+- (void)onDeleteFilter:(id)sender
 {
     if([m_OutlineView selectedRow] != CPNotFound)
     {
