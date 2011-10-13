@@ -13,7 +13,7 @@
     id m_Delegate   @accessors(property=delegate);
 }
 
-- (id)initWithParentFilter:(GiseduFilter)parentFilter
+- (id)initWithFilterNames:(CPArray)filterNames
 {
     self = [super initWithContentRect:CGRectMake(150,150,300,150) styleMask:CPClosableWindowMask];
 
@@ -36,52 +36,7 @@
         m_FilterType = [[CPPopUpButton alloc] initWithFrame:CGRectMake(20, 48, 260, 24)];
         [m_FilterType setTitle:"Select Filter Here"];
 
-        filterManager = [FilterManager getInstance];
-        parentType = [parentFilter type];
-
-        var filterDescriptions = [filterManager filterDescriptions];
-
-        var excludedFilterIds = [CPArray array];
-
-        if(parentFilter && parentType)
-        {
-            parentTypes = [];
-            parentIter = parentFilter;
-
-            while(parentIter != nil)
-            {
-                var parentDesc = [parentIter description];
-
-                console.log("parentDesc excludedFilters ="); console.log([parentDesc excludeFilters]);
-
-                [excludedFilterIds addObjectsFromArray:[parentDesc excludeFilters]];
-
-                parentIter = [parentIter parentNode];
-            }
-        }
-
-        console.log("excludedFilterIds = "); console.log(excludedFilterIds);
-
-        var itemList = [CPArray arrayWithArray:[filterDescriptions allKeys]];
-        for(var i=0; i < [excludedFilterIds count]; i++)
-        {
-            var excludedId = [excludedFilterIds objectAtIndex:i].toString();
-
-            console.log("excludedId = "); console.log(excludedId);
-            
-            [itemList removeObject:excludedId];
-
-            console.log("itemList ="); console.log(itemList);
-        }
-
-        if(itemList.length == 0)
-            return null;
-
-        for(var i=0; i < [itemList count]; i++)
-        {
-            var filterName = [[filterDescriptions objectForKey:[itemList objectAtIndex:i]] name];
-            [m_FilterType addItemWithTitle:filterName];
-        }
+        [m_FilterType addItemsWithTitles:filterNames];
 
         var cancelWidth = CGRectGetWidth([m_CancelButton bounds]);
         var addWidth = CGRectGetWidth([m_AddFilterButton bounds]);
@@ -100,8 +55,9 @@
 
 - (void)onAddFilterConfirm:(id)sender
 {
-    var curSelFilterName = [[m_FilterType selectedItem] title];
+    var filterManager = [FilterManager getInstance];
 
+    var curSelFilterName = [[m_FilterType selectedItem] title];
     var filterDescriptions = [[filterManager filterDescriptions] allValues];
 
     var newFilterType = nil;

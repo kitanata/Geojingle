@@ -62,26 +62,47 @@ g_sharedFileController = nil;
 
 - (void)triggerOpenProject
 {
-    var openPanel = [FKFilePanel openPanelWithProjectList:m_ProjectFiles];
+    if([m_SessionManager userIsLoggedIn])
+    {
+        var openPanel = [FKFilePanel openPanelWithProjectList:m_ProjectFiles];
 
-    [openPanel setDelegate:self];
-    [openPanel orderFront:self];
+        [openPanel setDelegate:self];
+        [openPanel orderFront:self];
+    }
+    else
+    {
+        [m_SessionManager triggerLogin];
+    }
 }
 
 - (void)triggerSaveProject
 {
-    if(m_ProjectFilename)
-        [self sendSaveRequest];
+    if([m_SessionManager userIsLoggedIn])
+    {
+        if(m_ProjectFilename)
+            [self sendSaveRequest];
+        else
+            [self triggerSaveProjectAs];
+    }
     else
-        [self triggerSaveProjectAs];
+    {
+        [m_SessionManager triggerLogin];
+    }
 }
 
 - (void)triggerSaveProjectAs
 {
-    var savePanel = [FKFilePanel savePanelWithProjectList:m_ProjectFiles];
+    if([m_SessionManager userIsLoggedIn])
+    {
+        var savePanel = [FKFilePanel savePanelWithProjectList:m_ProjectFiles];
 
-    [savePanel setDelegate:self];
-    [savePanel orderFront:self];
+        [savePanel setDelegate:self];
+        [savePanel orderFront:self];
+    }
+    else
+    {
+        [m_SessionManager triggerLogin];
+    }
 }
 
 - (void)triggerCloseProject

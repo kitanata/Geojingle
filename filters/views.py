@@ -203,18 +203,14 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
 
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
-    object_keys = []
     for name, value in options.iteritems():
         filter_fields = fields.filter(attribute_filter__name=name)
         filter_fields = filter_fields.filter(value=value)
 
         if geom_type == "POINT":
-            object_keys.extend([item.point.pk for item in filter_fields])
+            objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
-            object_keys.extend([item.polygon.pk for item in filter_fields])
-
-    if len(options) > 0:
-        objects = objects.filter(pk__in=object_keys)
+            objects = objects.filter(pk__in=[item.polygon.pk for item in filter_fields])
 
     return objects
 
@@ -224,19 +220,14 @@ def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
 
     options = {k : v for k, v in options.iteritems() if k in string_options}
 
-    object_keys = []
     for name, value in options.iteritems():
         filter_fields = fields.filter(attribute_filter__name=name)
         filter_fields = filter_fields.filter(option__pk=value)
 
         if geom_type == "POINT":
-            object_keys.extend([item.point.pk for item in filter_fields])
+            objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
-            object_keys.extend([item.polygon.pk for item in filter_fields])
-
-    if len(options) > 0:
-        objects = objects.filter(pk__in=object_keys)
-
+            objects = objects.filter(pk__in=[item.polygon.pk for item in filter_fields])
     return objects
 
 #Integer Filters
@@ -271,11 +262,8 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
             filter_fields = filter_fields.filter(value=value)
 
         if geom_type == "POINT":
-            object_keys.extend([item.point.pk for item in filter_fields])
+            objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])
         elif geom_type == "POLYGON":
-            object_keys.extend([item.polygon.pk for item in filter_fields])
-
-    if len(options) > 0:
-        objects = objects.filter(pk__in=object_keys)
+            objects = objects.filter(pk__in=[item.polygon.pk for item in filter_fields])
 
     return objects

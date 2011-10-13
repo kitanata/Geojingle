@@ -7,21 +7,21 @@
     <p></p>
     <div>
         <table border="0">
-            {% for name, value in boolean_fields.iteritems %}
+            {% for value, name in boolean_fields.iteritems %}
                 <tr>
                     <td><b>{{ name }}</b></td>
                     <td>{{ value }}</td>
                 </tr>
             {% endfor %}
 
-            {% for name, value in integer_fields.iteritems %}
+            {% for value, name in integer_fields.iteritems %}
                 <tr>
                     <td><b>{{ name }}</b></td>
                     <td>{{ value }}</td>
                 </tr>
             {% endfor %}
 
-            {% for name, value in string_fields.iteritems %}
+            {% for value, name in string_fields.iteritems %}
                 <tr>
                     <td><b>{{ name }}</b></td>
                     <td>{{ value }}</td>

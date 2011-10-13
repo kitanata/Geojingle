@@ -253,7 +253,7 @@ var overlayManagerInstance = nil;
             {
                 [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:filterId];
 
-                console.log("overlayDataObjects = "); console.log(m_OverlayDataObjects);
+                //console.log("overlayDataObjects = "); console.log(m_OverlayDataObjects);
 
                 if([m_Delegate respondsToSelector:@selector(onBasicDataTypeMapsLoaded:)])
                     [m_Delegate onBasicDataTypeMapsLoaded:filterId];
