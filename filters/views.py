@@ -204,8 +204,8 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
     for name, value in options.iteritems():
-        filter_fields = fields.filter(attribute_filter__name=name)
-        filter_fields = filter_fields.filter(value=value)
+        print("Name " + str(name) + " Value: " + str(value))
+        filter_fields = fields.filter(attribute_filter__name=name, value=value)
 
         if geom_type == "POINT":
             objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])

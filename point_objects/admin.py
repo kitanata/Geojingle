@@ -63,6 +63,8 @@ class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__description', 'item_type')
 
+    search_fields = ['item_name']
+
     inlines = [GiseduPointItemBooleanFieldsInline,
                GiseduPointItemIntegerFieldsInline,
                GiseduPointItemStringFieldsInline]

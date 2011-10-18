@@ -53,6 +53,8 @@ class GiseduPolygonItemAdmin(admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter', 'item_type')
 
+    search_fields = ['item_name']
+
     inlines = [GiseduPolygonItemBooleanFieldsInline,
                GiseduPolygonItemIntegerFieldsInline,
                GiseduPolygonItemStringFieldsInline]
