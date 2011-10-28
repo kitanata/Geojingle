@@ -6,7 +6,7 @@ class GiseduFilters(models.Model):
     filter_type = models.CharField(max_length=254)
     data_type = models.CharField(max_length=254)
     enabled = models.BooleanField()
-    option_filters = models.ManyToManyField("self", symmetrical=False, related_name="option_filters_rel", blank=True)
+    attribute_filters = models.ManyToManyField("self", symmetrical=False, related_name="attribute_filters_rel", blank=True)
     exclude_filters = models.ManyToManyField("self", symmetrical=False, related_name="exclude_filters_rel", blank=True)
 
     class Meta:

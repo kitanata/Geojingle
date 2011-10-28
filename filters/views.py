@@ -22,7 +22,7 @@ def filter_list(request):
                                         "filter_type" : gis_filter.data_type, #database refactoring switched these
                                         "data_type" : gis_filter.filter_type, #todo: make client side code match this designation
                                         "request_modifier" : gis_filter.name,
-                                        "option_filters" : [y.pk for y in list(gis_filter.option_filters.all())],
+                                        "attribute_filters" : [y.pk for y in list(gis_filter.attribute_filters.all())],
                                         "exclude_filters" : [y.pk for y in list(gis_filter.exclude_filters.all())],
                                         "filter_options" : option_data
         }
