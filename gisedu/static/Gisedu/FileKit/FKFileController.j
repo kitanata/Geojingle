@@ -2,6 +2,7 @@
 
 @import "FKFilePanel.j"
 @import "../loaders/DictionaryLoader.j"
+@import "JsonRequest.j"
 
 g_sharedFileController = nil;
 
@@ -11,9 +12,9 @@ g_sharedFileController = nil;
 @implementation FKFileController : CPObject
 {
     SCUserSessionManager m_SessionManager;
-    
-    CPURLConnection m_OpenFileRequestUrl;
-    CPURLConnection m_SaveFileRequestUrl;
+
+    JsonRequest m_OpenFileRequest;
+    JsonRequest m_SaveFileRequest;
 
     CPDictionary m_ProjectFiles; //name:date
 
@@ -125,108 +126,59 @@ g_sharedFileController = nil;
     if(m_Delegate && [m_Delegate respondsToSelector:@selector(buildJsonSaveData)])
     {
         var requestObject = [m_Delegate buildJsonSaveData];
-        var request         = [CPURLRequest requestWithURL:(g_UrlPrefix + "/cloud/project/" + m_ProjectFilename)];
+        var requestUrl = (g_UrlPrefix + "/cloud/project/" + m_ProjectFilename);
 
-        var csrfTok = [m_SessionManager csrfToken];
-
-        [request setHTTPMethod:@"POST"];
-        [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-        console.log("CSRF Token is " + csrfTok);
-        [request setValue:csrfTok forHTTPHeaderField:@"X-CSRFToken"];
-        [request setHTTPBody:[CPString JSONFromObject:requestObject]];
-        m_SaveFileRequestUrl = [CPURLConnection connectionWithRequest:request delegate:self];
+        m_SaveFileRequest = [JsonRequest postRequestWithJSObject:requestObject
+            toUrl:requestUrl delegate:self send:YES];
     }
 }
 
 - (void)sendOpenRequest
 {
-    var request = [CPURLRequest requestWithURL:(g_UrlPrefix + "/cloud/project/" + m_ProjectFilename)];
-    [request setHTTPMethod:@"GET"];
-    m_OpenFileRequestUrl = [CPURLConnection connectionWithRequest:request delegate:self];
+    var requestUrl = (g_UrlPrefix + "/cloud/project/" + m_ProjectFilename);
+    m_OpenFileRequest = [JsonRequest getRequestFromUrl:requestUrl delegate:self send:YES];
 }
 
-- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPError)anError
+- (void) onJsonRequestFailed:(JsonRequest)request withError:(CPString)anError
 {
-    if (aConnection == m_SaveFileRequestUrl)
+    var errorAugment = "";
+
+    if(request == m_SaveFileRequest)
+        errorAugment = 'Could not save project data! ';
+    else if(request == m_OpenFileRequest)
+        errorAugment = 'Could not open project data! ';
+
+    alert(errorAugment + anError);
+
+    if(request == m_SaveFileRequest)
     {
-        alert('Could not save project data! ' + anError);
-        m_Connection = nil;
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestFailed:)])
+            [m_Delegate onSaveFileRequestFailed:self];
     }
-    else if(aConnection == m_OpenFileRequestUrl)
+    else if(request == m_OpenFileRequest)
     {
-        alert('Could not open project data! ' + anError);
-        m_Connection = nil;
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOpenFileRequestFailed:)])
+            [m_Delegate onOpenFileRequestFailed:self];
     }
 }
 
-- (void)connection:(CPURLConnection)aConnection didReceiveResponse:(CPURLResponse)aResponse
+- (void) onJsonRequestSuccessful:(JsonRequest)request
 {
-    if (![aResponse isKindOfClass:[CPHTTPURLResponse class]])
+    if(request == m_SaveFileRequest)
     {
-        [aConnection cancel];
-
-        if (aConnection == m_SaveFileRequestUrl)
-            alert('Could not save project data! ' + anError);
-        else if (aConnection == m_OpenFileRequestUrl)
-            alert('Could not open project data! ' + anError);
-
-        return;
-    }
-
-    var statusCode = [aResponse statusCode];
-
-    if (aConnection == m_SaveFileRequestUrl)
-    {
-        if(statusCode == 200)
-        {
-            if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestSuccessful:)])
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestSuccessful:)])
                 [m_Delegate onSaveFileRequestSuccessful:self];
-
-            [self loadProjectDictData];
-        }
-        else if(statusCode == 404)
-        {
-            m_RequestError = "I could not contact the server. Please check your internet connection and try again."
-
-            if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestFailed:)])
-                [m_Delegate onSaveFileRequestFailed:self];
-        }
-        else
-        {
-            m_RequestError = "The server rejected the request. You do not have permission to do this."
-
-            if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestFailed:)])
-                [m_Delegate onSaveFileRequestFailed:self];
-        }
-    }
-    else if (aConnection == m_OpenFileRequestUrl)
-    {
-        if (statusCode == 404)
-            m_RequestError = "No project exists of that name on your account."
-        else if(statusCode != 200)
-            m_RequestError = "The server rejected the request. You do not have permission to do this."
-
-        if (statusCode != 200)
-        {
-            [aConnection cancel];
-
-            if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOpenFileRequestFailed:)])
-                [m_Delegate onOpenFileRequestFailed:self];
-        }
+                
+        [self loadProjectDictData];
     }
 }
 
-- (void)connection:(CPURLConnection)aConnection didReceiveData:(CPString)aData
+- (void) onJsonRequestSuccessful:(JsonRequest)request withResponse:(id)jsonResponse
 {
-    if(aConnection == m_OpenFileRequestUrl)
+    if(request == m_OpenFileRequest)
     {
-        var aData = aData.replace('while(1);', '');
-        m_JsonData = JSON.parse(aData);
-
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOpenFileRequestSuccessful:)])
-        {
             [m_Delegate onOpenFileRequestSuccessful:self];
-        }
     }
 }
 

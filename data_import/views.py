@@ -19,3 +19,10 @@ def upload_csv(request):
             return render_to_response('json/base.json', {'json': json.dumps(columnDict)})
     else:
         return HttpResponseNotFound(mimetype = 'application/json')
+
+def import_csv(request):
+    if request.method == "POST":
+        csv_data = json.loads(request.raw_post_data)
+        print(str(csv_data))
+    else:
+        return HttpResponseNotFound(mimetype = 'application/json')

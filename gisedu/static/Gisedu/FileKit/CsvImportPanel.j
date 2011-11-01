@@ -1,6 +1,7 @@
 @import <Foundation/CPObject.j>
 
 @import "FKUploadButton.j"
+@import "JsonRequest.j"
 @import "CsvUpdateView.j"
 @import "CsvPointInsertView.j"
 @import "CsvPolygonInsertView.j"
@@ -17,6 +18,8 @@
     CPDictionary m_TableColumns;
     CPDictionary m_AttributeMatches;
     CPArray m_UnassignedTableColumns;
+
+    JsonRequest m_ImportRequest;
     
     FKUploadButton m_UploadButton;
     CPTextField m_UploadLabel;
@@ -64,6 +67,8 @@
     {
         m_FilterManager = [FilterManager getInstance];
         var contentView = [self contentView];
+
+        m_ImportRequest = nil;
 
         // BEGIN THE MAIN TABLE
 
@@ -191,6 +196,8 @@
         [m_ImportButton setFrameOrigin:CGPointMake(m_ButtonsLeft + 10, 660)];
         [m_ImportButton sizeToFit];
         [m_ImportButton setFrameSize:CGSizeMake(126, CGRectGetHeight([m_ImportButton bounds]))];
+        [m_ImportButton setTarget:self];
+        [m_ImportButton setAction:@selector(onImportButton:)];
 
         [contentView addSubview:m_UploadButton];
         [contentView addSubview:m_UploadLabel];
@@ -536,6 +543,8 @@
 {
     var tableColTitle = [[tableColumn headerView] stringValue];
 
+    console.log("Column Assigned ="); console.log(tableColTitle);
+
     [m_UnassignedTableColumns removeObject:tableColumn];
 
     [m_MatchPopUp removeItemWithTitle:tableColTitle];
@@ -544,9 +553,9 @@
 
 - (void)onColumnUnassigned:(CPTableColumn)tableColumn inPanel:(CPView)panel
 {
-    console.log("Table Column = "); console.log(tableColumn);
-
     var tableColTitle = [[tableColumn headerView] stringValue];
+
+    console.log("Column UnAssigned ="); console.log(tableColTitle);
 
     [m_UnassignedTableColumns addObject:tableColumn];
 
@@ -618,6 +627,7 @@
     if(curSelectedRow != CPNotFound)
     {
         var columnValue = [[m_AttributeMatches objectForKey:m_ColumnTableColumn] objectAtIndex:curSelectedRow];
+        var attributeValue = [[m_AttributeMatches objectForKey:m_AttributeTableColumn] objectAtIndex:curSelectedRow];
          
         [[m_AttributeMatches objectForKey:m_ColumnTableColumn] removeObjectAtIndex:curSelectedRow];
         [[m_AttributeMatches objectForKey:m_AttributeTableColumn] removeObjectAtIndex:curSelectedRow];
@@ -629,6 +639,8 @@
             [m_UnassignedTableColumns addObject:removedCol];
             [self addColumnToColumnPopups:removedCol];
         }
+
+        [m_MatchToPopUp addItemWithTitle:attributeValue];
 
         [m_MatchTableView reloadData];
     }
@@ -654,6 +666,11 @@
             [self removeColumnFromColumnPopups:addedCol];
         }
 
+        if([m_MatchPopUp numberOfItems] > 0)
+            [m_MatchPopUp selectItemAtIndex:0];
+
+        [m_MatchToPopUp removeItemWithTitle:attributeValue];
+            
         [m_MatchTableView reloadData];
     }
 }
@@ -661,6 +678,163 @@
 - (void)onCancelButton:(id)sender
 {
     [self close];
+}
+
+- (void)onImportButton:(id)sender
+{
+    if(![[m_ImportOptionsScrollView documentView] validateColumnAssignments])
+        return;
+
+    /* schema = {
+        'geometry_type' : "POINT"/"POLYGON",
+        'filter_type' : int<filter_id>,
+        'op_type' : "INSERT"/"UPDATE",
+        op_type = UPDATE =>
+            'join_column' : [row_1_for_column, row_2_for_column, ...],
+            'join_attribute_filter' : int<filter_id>
+        op_type = INSERT =>
+            geometry_type = POINT =>
+                'item_name' : [row_1_for_column, row_2_for_column, ...],
+                'latitude' : [row_1_for_column, row_2_for_column, ...],
+                'longitude' : [row_1_for_column, row_2_for_column, ...],
+                opt<'item_type'> : [row_1_for_column, row_2_for_column, ...],
+                opt<'street_address'> : [row_1_for_column, row_2_for_column, ...],
+                opt<'city'> : [row_1_for_column, row_2_for_column, ...],
+                opt<'state'> : [row_1_for_column, row_2_for_column, ...],
+                opt<'zip'> : [row_1_for_column, row_2_for_column, ...],
+            geometry_type = POLYGON =>
+                'item_name' : [row_1_for_column, row_2_for_column, ...],
+                opt<'item_type'> : [row_1_for_column, row_2_for_column, ...],
+                'geometry' : [row_1_for_column, row_2_for_column, ...],
+        'match_sets' : [
+            {'column_data' : [row_1_for_column, row_2_for_column, ...]
+             'attribute_filter' : int<filter_id>},
+            {'column_data' : [row_1_for_column, row_2_for_column, ...]
+             'attribute_filter' : int<filter_id>},
+            {'column_data' : [row_1_for_column, row_2_for_column, ...]
+             'attribute_filter' : int<filter_id>},
+            ...
+        ]
+    } */
+
+    var columnNames = [m_AttributeMatches objectForKey:m_ColumnTableColumn];
+    var attributeNames = [m_AttributeMatches objectForKey:m_AttributeTableColumn];
+
+    var requestObject = {};
+
+    requestObject['geometry_type'] = [[m_GeometryTypePopUp titleOfSelectedItem] uppercaseString];
+    requestObject['filter_type'] = [m_FilterManager filterIdFromName:[m_FilterTypePopUp titleOfSelectedItem]];
+    requestObject['op_type'] = [[m_OperationTypePopUp titleOfSelectedItem] uppercaseString];
+    requestObject['match_sets'] = [];
+
+    if(requestObject['op_type'] == "UPDATE")
+    {
+        var joinColumn = [self columnWithTitle:[m_UpdateOptionsView joinColumnName]];
+
+        requestObject['join_column'] = [m_TableColumns objectForKey:joinColumn];
+        requestObject['join_attribute_filter'] = [m_FilterManager filterIdFromName:[m_UpdateOptionsView joinAttributeName]];
+    }
+    else if(requestObject['op_type'] == "INSERT")
+    {
+        if(requestObject['geometry_type'] == "POINT")
+        {
+            //Item Name
+            var col = [self columnWithTitle:[m_PointInsertOptionsView itemNameColumnName]];
+            //requestObject['item_name'] = [m_TableColumns objectForKey:col];
+
+            //Latitude
+            col = [self columnWithTitle:[m_PointInsertOptionsView latitudeColumnName]];
+            requestObject['latitude'] = [m_TableColumns objectForKey:col];
+
+            //Longitude
+            col = [self columnWithTitle:[m_PointInsertOptionsView longitudeColumnName]];
+            requestObject['longitude'] = [m_TableColumns objectForKey:col];
+
+            //Item Type
+            if([[m_PointInsertOptionsView itemTypeColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PointInsertOptionsView itemTypeColumnName]];
+                requestObject['item_type'] = [m_TableColumns objectForKey:col];
+            }
+
+            //Street Address
+            if([[m_PointInsertOptionsView streetAddressColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PointInsertOptionsView streetAddressColumnName]];
+                requestObject['street_address'] = [m_TableColumns objectForKey:col];
+            }
+
+            //City
+            if([[m_PointInsertOptionsView cityColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PointInsertOptionsView cityColumnName]];
+                requestObject['city'] = [m_TableColumns objectForKey:col];
+            }
+
+            //State
+            if([[m_PointInsertOptionsView stateColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PointInsertOptionsView stateColumnName]];
+                requestObject['state'] = [m_TableColumns objectForKey:col];
+            }
+
+            //Zip
+            if([[m_PointInsertOptionsView zipColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PointInsertOptionsView zipColumnName]];
+                requestObject['zip'] = [m_TableColumns objectForKey:col];
+            }
+        }
+        else if(requestObject['geometry_type'] == "POLYGON")
+        {
+            //Item Name
+            var col = [self columnWithTitle:[m_PolygonInsertOptionsView itemNameColumnName]];
+            requestObject['item_name'] = [m_TableColumns objectForKey:col];
+
+            //Geometry
+            col = [self columnWithTitle:[m_PolygonInsertOptionsView geometryColumnName]];
+            requestObject['geometry'] = [m_TableColumns objectForKey:col];
+
+            //Item Type
+            if([[m_PolygonInsertOptionsView itemTypeColumnName] uppercaseString] != "NONE")
+            {
+                col = [self columnWithTitle:[m_PolygonInsertOptionsView itemTypeColumnName]];
+                requestObject['item_type'] = [m_TableColumns objectForKey:col];
+            }
+        }
+    }
+    
+    for(var i=0; i < [columnNames count]; i++)
+    {
+        var curColumn = [self columnWithTitle:[columnNames objectAtIndex:i]];
+
+        var setObject = {
+            'column_data' : [m_TableColumns objectForKey:curColumn],
+            'attribute_filter' : [m_FilterManager filterIdFromName:[attributeNames objectAtIndex:i]]
+        };
+
+        requestObject['match_sets'].push(setObject);
+    }
+
+    //Send the request
+    var requestUrl = g_UrlPrefix + "/import_csv";
+    m_ImportRequest = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
+}
+
+- (void) onJsonRequestFailed:(JsonRequest)request withError:(CPString)anError
+{
+    if(request == m_ImportRequest)
+    {
+        alert("Could not import data " + anError);
+    }
+}
+
+- (void) onJsonRequestSuccessful:(JsonRequest)request
+{
+    if(request == m_ImportRequest)
+    {
+        alert("Successfully imported data to the server");
+    }
 }
 
 + (id)csvImportPanel

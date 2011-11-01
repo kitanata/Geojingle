@@ -51,6 +51,21 @@
     return self;
 }
 
+- (CPString)itemNameColumnName
+{
+    return [m_ItemNamePopUp titleOfSelectedItem];
+}
+
+- (CPString)itemTypeColumnName
+{
+    return [m_ItemTypePopUp titleOfSelectedItem];
+}
+
+- (CPString)geometryColumnName
+{
+    return [m_GeometryPopUp titleOfSelectedItem];
+}
+
 - (id)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg
 {
     var newLabel = [CPTextField labelWithTitle:title];
@@ -135,6 +150,31 @@
 
 - (void)updateAttributePopUps:(CPArray)attributes
 {
+}
+
+- (BOOL)validateColumnAssignments
+{
+    var popUps = [m_ItemNamePopUp, m_ItemTypePopUp, m_GeometryPopUp];
+
+    var assignedCols = []
+
+    for(var i=0; i < popUps.length; i++)
+    {
+        var cur = [popUps[i] titleOfSelectedItem];
+
+        if(cur == "")
+            return NO;
+            
+        if([cur uppercaseString] != "NONE")
+        {
+            if(assignedCols.indexOf(cur) != -1)
+                assignedCols.push(cur)
+            else
+                return NO;
+        }
+    }
+
+    return YES;
 }
 
 @end

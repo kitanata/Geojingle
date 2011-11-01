@@ -18,7 +18,6 @@ var g_FilterManagerInstance = nil;
     id m_Delegate                       @accessors(property=delegate);
 
     CPDictionary m_FilterDescriptions   @accessors(getter=filterDescriptions);
-
     CPURLConnection m_FilterDescriptionConn;
 }
 
@@ -94,6 +93,23 @@ var g_FilterManagerInstance = nil;
     }
 
     return flagMap;
+}
+
+- (CPInteger)filterIdFromName:(CPString)filterName
+{
+    var filterDesc = [m_FilterDescriptions allValues];
+
+    for(var i=0; i < [filterDesc count]; i++)
+    {
+        var curDesc = [filterDesc objectAtIndex:i];
+
+        if([curDesc name] == filterName)
+        {
+            return [curDesc id];
+        }
+    }
+    
+    return CPNotFound;
 }
 
 - (BOOL)containsFilter:(CPTreeNode)filter

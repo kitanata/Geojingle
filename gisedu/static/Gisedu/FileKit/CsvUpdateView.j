@@ -23,6 +23,8 @@
     {
         m_LabelsLeft = 10;
         m_ButtonsLeft = m_LabelsLeft + 130;
+
+        m_AssignedColumns = [CPDictionary dictionary];
         
         m_JoinLabel = [self createLabelWithTitle:"Join Column" yOrg:0];
         m_JoinPopUp = [self createPopUpButton:[CPArray array] yOrg:0 action:@selector(onColumnSelected:)];
@@ -38,6 +40,16 @@
     }
 
     return self;
+}
+
+- (CPString)joinColumnName
+{
+    return [m_JoinPopUp titleOfSelectedItem];
+}
+
+- (CPString)joinAttributeName
+{
+    return [m_JoinToPopUp titleOfSelectedItem];
 }
 
 - (id)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg
@@ -87,7 +99,7 @@
         if(newColumn && m_Delegate && [m_Delegate respondsToSelector:@selector(onColumnAssigned:inPanel:)])
             [m_Delegate onColumnAssigned:newColumn inPanel:self];
 
-        [m_AssignedColumns setObject:curColumn forKey:sender];
+        [m_AssignedColumns setObject:newColumn forKey:sender];
     }
 }
 
@@ -109,7 +121,7 @@
 {
     [m_JoinPopUp removeAllItems];
     [m_JoinPopUp addItemsWithTitles:csvColumns];
-
+    
     [self onColumnSelected:m_JoinPopUp];
 }
 
@@ -117,6 +129,11 @@
 {
     [m_JoinToPopUp removeAllItems];
     [m_JoinToPopUp addItemsWithTitles:attributes];
+}
+
+- (BOOL)validateColumnAssignments
+{
+    return YES;
 }
 
 @end

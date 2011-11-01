@@ -58,20 +58,7 @@
     var filterManager = [FilterManager getInstance];
 
     var curSelFilterName = [[m_FilterType selectedItem] title];
-    var filterDescriptions = [[filterManager filterDescriptions] allValues];
-
-    var newFilterType = nil;
-
-    for(var i=0; i < [filterDescriptions count]; i++)
-    {
-        var curDesc = [filterDescriptions objectAtIndex:i];
-
-        if([curDesc name] == curSelFilterName)
-        {
-            newFilterType = [curDesc id];
-            break;
-        }
-    }
+    var newFilterType = [filterManager filterIdFromName:curSelFilterName];
 
     console.log("CurSelFilterName is " + curSelFilterName);
     console.log("New Filter Type is " + newFilterType);

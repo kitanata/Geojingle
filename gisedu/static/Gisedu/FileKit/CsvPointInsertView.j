@@ -95,6 +95,46 @@
     return self;
 }
 
+- (CPString)itemNameColumnName
+{
+    return [m_ItemNamePopUp titleOfSelectedItem];
+}
+
+- (CPString)itemTypeColumnName
+{
+    return [m_ItemTypePopUp titleOfSelectedItem];
+}
+
+- (CPString)latitudeColumnName
+{
+    return [m_LatitudePopUp titleOfSelectedItem];
+}
+
+- (CPString)longitudeColumnName
+{
+    return [m_LongitudePopUp titleOfSelectedItem];
+}
+
+- (CPString)streetAddressColumnName
+{
+    return [m_StreetAddressPopUp titleOfSelectedItem];
+}
+
+- (CPString)cityColumnName
+{
+    return [m_CityPopUp titleOfSelectedItem];
+}
+
+- (CPString)stateColumnName
+{
+    return [m_StatePopUp titleOfSelectedItem];
+}
+
+- (CPString)zipColumnName
+{
+    return [m_ZipPopUp titleOfSelectedItem];
+}
+
 - (id)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg
 {
     var newLabel = [CPTextField labelWithTitle:title];
@@ -206,6 +246,32 @@
 
 - (void)updateAttributePopUps:(CPArray)attributes
 {
+}
+
+- (BOOL)validateColumnAssignments
+{
+    var popUps = [m_ItemNamePopUp, m_ItemTypePopUp, m_LatitudePopUp, m_LongitudePopUp,
+                    m_StreetAddressPopUp, m_CityPopUp, m_StatePopUp, m_ZipPopUp];
+
+    var assignedCols = []
+
+    for(var i=0; i < popUps.length; i++)
+    {
+        var cur = [popUps[i] titleOfSelectedItem];
+
+        if(cur == "")
+            return NO;
+
+        if([cur uppercaseString] != "NONE")
+        {
+            if(assignedCols.indexOf(cur) != -1)
+                assignedCols.push(cur)
+            else
+                return NO;
+        }
+    }
+
+    return YES;
 }
 
 @end

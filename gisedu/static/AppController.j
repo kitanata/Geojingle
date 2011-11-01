@@ -659,6 +659,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FileSaveMenuItem setHidden:!sessionActive];
     [m_FileSaveAsMenuItem setHidden:!sessionActive];
     [m_FileSeparatorItem setHidden:!sessionActive];
+    [m_FileImportCSVItem setHidden:!sessionActive];
 
     [m_AccountAdminMenuItem setHidden:!sessionActive];
     [m_AccountLogOutMenuItem setHidden:!sessionActive];
