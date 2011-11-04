@@ -740,7 +740,7 @@
         {
             //Item Name
             var col = [self columnWithTitle:[m_PointInsertOptionsView itemNameColumnName]];
-            //requestObject['item_name'] = [m_TableColumns objectForKey:col];
+            requestObject['item_name'] = [m_TableColumns objectForKey:col];
 
             //Latitude
             col = [self columnWithTitle:[m_PointInsertOptionsView latitudeColumnName]];

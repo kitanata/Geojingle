@@ -167,7 +167,7 @@
             
         if([cur uppercaseString] != "NONE")
         {
-            if(assignedCols.indexOf(cur) != -1)
+            if(assignedCols.indexOf(cur) == -1)
                 assignedCols.push(cur)
             else
                 return NO;
