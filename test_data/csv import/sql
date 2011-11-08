@@ -1,0 +1,15 @@
+point_update_sql.csv
+====================
+
+SELECT * FROM gisedu_point_item t1
+	JOIN gisedu_point_item_boolean_fields t2 ON t1.id = t2.point_id
+	JOIN gisedu_point_item_string_fields t3 ON t1.id = t3.point_id
+	JOIN gisedu_string_attribute_option t6 ON t3.option_id = t6.id
+	JOIN gisedu_point_item_integer_fields t4 ON t1.id = t4.point_id
+	JOIN gisedu_point_item_integer_fields t5 ON t1.id = t5.point_id
+WHERE t1.filter_id = 5 
+	AND t2.attribute_filter_id = 13
+	AND t3.attribute_filter_id = 25
+	AND t4.attribute_filter_id = 17
+	AND t5.attribute_filter_id = 14;
+

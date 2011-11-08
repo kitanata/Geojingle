@@ -1,0 +1,21 @@
+"Building Irn","School Name","School Type","Participated in Round 2 2010-2011 ARRA Grants","ODE Income Classification","Megabit connectivity","Latitude","Longitude","Street Address","City","State","Zip"
+11000001,"Test School 01","High School","t","Rural/agricultural - High poverty",100,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000002,"Test School 02","High School","t","Rural/agricultural - High poverty",100,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000003,"Test School 03","High School","t","Rural/agricultural - High poverty",100,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000004,"Test School 04","High School","t","Urban - Low median income",100,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000005,"Test School 05","High School","t","Urban - Low median income",100,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000006,"Test School 06","Middle School","TRUE","Urban - Low median income",1000,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000007,"Test School 07","Middle School","t","Urban - Low median income",1000,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000008,"Test School 08","Middle School","t","Urban - Low median income",1000,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000009,"Test School 09","Middle School","TRUE","Urban/Suburban - High median income",1000,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000010,"Test School 10","Middle School","t","Urban/Suburban - High median income",1000,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000011,"Test School 11","Elementary School","t","Urban/Suburban - High median income",10,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000012,"Test School 12","Elementary School","t","Major Urban - Very high poverty",10,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000013,"Test School 13","Elementary School","t","Major Urban - Very high poverty",10,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000014,"Test School 14","Elementary School","t","Major Urban - Very high poverty",10,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000015,"Test School 15","Elementary School","FALSE","Major Urban - Very high poverty",10,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000016,"Test School 16","Elementary School","FALSE","Major Urban - Very high poverty",45,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000017,"Test School 17","Elementary School","FALSE","Rural/agricultural - High poverty",45,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000018,"Test School 18","Elementary School","FALSE","Rural/agricultural - High poverty",45,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000019,"Test School 19","Elementary School","f","Rural/agricultural - High poverty",45,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216
+11000020,"Test School 20","Elementary School","f","Rural/agricultural - High poverty",45,41.1426,-85.5049,"221B Baker Street","Warsaw","Indiana",51216

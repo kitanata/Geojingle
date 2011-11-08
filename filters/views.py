@@ -22,7 +22,7 @@ def filter_list(request):
                                         "filter_type" : gis_filter.data_type, #database refactoring switched these
                                         "data_type" : gis_filter.filter_type, #todo: make client side code match this designation
                                         "request_modifier" : gis_filter.name,
-                                        "option_filters" : [y.pk for y in list(gis_filter.option_filters.all())],
+                                        "attribute_filters" : [y.pk for y in list(gis_filter.attribute_filters.all())],
                                         "exclude_filters" : [y.pk for y in list(gis_filter.exclude_filters.all())],
                                         "filter_options" : option_data
         }
@@ -204,8 +204,8 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     options = {k : True if v.upper() == "TRUE" or v.upper() == "T" else False for k, v in options.iteritems() if k in bool_options}
 
     for name, value in options.iteritems():
-        filter_fields = fields.filter(attribute_filter__name=name)
-        filter_fields = filter_fields.filter(value=value)
+        print("Name " + str(name) + " Value: " + str(value))
+        filter_fields = fields.filter(attribute_filter__name=name, value=value)
 
         if geom_type == "POINT":
             objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])

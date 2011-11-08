@@ -80,6 +80,9 @@
     if(m_SearchMenu)
     {
         [self setStringValue:[sender title]];
+
+        if([_delegate respondsToSelector:@selector(onSearchMenuItemSelected:)])
+            [_delegate onSearchMenuItemSelected:self];
     }
 }
 

@@ -146,7 +146,7 @@
 
                 console.log("baseFilterDesc = "); console.log(baseFilterDescription);
 
-                if([[baseFilterDescription optionFilters] containsObject:curFilterType])
+                if([[baseFilterDescription attributeFilters] containsObject:curFilterType])
                 {
                     //add to the base filter
                     if([curFilterDescription filterType] == "INTEGER" && [curFilter requestOption] != "")

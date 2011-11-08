@@ -25,7 +25,7 @@ def point_info_by_type(request, data_type, point_id):
 
     if data_type == "organization":
         org = GiseduOrg.objects.get(pk=point_id)
-        response = json.dumps({'gid' : int(org.gid), 'name' : org.org_nm, 'type' : org.org_type.org_type_name })
+        response = json.dumps({'gid' : int(org.pk), 'name' : org.org_nm, 'type' : org.org_type.org_type_name })
 
     return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
 

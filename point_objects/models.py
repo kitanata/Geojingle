@@ -3,21 +3,20 @@ from filters.models import GiseduFilters
 from gisedu.models import GiseduStringAttributeOption
 
 class GiseduPointItemAddress(models.Model):
-    gid = models.IntegerField(primary_key=True)
-    street_num = models.IntegerField()
-    street_name = models.CharField(max_length=254)
-    mail_stop = models.CharField(max_length=254)
-    address_line_one = models.CharField(max_length=254)
-    address_line_two = models.CharField(max_length=254)
-    city = models.CharField(max_length=254)
-    state = models.CharField(max_length=254)
-    zip10 = models.CharField(max_length=254)
+    street_num = models.IntegerField(null=True)
+    street_name = models.CharField(max_length=254, null=True)
+    mail_stop = models.CharField(max_length=254, null=True)
+    address_line_one = models.CharField(max_length=254, null=True)
+    address_line_two = models.CharField(max_length=254, null=True)
+    city = models.CharField(max_length=254, null=True)
+    state = models.CharField(max_length=254, null=True)
+    zip10 = models.CharField(max_length=254, null=True)
 
     def __str__(self):
         return str(self.address_line_one) + " " + str(self.city) + ", " + str(self.state)
 
     class Meta:
-        db_table = u'gisedu_point_item_address'
+        db_table = u'gisedu_point_item_address_new'
         verbose_name_plural = "Educational Organization Addresses"
 
 class GiseduPointItem(models.Model):

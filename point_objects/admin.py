@@ -7,7 +7,6 @@ from point_objects.models import GiseduPointItemAddress, GiseduPointItem, Gisedu
 class GiseduPointItemAddressAdmin(gis_admin.GeoModelAdmin):
     list_display = ('address_line_one', 'city', 'state', 'zip10')
     search_fields = ['address_line_one', 'city', 'state', 'zip10']
-    exclude = ['gid']
 
     list_filter = ('state',)
 
@@ -62,6 +61,8 @@ class GiseduPointItemStringFieldsInline(admin.TabularInline):
 class GiseduPointItemAdmin(gis_admin.GeoModelAdmin):
     list_display = ('item_name', 'filter', 'item_type')
     list_filter = ('filter__description', 'item_type')
+
+    search_fields = ['item_name']
 
     inlines = [GiseduPointItemBooleanFieldsInline,
                GiseduPointItemIntegerFieldsInline,

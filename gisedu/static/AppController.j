@@ -25,6 +25,7 @@
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
+@import "Gisedu/FileKit/CsvImportPanel.j"
 @import "Gisedu/FileKit/FKFileController.j"
 
 var m_NewProjectToolbarId = 'newProject';
@@ -75,6 +76,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPMenuItem m_FileSaveMenuItem;      //save project
     CPMenuItem m_FileSaveAsMenuItem;    //save project as
     CPMenuItem m_FileSeparatorItem;
+    CPMenuItem m_FileImportCSVItem;
     CPMenuItem m_FileExitMenuItem;      //exit Gisedu (closes browser tab)
 
     CPMenu m_AccountMenu;
@@ -322,6 +324,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         m_FileSaveMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project" action:@selector(onSaveProject:) keyEquivalent:@"S"];
         m_FileSaveAsMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project As..." action:@selector(onSaveProjectAs:) keyEquivalent:nil];
         m_FileSeparatorItem = [CPMenuItem separatorItem];
+        m_FileImportCSVItem = [[CPMenuItem alloc] initWithTitle:@"Import CSV" action:@selector(onImportCSV:) keyEquivalent:nil];
         m_FileExitMenuItem = [[CPMenuItem alloc] initWithTitle:@"Exit Gisedu" action:@selector(onExitGisedu:) keyEquivalent:nil];
 
         [m_FileMenu addItem:m_FileNewMenuItem];
@@ -329,6 +332,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         [m_FileMenu addItem:m_FileSaveMenuItem];
         [m_FileMenu addItem:m_FileSaveAsMenuItem];
         [m_FileMenu addItem:m_FileSeparatorItem];
+        [m_FileMenu addItem:m_FileImportCSVItem];
+        [m_FileMenu addItem:[CPMenuItem separatorItem]];
         [m_FileMenu addItem:m_FileExitMenuItem];
 
   	[fileMenuItem setSubmenu:m_FileMenu];
@@ -654,6 +659,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FileSaveMenuItem setHidden:!sessionActive];
     [m_FileSaveAsMenuItem setHidden:!sessionActive];
     [m_FileSeparatorItem setHidden:!sessionActive];
+    [m_FileImportCSVItem setHidden:!sessionActive];
 
     [m_AccountAdminMenuItem setHidden:!sessionActive];
     [m_AccountLogOutMenuItem setHidden:!sessionActive];
@@ -694,6 +700,15 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 - (void)onSaveProjectAs:(id)sender
 {
     [m_ProjectCloudManager triggerSaveProjectAs];
+}
+
+- (void)onImportCSV:(id)sender
+{
+    importPanel = [CsvImportPanel csvImportPanel];
+    [importPanel orderFront:self];
+
+    //openPanel = [CPOpenPanel openPanel];
+    //[openPanel runModal];
 }
 
 - (void)onExitGisedu:(id)sender
