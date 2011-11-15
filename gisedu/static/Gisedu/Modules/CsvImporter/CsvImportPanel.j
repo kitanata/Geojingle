@@ -1,11 +1,11 @@
 @import <Foundation/CPObject.j>
 
-@import "FKUploadButton.j"
-@import "JsonRequest.j"
+@import "../../FileKit/FKUploadButton.j"
+@import "../../FileKit/JsonRequest.j"
 @import "CsvUpdateView.j"
 @import "CsvPointInsertView.j"
 @import "CsvPolygonInsertView.j"
-@import "../FilterManager.j"
+@import "../../FilterManager.j"
 
 @implementation CsvImportPanel : CPPanel
 {

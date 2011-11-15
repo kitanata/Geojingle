@@ -10,6 +10,9 @@ from polygon_objects.models import GiseduPolygonItem
 
 @csrf_exempt
 def polygon_geom_list(request, data_type):
+    """
+    Responds to a post request containing a list of Polygon Item PKs by returning a list corresponding to each item's geometry field stored in the database.
+    """
     jsonObj = simplejson.loads(request.raw_post_data)
     poly_ids = jsonObj['polygon_ids']
 

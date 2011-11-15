@@ -11,6 +11,7 @@ from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, 
 from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemBooleanFields, GiseduPolygonItemIntegerFields, GiseduPolygonItemStringFields
 
 def filter_list(request):
+    """ Returns a list of filters back to the client program, with all the data the client will need when working with filters. """
     filter_objects = GiseduFilters.objects.filter(enabled=True)
 
     filter_data = {}
@@ -30,6 +31,10 @@ def filter_list(request):
     return render_to_response('json/base.json', {'json': json.dumps(filter_data)}, context_instance=RequestContext(request))
 
 def filter_options(gis_filter):
+    """
+    Returns a list of attribute filters and their associated optional values.
+    For example for a "Building IRN" attribute this will return all the possible IRNs that can be shown in the filter.
+    """
     list_data = None
 
     if gis_filter.filter_type == "POLYGON":
@@ -84,6 +89,7 @@ def filter_options(gis_filter):
     return list_data
 
 def parse_filter(request, filter_chain):
+    """ Parses the filter query language for a given filter chain. """
     queries = string.split(filter_chain, '/')
 
     query_results = []
@@ -140,6 +146,7 @@ def parse_filter(request, filter_chain):
     return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
 
 def filter_polygon(poly_filter, options):
+    """  Performs the appropriate database queries for "POLYGON"/"LIST" filters. """
     print("Polygon Options = " + str(options))
     polygon_id = options[poly_filter.name]
     get_all = (polygon_id == "All")
@@ -160,6 +167,7 @@ def filter_polygon(poly_filter, options):
     return list(poly_objects)
 
 def filter_point(point_filter, options):
+    """ Performs the appropriate database queries for "POINT"/"LIST" filters. """
     point_id = options[point_filter.name]
     get_all = (point_id == "All")
 
@@ -179,6 +187,7 @@ def filter_point(point_filter, options):
     return list(point_objects)
 
 def filter_point_by_type(point_filter, options):
+    """ Performs the appropriate database queries for "POINT"/"DICT" filters. """
     point_subtype = options[point_filter.name]
     get_all = (point_subtype == "All")
 
@@ -198,6 +207,7 @@ def filter_point_by_type(point_filter, options):
     return list(point_objects)
 
 def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
+    """ Processes a Boolean Reduce Filter on a point or polygon dataset."""
     bool_options = GiseduFilters.objects.filter(filter_type="REDUCE", data_type="BOOL")
     bool_options = [option.name for option in bool_options]
 
@@ -215,6 +225,7 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
     return objects
 
 def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
+    """ Processes a String/Char Reduce Filter on a point or polygon dataset."""
     string_options = GiseduFilters.objects.filter(filter_type="REDUCE", data_type="CHAR")
     string_options = [option.name for option in string_options]
 
@@ -232,6 +243,7 @@ def process_reduce_string_filters(fields, objects, options, geom_type="POINT"):
 
 #Integer Filters
 def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
+    """ Processes an Integer Reduce Filter on a point or polygon dataset. """
     integer_options = GiseduFilters.objects.filter(filter_type="REDUCE", data_type="INTEGER")
     integer_options = [option.name for option in integer_options]
 

@@ -4,7 +4,7 @@ var GenericRegisterErrorMessage = @"Something went wrong. Check your internet co
 var InvalidAuthLoginErrorMessage = @"Incorrect username or password. Please try again.";
 var UsernameTakenErrorMessage = "That username has been taken. Please choose another.";
 
-@implementation SCRegisterPanel : CPPanel
+@implementation AKRegisterPanel : CPPanel
 {
     CPTextField m_UsernameLabel;
     CPTextField m_PasswordLabel;

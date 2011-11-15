@@ -1,9 +1,10 @@
 @import <Foundation/CPObject.j>
-@import <SCAuth/SCUserSessionManager.j>
+
+@import "../AuthKit/AKUserSessionManager.j"
 
 @implementation JsonRequest : CPObject
 {
-    SCUserSessionManager m_SessionManager;
+    AKUserSessionManager m_SessionManager;
     CPURLConnection m_RequestConnection;
 
     id m_Delegate               @accessors(property=delegate);
@@ -24,7 +25,7 @@
 
     if(self)
     {
-        m_SessionManager = [SCUserSessionManager defaultManager];
+        m_SessionManager = [AKUserSessionManager defaultManager];
         m_RequestConnection = nil;
         m_JsonObject = nil;
 

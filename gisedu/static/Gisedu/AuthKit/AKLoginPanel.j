@@ -3,7 +3,7 @@
 var GenericLoginErrorMessage = @"Something went wrong. Check your internet connection and try again.";
 var InvalidAuthLoginErrorMessage = @"Incorrect username or password. Please try again.";
 
-@implementation SCLoginPanel : CPPanel
+@implementation AKLoginPanel : CPPanel
 {
     CPTextField m_UsernameLabel;
     CPTextField m_PasswordLabel;

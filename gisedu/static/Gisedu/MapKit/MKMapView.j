@@ -7,8 +7,8 @@
 /* a "class" variable that will hold the domWin.google.maps object/"namespace" */
 var gmNamespace = nil;
 
-MKLoadingMarkupWhiteSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-white.gif'/></div>";
-MKLoadingMarkupBlackSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Frameworks/MapKit/Resources/spinner-black.gif'/></div>";
+MKLoadingMarkupWhiteSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Gisedu/MapKit/Resources/spinner-white.gif'/></div>";
+MKLoadingMarkupBlackSpinner = @"<div style='position: absolute; top:50%; left:50%;'><img src='Gisedu/MapKit/Resources/spinner-black.gif'/></div>";
 
 g_mapViewInstance = nil;
 

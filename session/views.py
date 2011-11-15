@@ -18,6 +18,12 @@ from django.core.context_processors import csrf
 
 @csrf_exempt
 def session_request(request):
+    """
+    Depending on the request method this either logs a user in or out, or checks if the user is currently logged in.
+        POST - Attempts to authenticate and log in a user
+        DELETE - Attempts to log out the user stored in the current session
+        GET or HEAD - Attempts to check if the user is currently logged in.
+    """
     if request.method ==  'POST':
         return login_user(request)
     if request.method == 'DELETE':
@@ -30,10 +36,11 @@ def session_request(request):
 
 @csrf_exempt
 def register_request(request):
+    """ On POST requests this attempts to register a new user with Gisedu."""
     if request.method == 'POST':
         return register_user(request)
     else:
-        return HttpResponseNotAllowed(['POST', 'GET', 'DELETE'])
+        return HttpResponseNotAllowed(['POST'])
 
 
 
@@ -87,6 +94,7 @@ def register_user(request):
     
 @csrf_exempt
 def check_user(request, username):
+    """ Checks to see if a username is available for registering. """
     try:
         User.objects.get(username=username)
         return HttpResponseForbidden(mimetype = 'application/json')

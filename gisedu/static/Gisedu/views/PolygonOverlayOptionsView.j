@@ -1,6 +1,6 @@
 @import <Foundation/CPObject.j>
 @import <AppKit/CPView.j>
-@import "../../MapKit/MKMapView.j"
+@import "../MapKit/MKMapView.j"
 
 @implementation PolygonOverlayOptionsView : CPView
 {

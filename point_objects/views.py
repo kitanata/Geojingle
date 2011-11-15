@@ -9,6 +9,10 @@ from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, 
 
 @csrf_exempt
 def point_geom_list(request, data_type):
+    """
+    Responds to a post request containing a list of Point Item PKs by returning a list corresponding to each item's geometry field stored in the database.
+    TODO: Make another function that responds to single items(vs. the list of them) for access via HTTP.
+    """
     jsonObj = simplejson.loads(request.raw_post_data)
     point_ids = jsonObj['point_ids']
 
@@ -20,17 +24,11 @@ def point_geom_list(request, data_type):
     return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
 
 
-def point_info_by_type(request, data_type, point_id):
-    response = None
-
-    if data_type == "organization":
-        org = GiseduOrg.objects.get(pk=point_id)
-        response = json.dumps({'gid' : int(org.pk), 'name' : org.org_nm, 'type' : org.org_type.org_type_name })
-
-    return render_to_response('json/base.json', {'json': response}, context_instance=RequestContext(request))
-
-
 def point_infobox_by_type(request, data_type, point_id):
+    """
+    Returns HTML to show for a specific point's infobox inside Google Maps.
+    Currently returns address information as well as attribute information.
+    """
     point_object = GiseduPointItem.objects.get(pk=point_id)
 
     boolean_fields = GiseduPointItemBooleanFields.objects.filter(point=point_object)

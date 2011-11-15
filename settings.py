@@ -1,6 +1,7 @@
 import os
 
 DEBUG = True
+PRODUCTION_OPTIMIZED = False
 TEMPLATE_DEBUG = DEBUG
 BASE_DIR = os.path.dirname(__file__)
 
@@ -20,19 +21,6 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
-
-#CACHE BEHAVIOR
-CACHE_MIDDLEWARE_ALIAS = "default"
-CACHE_MIDDLEWARE_SECONDS = 1800
-CACHE_MIDDLEWARE_KEY_PREFIX = "gisedu"
-#CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True
 
 #Make sure that the default behavior for user sessions is that the session expires when the client browser is closed
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
@@ -109,16 +97,16 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+PRODUCTION_MIDDLEWARE_CLASSES = ('django.middleware.cache.CacheMiddleware')
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.cache.CacheMiddleware',
-    #'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    #'django.middleware.cache.FetchFromCacheMiddleware'
 )
 
 ROOT_URLCONF = 'Gisedu.urls'
@@ -155,3 +143,19 @@ INSTALLED_APPS = (
     'cloud',
 
 )
+
+if PRODUCTION_OPTIMIZED:
+    MIDDLEWARE_CLASSES += PRODUCTION_MIDDLEWARE_CLASSES
+    
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+        }
+    }
+
+    #CACHE BEHAVIOR
+    CACHE_MIDDLEWARE_ALIAS = "default"
+    CACHE_MIDDLEWARE_SECONDS = 1800
+    CACHE_MIDDLEWARE_KEY_PREFIX = "gisedu"
+    #CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True

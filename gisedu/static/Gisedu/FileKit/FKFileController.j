@@ -11,7 +11,7 @@ g_sharedFileController = nil;
 //The Panel classes delegate to the FileController when a file needs to be opened/saved/inspected etc.
 @implementation FKFileController : CPObject
 {
-    SCUserSessionManager m_SessionManager;
+    AKUserSessionManager m_SessionManager;
 
     JsonRequest m_OpenFileRequest;
     JsonRequest m_SaveFileRequest;
@@ -36,7 +36,7 @@ g_sharedFileController = nil;
     if(self)
     {
         [self loadProjectDictData];
-        m_SessionManager = [SCUserSessionManager defaultManager];
+        m_SessionManager = [AKUserSessionManager defaultManager];
         m_ProjectFilename = "Untitled";
     }
 

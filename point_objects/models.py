@@ -3,6 +3,7 @@ from filters.models import GiseduFilters
 from gisedu.models import GiseduStringAttributeOption
 
 class GiseduPointItemAddress(models.Model):
+    """ Contains all the addresses that point items may reference """
     street_num = models.IntegerField(null=True)
     street_name = models.CharField(max_length=254, null=True)
     mail_stop = models.CharField(max_length=254, null=True)
@@ -20,6 +21,7 @@ class GiseduPointItemAddress(models.Model):
         verbose_name_plural = "Educational Organization Addresses"
 
 class GiseduPointItem(models.Model):
+    """ The model associated with all point items in the postGIS database. """
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
@@ -36,6 +38,7 @@ class GiseduPointItem(models.Model):
         verbose_name_plural = "Point Items"
 
 class GiseduPointItemBooleanFields(models.Model):
+    """ Boolean attribute fields associated with point items. """
     point = models.ForeignKey(GiseduPointItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.BooleanField()
@@ -51,6 +54,7 @@ class GiseduPointItemBooleanFields(models.Model):
         verbose_name_plural = "Point Boolean Attributes"
 
 class GiseduPointItemIntegerFields(models.Model):
+    """ Integer attribute fields associated with point items. """
     point = models.ForeignKey(GiseduPointItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.IntegerField()
@@ -67,6 +71,7 @@ class GiseduPointItemIntegerFields(models.Model):
 
 
 class GiseduPointItemStringFields(models.Model):
+    """ String attribute fields associated with point items. """
     point = models.ForeignKey(GiseduPointItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.ForeignKey(GiseduStringAttributeOption)

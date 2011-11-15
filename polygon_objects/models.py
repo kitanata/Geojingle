@@ -12,6 +12,7 @@ from filters.models import GiseduFilters
 from gisedu.models import GiseduStringAttributeOption
 
 class GiseduPolygonItem(models.Model):
+    """ The model associated with all polygon items in the postGIS database. """
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
     item_type = models.CharField(max_length=254, null=True) #for dict fields
@@ -30,6 +31,7 @@ class GiseduPolygonItem(models.Model):
         verbose_name_plural = "Polygon Items"
 
 class GiseduPolygonItemBooleanFields(models.Model):
+    """ Boolean attribute fields associated with polygon items. """
     polygon = models.ForeignKey(GiseduPolygonItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.BooleanField()
@@ -42,6 +44,7 @@ class GiseduPolygonItemBooleanFields(models.Model):
         verbose_name_plural = "Polygon Boolean Attributes"
 
 class GiseduPolygonItemIntegerFields(models.Model):
+    """ Integer attribute fields associated with polygon items. """
     polygon = models.ForeignKey(GiseduPolygonItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     value = models.IntegerField()
@@ -57,6 +60,7 @@ class GiseduPolygonItemIntegerFields(models.Model):
         verbose_name_plural = "Polygon Integer Attributes"
 
 class GiseduPolygonItemStringFields(models.Model):
+    """ String attribute fields associated with polygon items. """
     polygon = models.ForeignKey(GiseduPolygonItem)
     attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.ForeignKey(GiseduStringAttributeOption)

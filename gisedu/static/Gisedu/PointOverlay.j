@@ -1,7 +1,7 @@
 @import <Foundation/CPObject.j>
 
-@import "../MapKit/MKLocation.j"
-@import "../MapKit/MKMarker.j"
+@import "MapKit/MKLocation.j"
+@import "MapKit/MKMarker.j"
 
 @import "loaders/InfoWindowOverlayLoader.j"
 
