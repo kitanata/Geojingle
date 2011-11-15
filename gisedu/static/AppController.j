@@ -16,8 +16,6 @@
 
 @import "Gisedu/MapKit/MKMapView.j"
 
-@import "Gisedu/TablesController.j"
-
 @import "Gisedu/views/LeftSideTabView.j"
 @import "Gisedu/views/OverlayOutlineView.j"
 @import "Gisedu/views/OverlayOptionsView.j"
@@ -56,8 +54,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     OverlayManager m_OverlayManager;
     FilterManager m_FilterManager;
-
-    TablesController m_TablesController;
 
     CPScrollView m_TableScrollView;
 
