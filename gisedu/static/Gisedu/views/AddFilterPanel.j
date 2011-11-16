@@ -15,7 +15,7 @@
 
 - (id)initWithFilterNames:(CPArray)filterNames
 {
-    self = [super initWithContentRect:CGRectMake(150,150,300,150) styleMask:CPClosableWindowMask];
+    self = [super initWithContentRect:CGRectMake(0,276,300,150) styleMask:CPClosableWindowMask];
 
     if(self)
     {
