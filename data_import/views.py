@@ -14,6 +14,7 @@ from polygon_objects.models import GiseduPolygonItemIntegerFields, GiseduPolygon
 
 @csrf_exempt
 def upload_csv(request):
+    """ Converts an uploaded CSV file into a manageable JSON object to be sent back to the client """
     if request.method == "POST":
         for key, value in request.FILES.iteritems():
             fileReader = csv.DictReader(value, delimiter=',', quotechar='"')
@@ -27,9 +28,7 @@ def upload_csv(request):
         return HttpResponseNotFound(mimetype = 'application/json')
 
 def import_csv(request):
-    """
-
-    """
+    """ Handles the response that comes from the CSV Import Tool """
     if request.method == "POST":
         csv_data = json.loads(request.raw_post_data)
         print(str(csv_data))

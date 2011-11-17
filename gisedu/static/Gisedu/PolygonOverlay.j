@@ -1,7 +1,7 @@
 @import <Foundation/CPObject.j>
-@import "../MapKit/MKMapView.j"
-@import "../MapKit/MKMapItem.j"
-@import "../MapKit/MKLocation.j"
+@import "MapKit/MKMapView.j"
+@import "MapKit/MKMapItem.j"
+@import "MapKit/MKLocation.j"
 
 @import "PointOverlay.j"
 

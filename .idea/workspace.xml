@@ -23,80 +23,17 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="CsvImportPanel.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvImportPanel.j">
+      <file leaf-file-name="AppController.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/AppController.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="756" column="18" selection-start="26932" selection-end="26932" vertical-scroll-proportion="0.0">
+            <state line="22" column="22" selection-start="514" selection-end="514" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/data_import/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="177" column="0" selection-start="8448" selection-end="8448" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="exceptions.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file:///usr/lib/pymodules/python2.7/django/core/exceptions.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="24" selection-start="113" selection-end="131" vertical-scroll-proportion="-3.8888888">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/filters/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="48" selection-start="259" selection-end="259" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/point_objects/models.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="39" column="52" selection-start="1596" selection-end="1596" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PolygonOverlayLoader.j" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/loaders/PolygonOverlayLoader.j">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="26" selection-start="1498" selection-end="1501" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="admin.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="66" selection-start="539" selection-end="539" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="views.py" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/point_objects/views.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="0" selection-start="1457" selection-end="1457" vertical-scroll-proportion="0.4136808">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+      <file leaf-file-name="LeftSideTabView.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/LeftSideTabView.j">
           <provider selected="true" editor-type-id="text-editor">
             <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
@@ -104,10 +41,73 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="base.py" pinned="false" current="false" current-in-tab="false">
-        <entry file="file:///usr/lib/pymodules/python2.7/django/db/models/base.py">
+      <file leaf-file-name="OverlayFiltersView.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="270" column="6" selection-start="12314" selection-end="12314" vertical-scroll-proportion="0.0">
+            <state line="473" column="45" selection-start="17063" selection-end="17063" vertical-scroll-proportion="-11.555555">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AddFilterPanel.j" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/AddFilterPanel.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="32" column="69" selection-start="967" selection-end="967" vertical-scroll-proportion="0.43908322">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GiseduFilterDescription.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterDescription.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="14" column="24" selection-start="708" selection-end="708" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GiseduFilterRequest.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterRequest.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="35" selection-start="47" selection-end="66" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="GiseduFilterChain.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterChain.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="227" column="22" selection-start="7562" selection-end="7576" vertical-scroll-proportion="-4.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="OverlayManager.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/OverlayManager.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="39" column="24" selection-start="1763" selection-end="1763" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PointDataObject.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/PointDataObject.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="0" selection-start="667" selection-end="667" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="PointOverlay.j" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/PointOverlay.j">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -127,22 +127,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/FKCsvImportPanel.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/AppController.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/views/AddFilterPanel.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/PostJsonRequest.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/GeoJsonParser.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/PointOverlay.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/PolygonOverlay.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/MapKit/MKMapView.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/Info.plist" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/UserSessionManager.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/AKLoginPanel.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j" />
         <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/FKFileController.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FilterManager.j" />
-        <option value="$PROJECT_DIR$/urls.py" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j" />
         <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/JsonRequest.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvUpdateView.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvPolygonInsertView.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvPointInsertView.j" />
-        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvImportPanel.j" />
-        <option value="$PROJECT_DIR$/point_objects/admin.py" />
-        <option value="$PROJECT_DIR$/point_objects/views.py" />
-        <option value="$PROJECT_DIR$/point_objects/models.py" />
-        <option value="$PROJECT_DIR$/data_import/views.py" />
+        <option value="$PROJECT_DIR$/gisedu/static/AppController.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j" />
+        <option value="$PROJECT_DIR$/gisedu/static/Gisedu/views/AddFilterPanel.j" />
       </list>
     </option>
   </component>
@@ -173,6 +173,7 @@
     </navigator>
     <panes>
       <pane id="Favorites" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -215,21 +216,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="polygon_objects" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gisedu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="point_objects" />
+              <option name="myItemId" value="gisedu" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -246,6 +233,10 @@
               <option name="myItemId" value="gisedu" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -257,7 +248,41 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="filters" />
+              <option name="myItemId" value="gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gis_Demo" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="static" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Gisedu" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -275,23 +300,8 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gis_Demo" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Gisedu" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cloud" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -467,7 +477,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1680" height="1025" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -540,110 +550,114 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/data_import/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="34" selection-start="1178" selection-end="1178" vertical-scroll-proportion="0.30442804">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/JsonRequest.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="107" column="45" selection-start="3453" selection-end="3453" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvUpdateView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="0" selection-start="2421" selection-end="2421" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/pymodules/python2.7/django/contrib/gis/db/models/fields.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="40" column="6" selection-start="1696" selection-end="1696" vertical-scroll-proportion="-5.3110747">
+        <state line="18" column="60" selection-start="731" selection-end="731" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/.PyCharm10/system/python_stubs/348993582/__builtin__.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/FKFileController.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="396" column="4" selection-start="11842" selection-end="11842" vertical-scroll-proportion="0.33224756">
+        <state line="4" column="9" selection-start="106" selection-end="106" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvPolygonInsertView.j">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="169" column="42" selection-start="4939" selection-end="4939" vertical-scroll-proportion="0.0">
+        <state line="11" column="38" selection-start="219" selection-end="219" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvPointInsertView.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="254" column="0" selection-start="8160" selection-end="8160" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FileKit/CsvImportPanel.j">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="756" column="18" selection-start="26932" selection-end="26932" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/pymodules/python2.7/django/db/models/base.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="270" column="6" selection-start="12314" selection-end="12314" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/polygon_objects/models.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/FilterManager.j">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/loaders/PolygonOverlayLoader.j">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterDescription.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="26" selection-start="1498" selection-end="1501" vertical-scroll-proportion="0.0">
+        <state line="14" column="24" selection-start="708" selection-end="708" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/admin.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterRequest.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="66" selection-start="539" selection-end="539" vertical-scroll-proportion="0.0">
+        <state line="2" column="35" selection-start="47" selection-end="66" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/lib/pymodules/python2.7/django/core/exceptions.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GiseduFilterChain.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="24" selection-start="113" selection-end="131" vertical-scroll-proportion="-3.8888888">
+        <state line="227" column="22" selection-start="7562" selection-end="7576" vertical-scroll-proportion="-4.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/models.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/OverlayManager.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="39" column="52" selection-start="1596" selection-end="1596" vertical-scroll-proportion="0.0">
+        <state line="39" column="24" selection-start="1763" selection-end="1763" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/filters/models.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/PointOverlay.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="48" selection-start="259" selection-end="259" vertical-scroll-proportion="0.0">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/data_import/views.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/GeoJsonParser.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="177" column="0" selection-start="8448" selection-end="8448" vertical-scroll-proportion="0.0">
+        <state line="17" column="38" selection-start="355" selection-end="355" vertical-scroll-proportion="0.3075995">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/point_objects/views.py">
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/PointDataObject.j">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="0" selection-start="1457" selection-end="1457" vertical-scroll-proportion="0.4136808">
+        <state line="18" column="0" selection-start="667" selection-end="667" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/static/AppController.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="22" column="22" selection-start="514" selection-end="514" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/LeftSideTabView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/OverlayFiltersView.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="473" column="45" selection-start="17063" selection-end="17063" vertical-scroll-proportion="-11.555555">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gisedu/static/Gisedu/views/AddFilterPanel.j">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="32" column="69" selection-start="967" selection-end="967" vertical-scroll-proportion="0.43908322">
           <folding />
         </state>
       </provider>

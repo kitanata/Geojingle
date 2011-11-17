@@ -2,8 +2,8 @@
 
 @import "PointOverlay.j"
 @import "PolygonOverlay.j"
-@import "../MapKit/MKLocation.j"
-@import "../MapKit/MKMapView.j"
+@import "MapKit/MKLocation.j"
+@import "MapKit/MKMapView.j"
 
 @implementation GeoJsonParser : CPObject
 {

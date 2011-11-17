@@ -1,5 +1,5 @@
 /*
- * SCUserSessionManager.j
+ * AKUserSessionManager.j
  * SCAuth
  *
  * Created by Saikat Chakrabarti on April 7, 2010.
@@ -11,22 +11,22 @@
 @import <Foundation/CPObject.j>
 @import <Foundation/CPURLConnection.j>
 @import <Foundation/CPUserSessionManager.j>
-@import "SCLoginPanel.j"
-@import "SCRegisterPanel.j"
+@import "AKLoginPanel.j"
+@import "AKRegisterPanel.j"
 
-var SCDefaultSessionManager = nil;
+var AKDefaultSessionManager = nil;
 
 /*!
-    @class SCUserSessionManager
+    @class AKUserSessionManager
 
     This class manages a user's session data. It is also responsible for dealing with 401
     response codes from the backend and will automatically deal with these by using its
     login provider to attempt to log the user in.
 */
 
-@implementation SCUserSessionManager : CPUserSessionManager
+@implementation AKUserSessionManager : CPUserSessionManager
 {
-    SCLoginPanel    m_LoginPanel            @accessors(property=loginPanel);
+    AKLoginPanel    m_LoginPanel            @accessors(property=loginPanel);
     RegisterPanel   m_RegisterPanel         @accessors(property=registerPanel);
     CPURLConnection m_LoginConnection;
     CPURLConnection m_LogoutConnection;
@@ -45,21 +45,21 @@ var SCDefaultSessionManager = nil;
 
     if (self)
     {
-        m_LoginPanel = [[SCLoginPanel alloc] init];
-        m_RegisterPanel = [[SCRegisterPanel alloc] init];
+        m_LoginPanel = [[AKLoginPanel alloc] init];
+        m_RegisterPanel = [[AKRegisterPanel alloc] init];
     }
     return self;
 }
 
 /*!
-    Returns a SCUserSessionManager singleton that can be used app-wide.
+    Returns a AKUserSessionManager singleton that can be used app-wide.
  */
-+ (SCUserSessionManager)defaultManager
++ (AKUserSessionManager)defaultManager
 {
-    if (!SCDefaultSessionManager)
-        SCDefaultSessionManager = [[SCUserSessionManager alloc] init];
+    if (!AKDefaultSessionManager)
+        AKDefaultSessionManager = [[AKUserSessionManager alloc] init];
 
-    return SCDefaultSessionManager;
+    return AKDefaultSessionManager;
 }
 
 /*!
@@ -319,7 +319,7 @@ var SCDefaultSessionManager = nil;
 
 - (void)openLoginPanel
 {
-    m_LoginPanel = [[SCLoginPanel alloc] init];
+    m_LoginPanel = [[AKLoginPanel alloc] init];
     [m_LoginPanel setDelegate:self];
     [m_LoginPanel orderFront:self];
 }
@@ -328,7 +328,7 @@ var SCDefaultSessionManager = nil;
 {
     [self resetUserSession];
 
-    m_RegisterPanel = [[SCRegisterPanel alloc] init];
+    m_RegisterPanel = [[AKRegisterPanel alloc] init];
     [m_RegisterPanel setDelegate:self];
     [m_RegisterPanel orderFront:self];
 }

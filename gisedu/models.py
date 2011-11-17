@@ -11,6 +11,8 @@ from django.contrib.gis.db import models
 from filters.models import GiseduFilters
 
 class GiseduStringAttributeOption(models.Model):
+    """ Used by both PointObjectStringField and PolygonObjectStringField to hold possible strings that can be assigned to string attributes.
+    """
     attribute_filter = models.ForeignKey(GiseduFilters)
     option = models.CharField(max_length=254)
 
@@ -22,6 +24,8 @@ class GiseduStringAttributeOption(models.Model):
         verbose_name_plural = "String Attribute Options"
 
 class GiseduReduceItem(models.Model):
+    """ This module maps attribute filters to all point and polygon filters that use them.
+    """
     reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')
     target_filter = models.ForeignKey(GiseduFilters, related_name='target_filter')
 

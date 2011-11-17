@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CPBundleIdentifier</key>
-	<string>com.sc.SCAuth</string>
+	<string>com.sc.AuthKit</string>
 	<key>CPBundleInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>CPBundleName</key>
-	<string>SCAuth</string>
+	<string>AuthKit</string>
 	<key>CPBundlePackageType</key>
 	<string>FMWK</string>
 </dict>

@@ -7,14 +7,14 @@
  */
 
 @import <Foundation/CPObject.j>
-@import "MapKit/MKMapView.j"
 @import <AppKit/CPToolbar.j>
 @import <AppKit/CPToolbarItem.j>
 
 @import <Foundation/CPURLConnection.j>
-@import <SCAuth/SCUserSessionManager.j>
 
-@import "Gisedu/TablesController.j"
+@import "Gisedu/AuthKit/AKUserSessionManager.j"
+
+@import "Gisedu/MapKit/MKMapView.j"
 
 @import "Gisedu/views/LeftSideTabView.j"
 @import "Gisedu/views/OverlayOutlineView.j"
@@ -25,7 +25,7 @@
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
-@import "Gisedu/FileKit/CsvImportPanel.j"
+@import "Gisedu/Modules/CsvImporter/CsvImportPanel.j"
 @import "Gisedu/FileKit/FKFileController.j"
 
 var m_NewProjectToolbarId = 'newProject';
@@ -55,8 +55,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     OverlayManager m_OverlayManager;
     FilterManager m_FilterManager;
 
-    TablesController m_TablesController;
-
     CPScrollView m_TableScrollView;
 
     var m_MinMapHeight; //map's minimum height
@@ -67,7 +65,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     var m_MaxMapWidth;  //map's maximum width
     var m_MapWidth;     //map's current width
 
-    SCUserSessionManager m_SessionManager;
+    AKUserSessionManager m_SessionManager;
     FKFileController m_ProjectCloudManager;
 
     CPMenu m_FileMenu;
@@ -156,7 +154,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [toolbar setVisible:YES];
     [theWindow setToolbar:toolbar];
 
-    m_SessionManager = [SCUserSessionManager defaultManager];
+    m_SessionManager = [AKUserSessionManager defaultManager];
     [CPURLConnection setClassDelegate:m_SessionManager];
     [m_SessionManager setDelegate:self];
     [m_SessionManager syncSession];
@@ -587,17 +585,17 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onLoginUser:(id)sender
 {
-    [[SCUserSessionManager defaultManager] triggerLogin];
+    [[AKUserSessionManager defaultManager] triggerLogin];
 }
 
 - (void)onRegisterUser:(id)sender
 {
-    [[SCUserSessionManager defaultManager] triggerRegister];
+    [[AKUserSessionManager defaultManager] triggerRegister];
 }
 
 - (void)onLogoutUser:(id)sender
 {
-    [[SCUserSessionManager defaultManager] triggerLogout];
+    [[AKUserSessionManager defaultManager] triggerLogout];
 }
 
 - (void)onManageUser:(id)sender
@@ -667,7 +665,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)updateMenuBarTitle
 {
-    var userId = [[SCUserSessionManager defaultManager] userIdentifier];
+    var userId = [[AKUserSessionManager defaultManager] userIdentifier];
     var projectName = [[FKFileController getInstance] projectName];
 
     var theTitle = "";

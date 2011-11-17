@@ -479,6 +479,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     {
         m_AddFilterPanel = [[AddFilterPanel alloc] initWithFilterNames:addFilterList];
         [m_AddFilterPanel setDelegate:self];
+        [m_AddFilterPanel setTitle:"Add New " + [dataType capitalizedString] + " Filter"];
         [m_AddFilterPanel orderFront:self];
     }
     else
