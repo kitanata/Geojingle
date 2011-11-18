@@ -1,47 +1,42 @@
-============================================================================================================
-== Project Gisedu (GIS-ed-you) - An eTech Ohio Initiative   www.etech.ohio.gov                            ==
-============================================================================================================
+Gisedu is geospatial business intelligence tool used to provide transparent access to eTech data sets in a geospatial format - that is through a mapping technology. The mapping technology that we leverage to accomplish this, Google Maps, allows us to display and manage all kinds of data.
 
-The Aim of the Gisedu project is to provide a platform to visualize geospatial intelligence data pertinent to
-eTech Ohio initiatives including technology based instruction, broad-band adoption, conference attendance and
-much much more.
+![Gisedu in the raw](https://github.com/etechAdmin/Gisedu/raw/master/tutorial/overview.png)
 
-Project Gisedu pronounced (GIS-ed-you) is still in the early phases of incubation and is not officially supported
-by eTech Ohio Commission or the State of Ohio.
+Design Choices
+==============
 
-================================
-== CORE CONTRIBUTORS          ==
-================================
+Gisedu makes the complex easy!
+-----------------------------
+Our #1 design goal while designing Gisedu was to make what are typically complex GIS operations easy. We strive for the ability of Gisedu to answer nearly any question that can be thrown at it. 
 
-Raymond Chandler III
+A few examples of these include:
 
-================================
-== CORE TECHNOLOGY            ==
-================================
+* Displaying point data within specific geopolitical region.
+    * High Schools in Franklin County
+    * Libraries in Senate District 22
+    * STEM Organizations inside Columbus City School District
 
-Project Gisedu is made up of several tiers of services that each work off of each other to achieve a desktop calibre
-GIS application that runs inside any modern web browser. These tiers are:
+* Filtering point data by numerical or categorical means
+    * Filter High Schools by grant participation / ITC
+    * Filter School Districts by ISP coverage
+    * Filter Counties by funding / population
 
-The Administration Tier
-    - Quantum GIS pushing to Postgresql 8 PostGIS database.
+* Scaling and colorizing data sets based on numeric or categorical data (Future Feature)
+    * Show all High Schools in Blue / Elementary Schools in Pink and / Middle Schools in Green
+    * Show all Schools but scale the size of the point based on the average classroom size
+    * Color school districts based on student performance / Standardized Testing percentile
+    * Color senate districts along political representation (Red / Blue)
 
-The Database Teir
-    - Postgresql 8 with PostGIS (Geometry is Stored as EPSG:4326 Standard WGS84)
-    
-The Spatial Query Teir (ORM)
-    - Python 2.6/2.7 & Django 2.5 with GeoDjango
-    
-The Web Client Teir
-    - Cappuchino version 0.9 & Objective-J (https://github.com/280north/cappuccino)
-        - Also using OJTest for unit testing (https://github.com/280north/OJTest)
-    
-    - MapKit Fork by jfahrenkrug (https://github.com/jfahrenkrug/MapKit) (Google Maps V2)
-        - jfahrenkrug - We will again be forking this as a seperate project shortly. Its time to use V3 ;)
+Gisedu is 100% data driven!
+---------------------------
+This means that any updates to software only supply new features dealing with how data is managed rather than the specific types of data in the system. Adding new data sets do not require a change in code or a new deployment.
 
-================================
-== LICENSE                    ==
-================================
+Gisedu is Fast!
+----------------------
+Gisedu follows the principal of least loaded, also known as "Just-In-Time". This means that Gisedu doesn't try to load data that you don't care about and only loads exactly what you need, when you need it. Gisedu caches everything. Once Gisedu loads something into the browser it stays there until you restart Gisedu or clear your browser's cache. This means that if you ever have to load a lot of data, loading just a bit more won't take nearly as long.
 
+Gisedu is Open Source.
+----------------------
 Project Gisedu *IS* open source software but is wholly owned by eTech Ohio Commission, a State of Ohio agency. 
 
 It is tri-licenced under the Mozzila Public License(MPL 1.1) version 1.1, the
@@ -83,4 +78,28 @@ Gnu General Public License 2.0(GPL2) and the Lesser Gnu General Public License(L
 *
 * ***** END LICENSE BLOCK ***** */
 
--
+Tutorial and Walkthrough
+==================
+* [GUI Overview](wiki/Tutorial "Tutorial")
+* [Registering a new Account](wiki/Registering-a-new-Account "Registering a new Account")
+* [The Menu Bar](wiki/The-menu-bar "The Menu Bar") 
+* [The Tool Bar](wiki/The-tool-bar "The Tool Bar")
+* [The Filter Tool Bar](wiki/The-filter-tool-bar "The Filter Tool Bar")
+* [Working With Filters](wiki/Working-with-filters "Working with filters")
+* [Understanding the Filter Tree](wiki/Understanding-the-filter-tree "Understanding the Filter Tree")
+* [Drilling down with Reduce Filters](wiki/Reducing-your-data "Reducing your data")
+* [Changing Display Properties](wiki/Changing-display-properties "Changing Display Properties")
+
+Technical Documentation
+=======================
+* [Technical Architecture](wiki/Technical-Architecture "Technical Architecture")
+* [Installation Guide](wiki/Installation-Guide "Installation Guide")
+    * [Installing Gisedu Prerequisites](wiki/Installing-Gisedu-Prerequisites)
+    * [Installing PostgreSQL and PostGIS](wiki/Installing-PostgreSQL-and-PostGIS)
+    * [Installing the Gisedu Platform](wiki/Installing-the-Gisedu-Platform)
+    * [Deploying Gisedu in Production](wiki/Deploying-Gisedu-in-Production)
+    * [Production Deployment Optimizations](wiki/Production-Deployment-Optimizations)
+* [Updating Gisedu](wiki/Updating-Gisedu "Updating Gisedu")
+* [REQL - The Rest Enabled Query Language](wiki/The-Rest-Enabled-Query-Language "Rest Enabled Query Language")
+* [Server-Side Documentation](wiki/Django-Modules "Django Applications")
+* [Client-Side Documentation](wiki/Client-Documentation "Client Documentation")
