@@ -42,6 +42,7 @@ Project Gisedu *IS* open source software but is wholly owned by eTech Ohio Commi
 It is tri-licenced under the Mozzila Public License(MPL 1.1) version 1.1, the
 Gnu General Public License 2.0(GPL2) and the Lesser Gnu General Public License(LGPL 2.1).
 
+```
 ***** BEGIN LICENSE BLOCK *****
 * Version: MPL 1.1/GPL 2.0/LGPL 2.1
 *
@@ -77,6 +78,7 @@ Gnu General Public License 2.0(GPL2) and the Lesser Gnu General Public License(L
 * the terms of any one of the MPL, the GPL or the LGPL.
 *
 * ***** END LICENSE BLOCK ***** */
+```
 
 Tutorial and Walkthrough
 ==================
