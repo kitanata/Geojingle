@@ -25,7 +25,7 @@
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
-@import "Gisedu/Modules/CsvImporter/CsvImportPanel.j"
+@import "Gisedu/Modules/CsvImporter/CsvImporterModule.j"
 @import "Gisedu/FileKit/FKFileController.j"
 
 var m_NewProjectToolbarId = 'newProject';
@@ -49,9 +49,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     id m_CurSelectedItem;
 
-    CPArray m_CountyItems;
-    CPArray m_SchoolDistrictItems;
-
     OverlayManager m_OverlayManager;
     FilterManager m_FilterManager;
 
@@ -74,7 +71,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPMenuItem m_FileSaveMenuItem;      //save project
     CPMenuItem m_FileSaveAsMenuItem;    //save project as
     CPMenuItem m_FileSeparatorItem;
-    CPMenuItem m_FileImportCSVItem;
     CPMenuItem m_FileExitMenuItem;      //exit Gisedu (closes browser tab)
 
     CPMenu m_AccountMenu;
@@ -84,6 +80,9 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPMenuItem m_AccountAdminMenuItem;
 
     CPAlert m_ExitAlert;
+
+    //Modules
+    CsvImporterModule m_CsvImporter;
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -105,9 +104,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FilterManager setDelegate:self];
     [m_FilterManager loadFilterDescriptions];
 
-    m_CountyItems = [CPArray array];
-    m_SchoolDistrictItems = [CPArray array];
+    //Load Modules
+    m_CsvImporter = [[CsvImporterModule alloc] initFromApp:self];
 
+    //Initialize the mapview
     m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
     m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
     m_MapHeight = m_MaxMapHeight;
@@ -321,16 +321,15 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         m_FileOpenMenuItem = [[CPMenuItem alloc] initWithTitle:@"Open Project" action:@selector(onOpenProject:) keyEquivalent:@"O"];
         m_FileSaveMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project" action:@selector(onSaveProject:) keyEquivalent:@"S"];
         m_FileSaveAsMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project As..." action:@selector(onSaveProjectAs:) keyEquivalent:nil];
-        m_FileSeparatorItem = [CPMenuItem separatorItem];
-        m_FileImportCSVItem = [[CPMenuItem alloc] initWithTitle:@"Import CSV" action:@selector(onImportCSV:) keyEquivalent:nil];
         m_FileExitMenuItem = [[CPMenuItem alloc] initWithTitle:@"Exit Gisedu" action:@selector(onExitGisedu:) keyEquivalent:nil];
 
         [m_FileMenu addItem:m_FileNewMenuItem];
         [m_FileMenu addItem:m_FileOpenMenuItem];
         [m_FileMenu addItem:m_FileSaveMenuItem];
         [m_FileMenu addItem:m_FileSaveAsMenuItem];
-        [m_FileMenu addItem:m_FileSeparatorItem];
-        [m_FileMenu addItem:m_FileImportCSVItem];
+
+        console.log("Importer = "); console.log(m_CsvImporter);
+        [m_CsvImporter loadIntoMenu:m_FileMenu];
         [m_FileMenu addItem:[CPMenuItem separatorItem]];
         [m_FileMenu addItem:m_FileExitMenuItem];
 
@@ -657,10 +656,11 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FileSaveMenuItem setHidden:!sessionActive];
     [m_FileSaveAsMenuItem setHidden:!sessionActive];
     [m_FileSeparatorItem setHidden:!sessionActive];
-    [m_FileImportCSVItem setHidden:!sessionActive];
 
     [m_AccountAdminMenuItem setHidden:!sessionActive];
     [m_AccountLogOutMenuItem setHidden:!sessionActive];
+
+    [m_CsvImporter updateMenuItems:sessionActive];
 }
 
 - (void)updateMenuBarTitle
@@ -698,15 +698,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 - (void)onSaveProjectAs:(id)sender
 {
     [m_ProjectCloudManager triggerSaveProjectAs];
-}
-
-- (void)onImportCSV:(id)sender
-{
-    importPanel = [CsvImportPanel csvImportPanel];
-    [importPanel orderFront:self];
-
-    //openPanel = [CPOpenPanel openPanel];
-    //[openPanel runModal];
 }
 
 - (void)onExitGisedu:(id)sender
