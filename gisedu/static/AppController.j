@@ -17,8 +17,8 @@
 @import "Gisedu/MapKit/MKMapView.j"
 
 @import "Gisedu/views/LeftSideTabView.j"
+@import "Gisedu/views/RightSideTabView.j"
 @import "Gisedu/views/OverlayOutlineView.j"
-@import "Gisedu/views/OverlayOptionsView.j"
 
 @import "Gisedu/views/AddFilterPanel.j"
 
@@ -26,6 +26,8 @@
 @import "Gisedu/loaders/PointOverlayLoader.j"
 
 @import "Gisedu/Modules/CsvImporter/CsvImporterModule.j"
+@import "Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j"
+@import "Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j"
 @import "Gisedu/FileKit/FKFileController.j"
 
 var m_NewProjectToolbarId = 'newProject';
@@ -44,15 +46,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPWindow theWindow;
     CPView m_ContentView;
 
-    LeftSideTabView m_LeftSideTabView;
-    OverlayOptionsView m_OverlayOptionsView;
+    LeftSideTabView m_LeftSideTabView   @accessors(getter=leftSideTabView);
+    RightSideTabView m_RightSideTabView @accessors(getter=rightSideTabView);
 
     id m_CurSelectedItem;
 
     OverlayManager m_OverlayManager;
     FilterManager m_FilterManager;
-
-    CPScrollView m_TableScrollView;
 
     var m_MinMapHeight; //map's minimum height
     var m_MaxMapHeight; //map's maximum height
@@ -83,6 +83,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     //Modules
     CsvImporterModule m_CsvImporter;
+    PointDisplayOptionsModule m_PointDisplayOptions @accessors(getter=pointDisplayOptions);
+    PolygonDisplayOptionsModule m_PolygonDisplayOptions @accessors(getter=polygonDisplayOptions);
 }
 
 - (void)applicationDidFinishLaunching:(CPNotification)aNotification
@@ -104,9 +106,6 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FilterManager setDelegate:self];
     [m_FilterManager loadFilterDescriptions];
 
-    //Load Modules
-    m_CsvImporter = [[CsvImporterModule alloc] initFromApp:self];
-
     //Initialize the mapview
     m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
     m_MaxMapHeight = CGRectGetHeight([m_ContentView bounds]);
@@ -127,25 +126,19 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
     [m_OverlayManager setMapView:m_MapView];
 
-    m_OverlayOptionsView = [[OverlayOptionsView alloc] initWithParentView:m_ContentView];
+    m_RightSideTabView = [[RightSideTabView alloc] initWithParentView:m_ContentView];
 
     m_LeftSideTabView = [[LeftSideTabView alloc] initWithContentView:m_ContentView];
     [m_LeftSideTabView setDelegate:self];
-    [[m_LeftSideTabView filtersView] setOptionsView:m_OverlayOptionsView];
+    [[m_LeftSideTabView filtersView] setAppController:self];
     [m_ContentView addSubview:m_LeftSideTabView];
 
-    //Not added to mapview because default is minimized
+    //Load Modules
+    m_CsvImporter = [[CsvImporterModule alloc] initFromApp:self];
+    m_PointDisplayOptions = [[PointDisplayOptionsModule alloc] initFromApp:self];
+    m_PolygonDisplayOptions = [[PolygonDisplayOptionsModule alloc] initFromApp:self];
 
-    m_TableScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(300, CGRectGetHeight([m_ContentView bounds]) - bottomHeight, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
-    [m_TableScrollView setAutoresizingMask:CPViewMinYMargin | CPViewWidthSizable];
-        var countyTableView = [[CPTableView alloc] initWithFrame:CGRectMake(300, 0, CGRectGetWidth([m_ContentView bounds]), bottomHeight)];
-        var countyNameCol = [[CPTableColumn alloc] initWithIdentifier:@"CountyNameColumn"];
-        [countyNameCol setWidth:125.0];
-        [[countyNameCol headerView] setStringValue:"County Name"];
-        [countyTableView addTableColumn:countyNameCol];
-        [m_TableScrollView setDocumentView:countyTableView];
-        console.log("Loaded Table View");
-
+    //Load the Menu
     [self initMenu];
 
     //Top View - Buttons and Controls
@@ -350,6 +343,10 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
         [m_EditMenu addItem:m_EditMenuAddReduceFilter];
         [m_EditMenu addItem:m_EditMenuDeleteFilter];
 
+        [m_EditMenu addItem:[CPMenuItem separatorItem]];
+        [m_PointDisplayOptions loadIntoMenu:m_EditMenu];
+        [m_PolygonDisplayOptions loadIntoMenu:m_EditMenu];
+
     [editMenuItem setSubmenu:m_EditMenu];
   	[menu addItem:editMenuItem];
   	//END EDIT MENU
@@ -383,15 +380,14 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onPolygonOverlaySelected:(id)sender
 {
-    [m_OverlayOptionsView setPolygonOverlayTarget:sender];
-    [self showOverlayOptionsView];
+    [m_RightSideTabView setPolygonOverlayTarget:sender];
+    [self showRightSideTabView];
 }
 
 - (void)onPointOverlaySelected:(id)pointDataObject
 {
     console.log("AppController::onPointOverlaySelected Called");
-    [m_OverlayOptionsView setPointOverlayTarget:[pointDataObject overlay]];
-
+    [m_PointDisplayOptions setOverlayTarget:[pointDataObject overlay]];
     [[m_LeftSideTabView outlineView] selectItem:[pointDataObject name]];
 }
 
@@ -422,17 +418,17 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
                 var pointDataObject = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
 
                 [pointDataObject toggleInfoWindow];
-                [m_OverlayOptionsView setPointOverlayTarget:[pointDataObject overlay]];
+                [m_PointDisplayOptions setOverlayTarget:[pointDataObject overlay]];
 
-                [self showOverlayOptionsView];
+                [self showRightSideTabView];
             }
             else if(curDataType == "POLYGON")
             {
                 var overlay = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
 
-                [m_OverlayOptionsView setPolygonOverlayTarget:overlay];
+                [m_RightSideTabView setPolygonOverlayTarget:overlay];
 
-                [self showOverlayOptionsView];
+                [self showRightSideTabView];
             }
 
             m_CurSelectedItem = item;
@@ -486,18 +482,18 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     return -1;
 }
 
-- (void)showOverlayOptionsView
+- (void)showRightSideTabView
 {
     [self updateMapTheory];
     m_MapWidth = m_MinMapWidth;
 
     [self updateMapViewFrame];
-    [m_ContentView addSubview:m_OverlayOptionsView];
+    [m_ContentView addSubview:m_RightSideTabView];
 }
 
-- (void)hideOverlayOptionsView
+- (void)hideRightSideTabView
 {
-    [m_OverlayOptionsView removeFromSuperview];
+    [m_RightSideTabView removeFromSuperview];
 
     [self updateMapTheory];
     m_MapWidth = m_MaxMapWidth;
@@ -521,13 +517,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onOverlayOptions:(id)sender
 {
-    if([m_OverlayOptionsView superview] != nil)
+    if([m_RightSideTabView superview] != nil)
     {
-        [self hideOverlayOptionsView];
+        [self hideRightSideTabView];
     }
     else
     {
-        [self showOverlayOptionsView];
+        [self showRightSideTabView];
     }
 }
 

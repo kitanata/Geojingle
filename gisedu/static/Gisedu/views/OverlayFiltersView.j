@@ -16,7 +16,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
 
 @implementation OverlayFiltersView : CPView
 {
-    OverlayOptionsView m_OverlayOptionsView @accessors(property=optionsView);
+    AppController m_AppController           @accessors(property=appController);
 
     AddFilterPanel m_AddFilterPanel;
     CPAlert m_DeleteFilterAlert;
@@ -411,7 +411,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                     andFilter:filter andAcceptedValues:[filterDescription options]];
 
-            [m_OverlayOptionsView setPolygonFilterTarget:filter];
+            [[m_AppController polygonDisplayOptions] setFilterTarget:filter];
         }
         else if([filterDescription dataType] == "POINT")
         {
@@ -426,7 +426,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
                     andFilter:filter andAcceptedValues:[filterDescription options]];
             }
 
-            [m_OverlayOptionsView setPointFilterTarget:filter];
+            [[m_AppController pointDisplayOptions] setFilterTarget:filter];
         }
         else if([filterDescription filterType] == "LIST")
         {

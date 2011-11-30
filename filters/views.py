@@ -256,6 +256,9 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
     print("Process Integer Filters")
     object_keys = []
     for name, value in options.iteritems():
+        if value == "All":
+            continue
+
         integer_query_option = string.split(name, "__")
 
         if len(integer_query_option) > 1:
