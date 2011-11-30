@@ -283,6 +283,7 @@ FKFileController : CPObject	gisedu/static/Gisedu/FileKit/FKFileController.j	/^@i
 FKFilePanel : CPPanel	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^@implementation FKFilePanel : CPPanel$/;"	c
 FKUploadButton : CPButton	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^@implementation FKUploadButton : CPButton$/;"	c
 FilterManager : CPObject	gisedu/static/Gisedu/FilterManager.j	/^@implementation FilterManager : CPObject$/;"	c
+FilterOptionsController : CPObject	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^@implementation FilterOptionsController : CPObject$/;"	c
 FilterView : CPControl	gisedu/static/Gisedu/views/FilterView.j	/^@implementation FilterView : CPControl$/;"	c
 GEOSGeometry	data_import/views.py	/^from django.contrib.gis.geos.geometry import GEOSGeometry$/;"	i
 GeoJsonParser : CPObject	gisedu/static/Gisedu/GeoJsonParser.j	/^@implementation GeoJsonParser : CPObject$/;"	c
@@ -442,16 +443,16 @@ Point	data_import/views.py	/^from django.contrib.gis.geos.point import Point$/;"
 PointDataObject : CPObject	gisedu/static/Gisedu/PointDataObject.j	/^@implementation PointDataObject : CPObject$/;"	c
 PointDisplayOptionsModule : GiseduModule	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^@implementation PointDisplayOptionsModule : GiseduModule$/;"	c
 PointDisplayOptionsView : CPView	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^@implementation PointDisplayOptionsView : CPView$/;"	c
-PointFilterOptionsController : CPObject	gisedu/static/Gisedu/PointFilterOptionsController.j	/^@implementation PointFilterOptionsController : CPObject$/;"	c
 PointOverlay : CPControl	gisedu/static/Gisedu/PointOverlay.j	/^@implementation PointOverlay : CPControl$/;"	c
 PointOverlayListLoader : CPControl	gisedu/static/Gisedu/loaders/PointOverlayListLoader.j	/^@implementation PointOverlayListLoader : CPControl$/;"	c
 PointOverlayLoader : CPControl	gisedu/static/Gisedu/loaders/PointOverlayLoader.j	/^@implementation PointOverlayLoader : CPControl$/;"	c
-PolygonFilterOptionsController : CPObject	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^@implementation PolygonFilterOptionsController : CPObject$/;"	c
+PolygonDisplayOptionsModule : GiseduModule	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^@implementation PolygonDisplayOptionsModule : GiseduModule$/;"	c
+PolygonDisplayOptionsView: CPView	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^@implementation PolygonDisplayOptionsView: CPView$/;"	c
+PolygonFilterOptionsController : CPObject	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^@implementation PolygonFilterOptionsController : CPObject$/;"	c
 PolygonOverlay : CPControl	gisedu/static/Gisedu/PolygonOverlay.j	/^@implementation PolygonOverlay : CPControl$/;"	c
 PolygonOverlayListLoader : CPControl	gisedu/static/Gisedu/loaders/PolygonOverlayListLoader.j	/^@implementation PolygonOverlayListLoader : CPControl$/;"	c
 PolygonOverlayLoader : CPControl	gisedu/static/Gisedu/loaders/PolygonOverlayLoader.j	/^@implementation PolygonOverlayLoader : CPControl$/;"	c
-PolygonOverlayOptionsController : CPObject	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^@implementation PolygonOverlayOptionsController : CPObject$/;"	c
-PolygonOverlayOptionsView : CPView	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^@implementation PolygonOverlayOptionsView : CPView$/;"	c
+PolygonOverlayOptionsController : CPObject	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^@implementation PolygonOverlayOptionsController : CPObject$/;"	c
 Q	filters/views.py	/^from django.db.models import Q$/;"	i
 ROOT_URLCONF	settings.py	/^ROOT_URLCONF = 'Gisedu.urls'$/;"	v
 ROTL	gisedu/static/Gisedu/HashKit/Sha1Hash.j	/^+ (id) ROTL:(id)x n:(id)n$/;"	m
@@ -589,6 +590,8 @@ addPolygonPath	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)addPolygonPath:(C
 addSearchString	gisedu/static/Gisedu/views/CPDynamicSearch.j	/^- (void)addSearchString:(CPString)searchString$/;"	m
 addToMapView	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)addToMapView:(MKMapView)mapView$/;"	m
 addToMapView	gisedu/static/Gisedu/MapKit/MKPolyline.j	/^- (void)addToMapView:(MKMapView)mapView$/;"	m
+addToMapView	gisedu/static/Gisedu/PointOverlay.j	/^- (void)addToMapView$/;"	m
+addToMapView	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)addToMapView$/;"	m
 address_line_one	point_objects/models.py	/^    address_line_one = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
 address_line_two	point_objects/models.py	/^    address_line_two = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
 admin	filters/admin.py	/^from django.contrib import admin$/;"	i
@@ -611,16 +614,32 @@ attribute_filter	polygon_objects/models.py	/^    attribute_filter = models.Forei
 attribute_filter	polygon_objects/models.py	/^    attribute_filter = models.ForeignKey(GiseduFilters)$/;"	v	class:GiseduPolygonItemStringFields
 attribute_filters	filters/models.py	/^    attribute_filters = models.ManyToManyField("self", symmetrical=False, related_name="attribute_filters_rel", blank=True)$/;"	v	class:GiseduFilters
 authenticate	session/views.py	/^from django.contrib.auth import authenticate, login, logout$/;"	i
+authenticationFailed	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (void)authenticationFailed$/;"	m
+authenticationFailed	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)authenticationFailed$/;"	m
 basicDataOverlayMap	gisedu/static/Gisedu/OverlayManager.j	/^- (CPDictionary)basicDataOverlayMap:(CPString)dataType$/;"	m
 be	manage.py	/^    import settings # Assumed to be in the same directory.$/;"	i
 browser_test	gisedu/views.py	/^def browser_test(request):$/;"	f
 buildAddFilterList	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (CPArray)buildAddFilterList:(CPString)dataType$/;"	m
+buildFilterRequest	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (CPString)buildFilterRequest$/;"	m
+buildJsonSaveData	gisedu/static/AppController.j	/^- (id)buildJsonSaveData$/;"	m
 cancelOperation	gisedu/static/Gisedu/views/CPDynamicSearch.j	/^- (void)cancelOperation:(id)sender$/;"	m
+center	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (MKLocation)center $/;"	m
 checkUsername	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)checkUsername:(CPString)username$/;"	m
+checkUsernameFailed	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)checkUsernameFailed$/;"	m
+checkUsernameFailed	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)checkUsernameFailed$/;"	m
+checkUsernameSuccessful	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)checkUsernameSuccessful$/;"	m
+checkUsernameSuccessful	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)checkUsernameSuccessful$/;"	m
 checkVersion	templates/browser_test.html	/^            function checkVersion() {$/;"	f
 check_user	session/views.py	/^def check_user(request, username):$/;"	f
 city	point_objects/models.py	/^    city = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
+cityColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)cityColumnName$/;"	m
+clearItems	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (void) clearItems$/;"	m
 clearMutableData	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function clearMutableData( aData)$/;"	c
+clearOverlays	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)clearOverlays $/;"	m
+clearProjectDictData	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)clearProjectDictData$/;"	m
+close	gisedu/static/Gisedu/InfoWindowOverlay.j	/^- (void)close$/;"	m
+closeInfoWindow	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)closeInfoWindow$/;"	m
+closeInfoWindow	gisedu/static/Gisedu/PointDataObject.j	/^- (void)closeInfoWindow$/;"	m
 columnWithTitle	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (CPTableColumn)columnWithTitle:(CPString)columnTitle$/;"	m
 conn	utilities/grade_morpher.py	/^conn = psycopg2.connect(database="gis_demo", user="postgres", password="9Aakvc82!", host="127.0.0.1")$/;"	v
 connection	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)connection:(CPURLConnection)aConnection didFailWithError:(CPException)anException$/;"	m
@@ -653,12 +672,15 @@ connectionDidReceiveAuthenticationChallenge	gisedu/static/Gisedu/AuthKit/AKUserS
 containsFilter	gisedu/static/Gisedu/FilterManager.j	/^- (BOOL)containsFilter:(CPTreeNode)filter withNodes:(CPArray)nodes$/;"	m
 containsFilter	gisedu/static/Gisedu/FilterManager.j	/^- (BOOL)containsFilter:(CPTreeNode)filter$/;"	m
 containsFilter	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (BOOL)containsFilter:(GiseduFilter)filter$/;"	m
+content	gisedu/static/Gisedu/InfoWindowOverlay.j	/^- (CPString)content$/;"	m
 controlTextDidChange	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)controlTextDidChange:(id)sender$/;"	m
-controllerWithFilter	gisedu/static/Gisedu/PointFilterOptionsController.j	/^+ (id)controllerWithFilter:(GiseduFilter)filter$/;"	m
-controllerWithFilter	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^+ (id)controllerWithFilter:(GiseduFilter)filter$/;"	m
+controllerWithFilter	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^+ (id)controllerWithFilter:(GiseduFilter)filter$/;"	m
+controllerWithFilter	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^+ (id)controllerWithFilter:(GiseduFilter)filter$/;"	m
 controllerWithOverlay	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^+ (id)controllerWithOverlay:(PointOverlay)overlay$/;"	m
-controllerWithOverlay	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^+ (id)controllerWithOverlay:(PointOverlay)overlay$/;"	m
+controllerWithOverlay	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^+ (id)controllerWithOverlay:(PointOverlay)overlay$/;"	m
 createFilter	gisedu/static/Gisedu/FilterManager.j	/^- (CPTreeNode)createFilter:(CPString)type$/;"	m
+createGoogleMarker	gisedu/static/Gisedu/PointOverlay.j	/^- (void)createGoogleMarker$/;"	m
+createGooglePolygon	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)createGooglePolygon$/;"	m
 createLabelWithTitle	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (CPTextField)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg$/;"	m
 createLabelWithTitle	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (id)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg$/;"	m
 createLabelWithTitle	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (id)createLabelWithTitle:(CPString)title yOrg:(CPInteger)yOrg$/;"	m
@@ -677,12 +699,15 @@ csrf_exempt	point_objects/views.py	/^from django.views.decorators.csrf import cs
 csrf_exempt	polygon_objects/views.py	/^from django.views.decorators.csrf import csrf_exempt$/;"	i
 csrf_exempt	session/views.py	/^from django.views.decorators.csrf import csrf_exempt$/;"	i
 csv	data_import/views.py	/^import csv$/;"	i
+csvImportPanel	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^+ (id)csvImportPanel$/;"	m
 cur	utilities/grade_morpher.py	/^cur = conn.cursor()$/;"	v
 curEntry	utilities/grade_morpher.py	/^    curEntry = cur.fetchone()$/;"	v
 curEntry	utilities/grade_morpher.py	/^curEntry = cur.fetchone()$/;"	v
 curEntryGid	utilities/grade_morpher.py	/^    curEntryGid = curEntry[0]$/;"	v
 curEntryGrades	utilities/grade_morpher.py	/^        curEntryGrades = string.split(curEntry[4], ' ')$/;"	v
 curEntryGrades	utilities/grade_morpher.py	/^    curEntryGrades = curEntry[4]$/;"	v
+curSelectedFilter	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (id)curSelectedFilter$/;"	m
+curSelectedFilterTypeDescription	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (GiseduFilterDescription)curSelectedFilterTypeDescription$/;"	m
 data_type	filters/models.py	/^    data_type = models.CharField(max_length=254)$/;"	v	class:GiseduFilters
 datetime	cloud/views.py	/^from datetime import datetime$/;"	i
 db_table	cloud/models.py	/^        db_table = u'cloud_project_storage_item'$/;"	v	class:CloudProjectStorageItem.Meta
@@ -698,12 +723,21 @@ db_table	polygon_objects/models.py	/^        db_table = u'gisedu_polygon_item'$/
 db_table	polygon_objects/models.py	/^        db_table = u'gisedu_polygon_item_boolean_fields'$/;"	v	class:GiseduPolygonItemBooleanFields.Meta
 db_table	polygon_objects/models.py	/^        db_table = u'gisedu_polygon_item_integer_fields'$/;"	v	class:GiseduPolygonItemIntegerFields.Meta
 db_table	polygon_objects/models.py	/^        db_table = u'gisedu_polygon_item_string_fields'$/;"	v	class:GiseduPolygonItemStringFields.Meta
+decode	gisedu/static/Gisedu/HashKit/Utf8.j	/^+ (CPString)decode strUtf:(CPString)strUtf$/;"	m
 decompileStaticFile	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function decompileStaticFile( aBundle, aString, aPath)$/;"	f
+defaultManager	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^+ (AKUserSessionManager)defaultManager$/;"	m
 defaultdict	filters/views.py	/^from _collections import defaultdict$/;"	i
+delegate	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (id)delegate$/;"	m
 deleteFilter	gisedu/static/Gisedu/FilterManager.j	/^- (void)deleteFilter:(CPTreeNode)filter$/;"	m
 description	filters/models.py	/^    description = models.CharField(max_length=254)$/;"	v	class:GiseduFilters
 directory	manage.py	/^    import settings # Assumed to be in the same directory.$/;"	i
+displayOptions	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (id)displayOptions$/;"	m
+displayOptions	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (id)displayOptions$/;"	m
+displayOptions	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (id)displayOptions$/;"	m
+displayOptions	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (id)displayOptions$/;"	m
+email	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (CPString)email$/;"	m
 enabled	filters/models.py	/^    enabled = models.BooleanField()$/;"	v	class:GiseduFilters
+encode	gisedu/static/Gisedu/HashKit/Utf8.j	/^+ (CPString)encode strUni:(CPString)strUni$/;"	m
 encodeHTMLComponent	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function encodeHTMLComponent( aString)$/;"	f
 encodeWithCoder	gisedu/static/Gisedu/MapKit/MKLocation.j	/^- (void)encodeWithCoder:(CPCoder)coder$/;"	m
 encodeWithCoder	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)encodeWithCoder:(CPCoder)coder$/;"	m
@@ -715,10 +749,13 @@ exports.sprintf	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^expo
 exports.sprintf.justify	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function justify(sign, prefix, string, suffix, width, leftJustify, padZeros)$/;"	f
 exports.sprintf.pad	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function pad(n, ch)$/;"	f
 failureAlertWithMessage	gisedu/static/AppController.j	/^- (void)failureAlertWithMessage:(CPString)aMessage$/;"	m
+fileName	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^- (CPString)fileName$/;"	m
 filter	point_objects/models.py	/^    filter = models.ForeignKey(GiseduFilters)$/;"	v	class:GiseduPointItem
 filter	polygon_objects/models.py	/^    filter = models.ForeignKey(GiseduFilters)$/;"	v	class:GiseduPolygonItem
+filterChain	gisedu/static/Gisedu/GiseduFilterChain.j	/^+ (id)filterChain$/;"	m
 filterChainWithRootFilter	gisedu/static/Gisedu/GiseduFilterChain.j	/^+ (id)filterChainWithRootFilter:(GiseduFilter)rootFilter$/;"	m
 filterChainsWithFilter	gisedu/static/Gisedu/FilterManager.j	/^- (CPArray)filterChainsWithFilter:(GiseduFilter)filter$/;"	m
+filterFlagMap	gisedu/static/Gisedu/FilterManager.j	/^- (id)filterFlagMap$/;"	m
 filterIdFromName	gisedu/static/Gisedu/FilterManager.j	/^- (CPInteger)filterIdFromName:(CPString)filterName$/;"	m
 filter_list	filters/views.py	/^def filter_list(request):$/;"	f
 filter_options	filters/views.py	/^def filter_options(gis_filter):$/;"	f
@@ -753,9 +790,14 @@ gap.f	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^            '\
 gap.n	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^            '\\n': '\\\\n',$/;"	p
 gap.r	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^            '\\r': '\\\\r',$/;"	p
 gap.t	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^            '\\t': '\\\\t',$/;"	p
+geometryColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (CPString)geometryColumnName$/;"	m
 getDisplayOption	gisedu/static/Gisedu/GiseduFilter.j	/^- (id)getDisplayOption:(CPString)option$/;"	m
 getDisplayOptions	gisedu/static/Gisedu/PointOverlay.j	/^- (id)getDisplayOptions:(CPString)option$/;"	m
 getDisplayOptions	gisedu/static/Gisedu/PolygonOverlay.j	/^- (id)getDisplayOptions:(CPString)option$/;"	m
+getInstance	gisedu/static/Gisedu/FileKit/FKFileController.j	/^+ (id)getInstance$/;"	m
+getInstance	gisedu/static/Gisedu/FilterManager.j	/^+ (FilterManager)getInstance$/;"	m
+getInstance	gisedu/static/Gisedu/MapKit/MKMapView.j	/^+ (id)getInstance$/;"	m
+getInstance	gisedu/static/Gisedu/OverlayManager.j	/^+ (OverlayManager)getInstance$/;"	m
 getInternetExplorerVersion	templates/browser_test.html	/^            function getInternetExplorerVersion() {$/;"	f
 getInternetExplorerVersion	templates/index.html	/^            function getInternetExplorerVersion() {$/;"	f
 getOverlayObject	gisedu/static/Gisedu/OverlayManager.j	/^- (id)getOverlayObject:(CPString)dataType objId:(CPInteger)objId$/;"	m
@@ -763,6 +805,9 @@ getRequestFromUrl	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^+ (id)getRequestF
 getRequestFromUrl	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^+ (id)getRequestFromUrl:(CPString)url delegate:(id)delegate$/;"	m
 get_object_or_404	cloud/views.py	/^from django.shortcuts import render_to_response, get_object_or_404$/;"	i
 gis_admin	point_objects/admin.py	/^from django.contrib.gis import admin as gis_admin$/;"	i
+gmNamespace	gisedu/static/Gisedu/MapKit/MKMapView.j	/^+ (JSObject)gmNamespace $/;"	m
+gmNamespace	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (JSObject)gmNamespace $/;"	m
+googleLatLng	gisedu/static/Gisedu/MapKit/MKLocation.j	/^- (LatLng)googleLatLng$/;"	m
 googlePolyline	gisedu/static/Gisedu/MapKit/MKPolyline.j	/^- (Polyline)googlePolyline {$/;"	m
 google_map	gisedu/views.py	/^def google_map(request):$/;"	f
 gradeId	utilities/grade_morpher.py	/^                    gradeId = grade_id_map[grade]$/;"	v
@@ -772,6 +817,12 @@ gradeRange	utilities/grade_morpher.py	/^                gradeRange = string.spli
 grade_id_map	utilities/grade_morpher.py	/^grade_id_map = {'K': 2, 'P': 1, 'PS': 1, 'SN': 15, 'UNG': 17, $/;"	v
 handle_user_login	session/views.py	/^def handle_user_login(request, username, password, remember):$/;"	f
 hash	gisedu/static/Gisedu/HashKit/Sha1Hash.j	/^+ (CPString) hash:(CPString)msg utf8Encode:(BOOL)utf8encode$/;"	m
+hideErrorMessage	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)hideErrorMessage$/;"	m
+hideRightSideTabView	gisedu/static/AppController.j	/^- (void)hideRightSideTabView$/;"	m
+icon	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (CPString)icon$/;"	m
+icon	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (CPString)icon$/;"	m
+iconColor	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (CPString)iconColor$/;"	m
+iconColor	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (CPString)iconColor$/;"	m
 image.onerror	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    image.onerror = function()$/;"	f
 image.onload	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    image.onload = function()$/;"	f
 import_csv	data_import/views.py	/^def import_csv(request):$/;"	f
@@ -780,24 +831,45 @@ include	urls.py	/^from django.conf.urls.defaults import patterns, include, url$/
 includeURLs	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^var includeURLs = NULL;$/;"	v
 index	gisedu/views.py	/^def index(request):$/;"	f
 indexOf	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^var indexOf = Array.prototype.indexOf,$/;"	v
+infoWindowHTML	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (CPString)infoWindowHTML$/;"	m
+init	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void) init$/;"	m
+init	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/FilterManager.j	/^- (void)init$/;"	m
+init	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (vid)init$/;"	m
 init	gisedu/static/Gisedu/MapKit/MKPolyline.j	/^- (id)init {$/;"	m
+init	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/OverlayManager.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/PointDataObject.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/PointOverlay.j	/^- (id)init$/;"	m
+init	gisedu/static/Gisedu/PolygonOverlay.j	/^- (id)init $/;"	m
 initAtLocation	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (id)initAtLocation:(MKLocation)aLocation$/;"	m
+initColumnPopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)initColumnPopUps$/;"	m
 initColumnPopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (void)initColumnPopUps:(CPArray)csvColumns$/;"	m
 initColumnPopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (void)initColumnPopUps:(CPArray)csvColumns$/;"	m
 initColumnPopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (void)initColumnPopUps:(CPArray)csvColumns$/;"	m
 initFromApp	gisedu/static/Gisedu/Modules/CsvImporter/CsvImporterModule.j	/^- (id)initFromApp:(CPObject)app$/;"	m
 initFromApp	gisedu/static/Gisedu/Modules/GiseduModule.j	/^- (id)initFromApp:(CPObject)app$/;"	m
 initFromApp	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (id)initFromApp:(CPObject)app$/;"	m
+initFromApp	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (id)initFromApp:(CPObject)app$/;"	m
 initFromLocation	gisedu/static/Gisedu/PointOverlay.j	/^- (id)initFromLocation:(MKLocation)location$/;"	m
+initMenu	gisedu/static/AppController.j	/^- (void)initMenu$/;"	m
 initWithContent	gisedu/static/Gisedu/InfoWindowOverlay.j	/^- (id) initWithContent:(CPString)contentString$/;"	m
 initWithContentView	gisedu/static/Gisedu/views/LeftSideTabView.j	/^- (id) initWithContentView:(CPView)contentView$/;"	m
-initWithFilter	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (id)initWithFilter:(GiseduFilter)filter$/;"	m
-initWithFilter	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (id)initWithFilter:(GiseduFilter)filter$/;"	m
+initWithFilter	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (id)initWithFilter:(GiseduFilter)filter$/;"	m
+initWithFilter	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (id)initWithFilter:(GiseduFilter)filter$/;"	m
 initWithFilterNames	gisedu/static/Gisedu/views/AddFilterPanel.j	/^- (id)initWithFilterNames:(CPArray)filterNames$/;"	m
 initWithFrame	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (id)initWithFrame:(CGRect)aFrame$/;"	m
 initWithFrame	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (id)initWithFrame:(CGRect)aFrame center:(MKLocation)aLocation$/;"	m
 initWithFrame	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (id)initWithFrame:(CGRect)aFrame$/;"	m
 initWithFrame	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (id) initWithFrame:(CGRect)aFrame$/;"	m
+initWithFrame	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (id) initWithFrame:(CGRect)aFrame$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/ArrayFilterView.j	/^- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPArray)acceptedValues$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/BooleanFilterView.j	/^- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/CPDynamicSearch.j	/^- (id)initWithFrame:(CGRect)aFrame$/;"	m
@@ -807,7 +879,6 @@ initWithFrame	gisedu/static/Gisedu/views/IdStringMapFilterView.j	/^- (id)initWit
 initWithFrame	gisedu/static/Gisedu/views/IntegerFilterView.j	/^- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPArray)acceptedValues$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (id) initWithFrame:(CGRect)aFrame$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (id) initWithFrame:(CGRect)aFrame$/;"	m
-initWithFrame	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (id) initWithFrame:(CGRect)aFrame$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/StringFilterView.j	/^- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPArray)acceptedValues$/;"	m
 initWithFrame	gisedu/static/Gisedu/views/StringIdMapFilterView.j	/^- (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPDictionary)acceptedValues$/;"	m
 initWithIdentifier	gisedu/static/Gisedu/PointDataObject.j	/^- (id)initWithIdentifier:(CPInteger)identifier$/;"	m
@@ -816,7 +887,7 @@ initWithLatLng	gisedu/static/Gisedu/MapKit/MKLocation.j	/^- (id)initWithLatLng:(
 initWithLatitude	gisedu/static/Gisedu/MapKit/MKLocation.j	/^- (id)initWithLatitude:(float)aLat andLongitude:(float)aLng$/;"	m
 initWithLocations	gisedu/static/Gisedu/MapKit/MKPolyline.j	/^- (id)initWithLocations:(CPArray)someLocations$/;"	m
 initWithOverlay	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (id)initWithOverlay:(PointOverlay)overlay$/;"	m
-initWithOverlay	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (id)initWithOverlay:(PolygonOverlay)overlay$/;"	m
+initWithOverlay	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (id)initWithOverlay:(PolygonOverlay)overlay$/;"	m
 initWithParentView	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (id) initWithParentView:(CPView)parentView$/;"	m
 initWithRequestUrl	gisedu/static/Gisedu/loaders/InfoWindowOverlayLoader.j	/^- (id)initWithRequestUrl:(CPString)connectionUrl$/;"	m
 initWithRequestUrl	gisedu/static/Gisedu/loaders/PointOverlayListLoader.j	/^- (id)initWithRequestUrl:(CPString)connectionUrl$/;"	m
@@ -832,12 +903,19 @@ initWithValue	gisedu/static/Gisedu/GiseduFilterDescription.j	/^- (id)initWithVal
 inlines	point_objects/admin.py	/^    inlines = [GiseduPointItemBooleanFieldsInline,$/;"	v	class:GiseduPointItemAdmin
 inlines	polygon_objects/admin.py	/^    inlines = [GiseduPolygonItemBooleanFieldsInline,$/;"	v	class:GiseduPolygonItemAdmin
 insert_cur	utilities/grade_morpher.py	/^insert_cur = conn.cursor()$/;"	v
+isMapReady	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (BOOL)isMapReady $/;"	m
 is_logged_in	session/views.py	/^def is_logged_in(request):$/;"	f
+itemNameColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)itemNameColumnName$/;"	m
+itemNameColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (CPString)itemNameColumnName$/;"	m
+itemTypeColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)itemTypeColumnName$/;"	m
+itemTypeColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (CPString)itemTypeColumnName$/;"	m
 item_address	point_objects/models.py	/^    item_address = models.ForeignKey(GiseduPointItemAddress)$/;"	v	class:GiseduPointItem
 item_name	point_objects/models.py	/^    item_name = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItem
 item_name	polygon_objects/models.py	/^    item_name = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPolygonItem
 item_type	point_objects/models.py	/^    item_type = models.CharField(max_length=254, null=True) #for dict fields$/;"	v	class:GiseduPointItem
 item_type	polygon_objects/models.py	/^    item_type = models.CharField(max_length=254, null=True) #for dict fields$/;"	v	class:GiseduPolygonItem
+joinAttributeName	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (CPString)joinAttributeName$/;"	m
+joinColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (CPString)joinColumnName$/;"	m
 json	cloud/views.py	/^import json$/;"	i
 json	data_import/views.py	/^import json$/;"	i
 json	filters/views.py	/^import json$/;"	i
@@ -845,6 +923,7 @@ json	point_objects/views.py	/^import json$/;"	i
 json	polygon_objects/views.py	/^import json$/;"	i
 json	session/views.py	/^import json$/;"	i
 last_modified	cloud/models.py	/^    last_modified = models.DateTimeField(auto_now=True, null=False)$/;"	v	class:CloudProjectStorageItem
+latitudeColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)latitudeColumnName$/;"	m
 list_display	gisedu/admin.py	/^    list_display = ['option', 'attribute_filter']$/;"	v	class:GiseduStringAttributeOptionAdmin
 list_display	point_objects/admin.py	/^    list_display = ('address_line_one', 'city', 'state', 'zip10')$/;"	v	class:GiseduPointItemAddressAdmin
 list_display	point_objects/admin.py	/^    list_display = ('item_name', 'filter', 'item_type')$/;"	v	class:GiseduPointItemAdmin
@@ -865,10 +944,19 @@ list_filter	polygon_objects/admin.py	/^    list_filter = ('filter', 'item_type')
 list_filter	polygon_objects/admin.py	/^    list_filter = ('polygon__filter__description', 'attribute_filter', 'option')$/;"	v	class:GiseduPolygonItemStringFieldAdmin
 list_filter	polygon_objects/admin.py	/^    list_filter = ('polygon__filter__description', 'attribute_filter', 'value')$/;"	v	class:GiseduPolygonItemBooleanFieldAdmin
 list_filter	polygon_objects/admin.py	/^    list_filter = ('polygon__filter__description', 'attribute_filter', 'value')$/;"	v	class:GiseduPolygonItemIntegerFieldAdmin
+load	gisedu/static/Gisedu/loaders/DictionaryLoader.j	/^- (void)load$/;"	m
+load	gisedu/static/Gisedu/loaders/InfoWindowOverlayLoader.j	/^- (void)load$/;"	m
+load	gisedu/static/Gisedu/loaders/JsonDictionaryLoader.j	/^- (void)load$/;"	m
+load	gisedu/static/Gisedu/loaders/ListLoader.j	/^- (void)load$/;"	m
 loadExecutableForBundle	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function loadExecutableForBundle( aBundle, success, failure)$/;"	f
+loadFilterDescriptions	gisedu/static/Gisedu/FilterManager.j	/^- (void)loadFilterDescriptions$/;"	m
 loadIntoMenu	gisedu/static/Gisedu/Modules/CsvImporter/CsvImporterModule.j	/^- (void)loadIntoMenu:(CPMenu)theMenu$/;"	m
 loadIntoMenu	gisedu/static/Gisedu/Modules/GiseduModule.j	/^- (void)loadIntoMenu:(CPMenu)theMenu$/;"	m
 loadIntoMenu	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void)loadIntoMenu:(CPMenu)theMenu$/;"	m
+loadIntoMenu	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (void)loadIntoMenu:(CPMenu)theMenu$/;"	m
+loadPointOverlayQueue	gisedu/static/Gisedu/OverlayManager.j	/^- (void)loadPointOverlayQueue$/;"	m
+loadPolygonOverlayQueue	gisedu/static/Gisedu/OverlayManager.j	/^- (void)loadPolygonOverlayQueue$/;"	m
+loadProjectDictData	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)loadProjectDictData$/;"	m
 loadSpritedImagesForBundle	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function loadSpritedImagesForBundle( aBundle, success, failure)$/;"	f
 loadWithDisplayOptions	gisedu/static/Gisedu/PointDataObject.j	/^- (void)loadWithDisplayOptions:(id)displayOptions$/;"	m
 loadWithDisplayOptions	gisedu/static/Gisedu/loaders/PointOverlayListLoader.j	/^- (void)loadWithDisplayOptions:(id)displayOptions$/;"	m
@@ -876,18 +964,23 @@ loadWithDisplayOptions	gisedu/static/Gisedu/loaders/PointOverlayLoader.j	/^- (vo
 loadWithDisplayOptions	gisedu/static/Gisedu/loaders/PolygonOverlayListLoader.j	/^- (void)loadWithDisplayOptions:(id)displayOptions$/;"	m
 loadWithDisplayOptions	gisedu/static/Gisedu/loaders/PolygonOverlayLoader.j	/^- (void)loadWithDisplayOptions:(id)displayOptions$/;"	m
 load_gisedu	templates/index.html	/^            function load_gisedu() {$/;"	f
+location	gisedu/static/Gisedu/MapKit/MKLocation.j	/^+ (MKLocation)location$/;"	m
 locationFromString	gisedu/static/Gisedu/MapKit/MKLocation.j	/^+ (MKLocation)locationFromString:(CPString)aString$/;"	m
 locationWithLatitude	gisedu/static/Gisedu/MapKit/MKLocation.j	/^+ (MKLocation)locationWithLatitude:(float)aLat andLongitude:(float)aLng {$/;"	m
 logWindow.scrollToBottom	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    logWindow.scrollToBottom = function() {$/;"	f
 logWindow.toggle	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    logWindow.toggle = function(elem) {$/;"	f
 login	session/views.py	/^from django.contrib.auth import authenticate, login, logout$/;"	i
+loginFailed	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (void)loginFailed$/;"	m
 loginUser	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)loginUser:(CPString)username password:(CPString)password remember:(BOOL)rememberUser$/;"	m
 login_user	session/views.py	/^def login_user(request):$/;"	f
 logout	session/views.py	/^from django.contrib.auth import authenticate, login, logout$/;"	i
 logout_user	session/views.py	/^def logout_user(request):$/;"	f
+longitudeColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)longitudeColumnName$/;"	m
 mail_stop	point_objects/models.py	/^    mail_stop = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
 mapViewIsReady	gisedu/static/AppController.j	/^- (void)mapViewIsReady:(MKMapView)mapView$/;"	m
 mapViewIsReady	gisedu/static/Gisedu/views/LeftSideTabView.j	/^- (void)mapViewIsReady:(MKMapView)mapView$/;"	m
+marker	gisedu/static/Gisedu/MapKit/MKMarker.j	/^+ (MKMarker)marker$/;"	m
+markerValid	gisedu/static/Gisedu/PointOverlay.j	/^- (BOOL)markerValid$/;"	m
 model	point_objects/admin.py	/^    model = GiseduPointItemBooleanFields$/;"	v	class:GiseduPointItemBooleanFieldsInline
 model	point_objects/admin.py	/^    model = GiseduPointItemIntegerFields$/;"	v	class:GiseduPointItemIntegerFieldsInline
 model	point_objects/admin.py	/^    model = GiseduPointItemStringFields$/;"	v	class:GiseduPointItemStringFieldsInline
@@ -924,6 +1017,9 @@ onCancelButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (vo
 onCancelButtonPressed	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (void)onCancelButtonPressed:(id)sender$/;"	m
 onCancelButtonPressed	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)onCancelButtonPressed:(id)sender$/;"	m
 onCheckUsername	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onCheckUsername:(id)panel$/;"	m
+onClick	gisedu/static/Gisedu/PointDataObject.j	/^- (void)onClick$/;"	m
+onClick	gisedu/static/Gisedu/PointOverlay.j	/^- (void)onClick$/;"	m
+onClick	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)onClick$/;"	m
 onColumnAssigned	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onColumnAssigned:(CPTableColumn)tableColumn inPanel:(CPView)panel$/;"	m
 onColumnSelected	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (void)onColumnSelected:(id)sender$/;"	m
 onColumnUnassigned	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onColumnUnassigned:(CPTableColumn)tableColumn inPanel:(CPView)panel$/;"	m
@@ -934,18 +1030,20 @@ onDeleteRow	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)
 onDuplicateRow	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onDuplicateRow:(id)sender$/;"	m
 onExitGisedu	gisedu/static/AppController.j	/^- (void)onExitGisedu:(id)sender$/;"	m
 onFilePanelFinished	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)onFilePanelFinished:(id)sender$/;"	m
+onFillColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
 onFillColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
-onFillColorChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
-onFillColorChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
-onFillColorChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
+onFillColorChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
+onFillColorChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onFillColorChanged:(CPString)fillColor$/;"	m
 onFillColorWell	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onFillColorWell:(id)sender$/;"	m
-onFillColorWell	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onFillColorWell:(id)sender$/;"	m
+onFillColorWell	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onFillColorWell:(id)sender$/;"	m
+onFillOpacityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
 onFillOpacityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
-onFillOpacityChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
-onFillOpacityChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
-onFillOpacityChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
+onFillOpacityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
+onFillOpacityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onFillOpacityChanged:(id)fillOpacity$/;"	m
 onFillOpacitySlider	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onFillOpacitySlider:(id)sender$/;"	m
-onFillOpacitySlider	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onFillOpacitySlider:(id)sender$/;"	m
+onFillOpacitySlider	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onFillOpacitySlider:(id)sender$/;"	m
+onFilterDescriptionsLoaded	gisedu/static/AppController.j	/^- (void)onFilterDescriptionsLoaded$/;"	m
+onFilterDescriptionsLoaded	gisedu/static/Gisedu/OverlayManager.j	/^- (void)onFilterDescriptionsLoaded$/;"	m
 onFilterPropertiesChanged	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (void)onFilterPropertiesChanged:(id)sender$/;"	m
 onFilterRequestProcessed	gisedu/static/AppController.j	/^- (void)onFilterRequestProcessed:(id)sender$/;"	m
 onFilterRequestProcessed	gisedu/static/Gisedu/FilterManager.j	/^- (void)onFilterRequestProcessed:(id)sender$/;"	m
@@ -953,15 +1051,15 @@ onFilterRequestSuccessful	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (void)onF
 onFilterTypeChanged	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onFilterTypeChanged:(id)sender$/;"	m
 onFilterUpdateButton	gisedu/static/Gisedu/views/StringIdMapFilterView.j	/^- (void)onFilterUpdateButton:(id)sender$/;"	m
 onGeometryTypeChanged	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onGeometryTypeChanged:(id)sender$/;"	m
+onIconColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onIconColorChanged:(CPString)iconColor$/;"	m
 onIconColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onIconColorChanged:(CPString)iconColor$/;"	m
 onIconColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onIconColorChanged:(id)sender$/;"	m
-onIconColorChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onIconColorChanged:(CPString)iconColor$/;"	m
+onIconSubTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onIconSubTypeChanged:(CPString)newType$/;"	m
 onIconSubTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onIconSubTypeChanged:(CPString)newType$/;"	m
 onIconSubTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onIconSubTypeChanged:(id)sender$/;"	m
-onIconSubTypeChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onIconSubTypeChanged:(CPString)newType$/;"	m
+onIconTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onIconTypeChanged:(CPString)newType$/;"	m
 onIconTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onIconTypeChanged:(CPString)newType$/;"	m
 onIconTypeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onIconTypeChanged:(id)sender$/;"	m
-onIconTypeChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onIconTypeChanged:(CPString)newType$/;"	m
 onImportButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onImportButton:(id)sender$/;"	m
 onImportCSV	gisedu/static/Gisedu/Modules/CsvImporter/CsvImporterModule.j	/^- (void)onImportCSV:(id)sender$/;"	m
 onInfoWindowLoaded	gisedu/static/Gisedu/PointDataObject.j	/^- (void)onInfoWindowLoaded:(id)sender$/;"	m
@@ -975,23 +1073,24 @@ onJsonRequestSuccessful	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (voi
 onJsonRequestSuccessful	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^- (void) onJsonRequestSuccessful:(JsonRequest)request withResponse:(id)jsonResponse$/;"	m
 onJsonRequestSuccessful	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^- (void) onJsonRequestSuccessful:(JsonRequest)request$/;"	m
 onJsonRequestSuccessful	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void) onJsonRequestSuccessful:(JsonRequest)request$/;"	m
+onLineColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
 onLineColorChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
-onLineColorChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
-onLineColorChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
-onLineColorChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
+onLineColorChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
+onLineColorChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onLineColorChanged:(CPString)lineColor$/;"	m
 onLineColorWell	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onLineColorWell:(id)sender$/;"	m
-onLineColorWell	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onLineColorWell:(id)sender$/;"	m
+onLineColorWell	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onLineColorWell:(id)sender$/;"	m
+onLineOpacityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
 onLineOpacityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
-onLineOpacityChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
-onLineOpacityChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
-onLineOpacityChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
+onLineOpacityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
+onLineOpacityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onLineOpacityChanged:(id)lineOpacity$/;"	m
 onLineOpacitySlider	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onLineOpacitySlider:(id)sender$/;"	m
-onLineOpacitySlider	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onLineOpacitySlider:(id)sender$/;"	m
+onLineOpacitySlider	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onLineOpacitySlider:(id)sender$/;"	m
+onLineStrokeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
 onLineStrokeChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
-onLineStrokeChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
-onLineStrokeChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
-onLineStrokeChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
+onLineStrokeChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
+onLineStrokeChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onLineStrokeChanged:(id)lineStroke$/;"	m
 onLoginButtonPressed	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (void)onLoginButtonPressed:(id)sender$/;"	m
+onLoginFailed	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onLoginFailed$/;"	m
 onLoginPanelFinished	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onLoginPanelFinished:(id)panel$/;"	m
 onLoginSuccessful	gisedu/static/AppController.j	/^- (void)onLoginSuccessful:(id)sender$/;"	m
 onLoginUser	gisedu/static/AppController.j	/^- (void)onLoginUser:(id)sender$/;"	m
@@ -999,6 +1098,8 @@ onLogoutFailed	gisedu/static/AppController.j	/^- (void)onLogoutFailed:(id)sender
 onLogoutSuccessful	gisedu/static/AppController.j	/^- (void)onLogoutSuccessful:(id)sender$/;"	m
 onLogoutUser	gisedu/static/AppController.j	/^- (void)onLogoutUser:(id)sender$/;"	m
 onManageUser	gisedu/static/AppController.j	/^- (void)onManageUser:(id)sender$/;"	m
+onMenuItem	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void)onMenuItem:(id)sender$/;"	m
+onMenuItem	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (void)onMenuItem:(id)sender$/;"	m
 onNewProject	gisedu/static/AppController.j	/^- (void)onNewProject:(id)sender$/;"	m
 onOpenFileRequestFailed	gisedu/static/AppController.j	/^- (void)onOpenFileRequestFailed:(id)sender$/;"	m
 onOpenFileRequestSuccessful	gisedu/static/AppController.j	/^- (void)onOpenFileRequestSuccessful:(id)sender$/;"	m
@@ -1010,7 +1111,6 @@ onOutlineItemSelected	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (void)
 onOutlineItemSelected	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (void) onOutlineItemSelected:(id)sender$/;"	m
 onOverlayListLoaded	gisedu/static/AppController.j	/^- (void)onOverlayListLoaded:(CPArray)overlays dataType:(CPString)dataType$/;"	m
 onOverlayOptions	gisedu/static/AppController.j	/^- (void)onOverlayOptions:(id)sender$/;"	m
-onPointDisplayOptions	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void)onPointDisplayOptions:(id)sender$/;"	m
 onPointGeomLoaded	gisedu/static/Gisedu/PointDataObject.j	/^- (void)onPointGeomLoaded:(id)sender$/;"	m
 onPointOverlayListLoaded	gisedu/static/Gisedu/OverlayManager.j	/^- (void)onPointOverlayListLoaded:(id)sender$/;"	m
 onPointOverlaySelected	gisedu/static/AppController.j	/^- (void)onPointOverlaySelected:(id)pointDataObject$/;"	m
@@ -1021,7 +1121,9 @@ onPopUpColumnSelected	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertVie
 onPopUpColumnSelected	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (void)onPopUpColumnSelected:(id)sender$/;"	m
 onProjectDictLoaded	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)onProjectDictLoaded:(id)sender$/;"	m
 onRegisterButtonPressed	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)onRegisterButtonPressed:(id)sender$/;"	m
+onRegisterFailed	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onRegisterFailed$/;"	m
 onRegisterPanelFinished	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onRegisterPanelFinished:(id)panel$/;"	m
+onRegisterSuccess	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onRegisterSuccess$/;"	m
 onRegisterSuccessful	gisedu/static/AppController.j	/^- (void)onRegisterSuccessful:(id)sender$/;"	m
 onRegisterUser	gisedu/static/AppController.j	/^- (void)onRegisterUser:(id)sender$/;"	m
 onRemoveMatchButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)onRemoveMatchButton:(id)sender$/;"	m
@@ -1035,13 +1137,13 @@ onSearchMenuItemSelected	gisedu/static/Gisedu/views/CPDynamicSearch.j	/^- (void)
 onSearchMenuItemSelected	gisedu/static/Gisedu/views/DictFilterView.j	/^- (void)onSearchMenuItemSelected:(id)sender$/;"	m
 onSessionSyncFailed	gisedu/static/AppController.j	/^- (void)onSessionSyncFailed:(id)sender$/;"	m
 onSessionSyncSuccessful	gisedu/static/AppController.j	/^- (void)onSessionSyncSuccessful:(id)sender$/;"	m
+onShapeRadiusChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onShapeRadiusChanged:(id)shapeRadius$/;"	m
 onShapeRadiusChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onShapeRadiusChanged:(id)shapeRadius$/;"	m
-onShapeRadiusChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onShapeRadiusChanged:(id)shapeRadius$/;"	m
 onShapeRadiusSlider	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onShapeRadiusSlider:(id)sender$/;"	m
 onShowButton	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onShowButton:(id)sender$/;"	m
-onShowButton	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onShowButton:(id)sender$/;"	m
+onShowButton	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onShowButton:(id)sender$/;"	m
 onStrokeSlider	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)onStrokeSlider:(id)sender$/;"	m
-onStrokeSlider	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)onStrokeSlider:(id)sender$/;"	m
+onStrokeSlider	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)onStrokeSlider:(id)sender$/;"	m
 onTableItemSelected	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^- (void)onTableItemSelected:(id)sender$/;"	m
 onUpdate	gisedu/static/Gisedu/views/BooleanFilterView.j	/^- (void)onUpdate:(id)sender$/;"	m
 onUpdate	gisedu/static/Gisedu/views/IdStringMapFilterView.j	/^- (void)onUpdate:(id)sender$/;"	m
@@ -1049,11 +1151,14 @@ onUpdate	gisedu/static/Gisedu/views/IntegerFilterView.j	/^- (void)onUpdate:(id)s
 onUpdate	gisedu/static/Gisedu/views/StringFilterView.j	/^- (void)onUpdate:(id)sender$/;"	m
 onUpdateMapFilters	gisedu/static/AppController.j	/^- (void)onUpdateMapFilters:(id)sender$/;"	m
 onUserAuthenticationSuccessful	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)onUserAuthenticationSuccessful:(id)data$/;"	m
+onVisibilityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
 onVisibilityChanged	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
-onVisibilityChanged	gisedu/static/Gisedu/PointFilterOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
-onVisibilityChanged	gisedu/static/Gisedu/PolygonFilterOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
-onVisibilityChanged	gisedu/static/Gisedu/PolygonOverlayOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
+onVisibilityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
+onVisibilityChanged	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)onVisibilityChanged:(BOOL)visible$/;"	m
 open	gisedu/static/Gisedu/InfoWindowOverlay.j	/^- (void)open:(JSObject)marker$/;"	m
+openInfoWindow	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)openInfoWindow$/;"	m
+openInfoWindow	gisedu/static/Gisedu/PointDataObject.j	/^- (void)openInfoWindow$/;"	m
+openLoginPanel	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)openLoginPanel$/;"	m
 openPanelWithProjectList	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^+ (id)openPanelWithProjectList:(CPDictionary)fileMap$/;"	m
 open_project	cloud/views.py	/^def open_project(request, project_name):$/;"	f
 option	gisedu/models.py	/^    option = models.CharField(max_length=254)$/;"	v	class:GiseduStringAttributeOption
@@ -1071,6 +1176,7 @@ outlineView	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (BOOL)outlineVie
 outlineView	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item$/;"	m
 outlineView	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item$/;"	m
 outlineView	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item$/;"	m
+parameters	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (void)parameters$/;"	m
 parse	gisedu/static/Gisedu/GeoJsonParser.j	/^- (id)parse:(CPString)geoJson$/;"	m
 parseObjectIntoArray	gisedu/static/Gisedu/loaders/DictionaryLoader.j	/^- (CPArray)parseObjectIntoArray:(id)data$/;"	m
 parseObjectIntoDictionary	gisedu/static/Gisedu/loaders/DictionaryLoader.j	/^- (CPDictionary)parseObjectIntoDictionary:(id)data$/;"	m
@@ -1078,6 +1184,8 @@ parsePoint	gisedu/static/Gisedu/GeoJsonParser.j	/^- (id)parsePoint:(id)objectDat
 parsePolygon	gisedu/static/Gisedu/GeoJsonParser.j	/^- (id)parsePolygon:(id)objectData$/;"	m
 parseXML	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function parseXML( aString)$/;"	f
 parse_filter	filters/views.py	/^def parse_filter(request, filter_chain):$/;"	f
+password	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (CPString)password$/;"	m
+password	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (CPString)password$/;"	m
 pathFromPathComponents	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function pathFromPathComponents( pathComponents, isDirectoryPath)$/;"	f
 patterns	urls.py	/^from django.conf.urls.defaults import patterns, include, url$/;"	i
 point	point_objects/models.py	/^    point = models.ForeignKey(GiseduPointItem)$/;"	v	class:GiseduPointItemBooleanFields
@@ -1097,6 +1205,7 @@ polygon__filter	polygon_objects/models.py	/^    def polygon__filter(self):$/;"	m
 polygon__filter	polygon_objects/models.py	/^    def polygon__filter(self):$/;"	m	class:GiseduPolygonItemIntegerFields
 polygon__filter	polygon_objects/models.py	/^    def polygon__filter(self):$/;"	m	class:GiseduPolygonItemStringFields
 polygon_geom_list	polygon_objects/views.py	/^def polygon_geom_list(request, data_type):$/;"	f
+polyline	gisedu/static/Gisedu/MapKit/MKPolyline.j	/^+ (MKPolyline)polyline$/;"	m
 postRequestWithJSObject	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^+ (id)postRequestWithJSObject:(id)jsonObject$/;"	m
 process_reduce_boolean_filters	filters/views.py	/^def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):$/;"	f
 process_reduce_integer_filters	filters/views.py	/^def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):$/;"	f
@@ -1109,14 +1218,22 @@ queuePointOverlayList	gisedu/static/Gisedu/OverlayManager.j	/^- (void)queuePoint
 queuePolygonOverlayList	gisedu/static/Gisedu/OverlayManager.j	/^- (void)queuePolygonOverlayList:(CPString)dataType withIds:(id)itemIds withDisplayOptions:(id)displayOptions$/;"	m
 quote	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    function quote(string) {$/;"	f
 reduce_filter	gisedu/models.py	/^    reduce_filter = models.ForeignKey(GiseduFilters, related_name='reduce_filter')$/;"	v	class:GiseduReduceItem
+refreshOutline	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (void)refreshOutline$/;"	m
+registerFailed	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)registerFailed$/;"	m
 registerUser	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)registerUser:(CPString)username password:(CPString)password email:(CPString)email remember:(BOOL)rememberUser$/;"	m
 register_request	session/views.py	/^def register_request(request):$/;"	f
 register_user	session/views.py	/^def register_user(request):$/;"	f
+rememberUser	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (BOOL)rememberUser$/;"	m
+rememberUser	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (BOOL)rememberUser$/;"	m
+removeAllOverlaysFromMapView	gisedu/static/Gisedu/OverlayManager.j	/^- (void)removeAllOverlaysFromMapView$/;"	m
 removeColumnFromColumnPopups	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)removeColumnFromColumnPopups:(CPTableColumn)tableColumn$/;"	m
 removeColumnFromColumnPopups	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (void)removeColumnFromColumnPopups:(CPTableColumn)tableColumn$/;"	m
 removeColumnFromColumnPopups	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (void)removeColumnFromColumnPopups:(CPTableColumn)tableColumn$/;"	m
 removeColumnFromColumnPopups	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (void)removeColumnFromColumnPopups:(CPTableColumn)tableColumn$/;"	m
 removeDataOverlaysFromMapView	gisedu/static/Gisedu/OverlayManager.j	/^- (void)removeDataOverlaysFromMapView:(CPDictionary)overlayDict$/;"	m
+removeFromMapView	gisedu/static/Gisedu/PointDataObject.j	/^- (void)removeFromMapView$/;"	m
+removeFromMapView	gisedu/static/Gisedu/PointOverlay.j	/^- (void)removeFromMapView$/;"	m
+removeFromMapView	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)removeFromMapView$/;"	m
 render_to_response	cloud/views.py	/^from django.shortcuts import render_to_response, get_object_or_404$/;"	i
 render_to_response	data_import/views.py	/^from django.shortcuts import render_to_response$/;"	i
 render_to_response	filters/views.py	/^from django.shortcuts import render_to_response$/;"	i
@@ -1124,6 +1241,8 @@ render_to_response	gisedu/views.py	/^from django.shortcuts import render_to_resp
 render_to_response	point_objects/views.py	/^from django.shortcuts import render_to_response$/;"	i
 render_to_response	polygon_objects/views.py	/^from django.shortcuts import render_to_response$/;"	i
 requestWithUrl	gisedu/static/Gisedu/GiseduFilterRequest.j	/^+ (id)requestWithUrl:(CPString)url$/;"	m
+resetSelection	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (void)resetSelection$/;"	m
+resetUserSession	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)resetUserSession$/;"	m
 resolveResourceAtURLSearchingIncludeURLs	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function resolveResourceAtURLSearchingIncludeURLs( aURL, anIndex, aCallback)$/;"	f
 resolveResourceComponents	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function resolveResourceComponents( aResource, isDirectory, components, index, aCallback)$/;"	f
 resolveStaticResource	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function resolveStaticResource( aResource)$/;"	f
@@ -1145,6 +1264,12 @@ search_fields	polygon_objects/admin.py	/^    search_fields = ['polygon__item_nam
 search_fields	polygon_objects/admin.py	/^    search_fields = ['polygon__item_name']$/;"	v	class:GiseduPolygonItemStringFieldAdmin
 selectItem	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (void) selectItem:(CPString)item$/;"	m
 selectTabItem	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (id)selectTabItem:(CPTabViewitem)tabItem$/;"	m
+selection	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (CPArray)selection$/;"	m
+send	gisedu/static/Gisedu/FileKit/JsonRequest.j	/^- (id)send$/;"	m
+sendFilterRequest	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (void)sendFilterRequest$/;"	m
+sendFilterRequests	gisedu/static/Gisedu/FilterManager.j	/^- (void)sendFilterRequests$/;"	m
+sendOpenRequest	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)sendOpenRequest$/;"	m
+sendSaveRequest	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)sendSaveRequest$/;"	m
 serializePropertyList	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function serializePropertyList( aPropertyList, serializers)$/;"	f
 session_request	session/views.py	/^def session_request(request):$/;"	f
 setCenter	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)setCenter:(MKLocation)aLocation $/;"	m
@@ -1158,18 +1283,18 @@ setDisplayOptions	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)setDisplayOpti
 setEnabled	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (void)setEnabled:(BOOL)isEnabled$/;"	m
 setErrorMessageText	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (void)setErrorMessageText:(CPString)anErrorMessage$/;"	m
 setFileMap	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^- (void)setFileMap:(CPDictionary)fileMap$/;"	m
+setFilterTarget	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void) setFilterTarget: (PointFilter)filterTarget$/;"	m
+setFilterTarget	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (void) setFilterTarget: (PointFilter)filterTarget$/;"	m
 setFrameSize	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)setFrameSize:(CGSize)aSize$/;"	m
 setGoogleIcon	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)setGoogleIcon:(CPString)anIconName withShadow:(BOOL)withShadow$/;"	m
 setGoogleIcon	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)setGoogleIcon:(CPString)anIconName$/;"	m
 setInfoWindowHTML	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)setInfoWindowHTML:(CPString)someHTML openOnClick:(BOOL)shouldOpenOnClick$/;"	m
 setInfoWindowHTML	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)setInfoWindowHTML:(CPString)someHTML$/;"	m
 setOptionsController	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)setOptionsController:(id)optionsController$/;"	m
-setOptionsController	gisedu/static/Gisedu/views/PolygonOverlayOptionsView.j	/^- (void)setOptionsController:(id)optionsController$/;"	m
+setOptionsController	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsView.j	/^- (void)setOptionsController:(id)optionsController$/;"	m
 setOverlay	gisedu/static/Gisedu/PointDataObject.j	/^- (void)setOverlay:(id)overlay$/;"	m
-setPointFilterTarget	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (void) setPointFilterTarget: (PointFilter)filterTarget$/;"	m
-setPointOverlayTarget	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void) setPointOverlayTarget: (PointOverlay)overlayTarget$/;"	m
-setPolygonFilterTarget	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (void)setPolygonFilterTarget:(PolygonFilter)filterTarget$/;"	m
-setPolygonOverlayTarget	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (void) setPolygonOverlayTarget: (PolygonOverlay)overlayTarget$/;"	m
+setOverlayTarget	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void) setOverlayTarget: (PointOverlay)overlayTarget$/;"	m
+setOverlayTarget	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (void) setOverlayTarget: (PointOverlay)overlayTarget$/;"	m
 setURL	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (void)setURL:(CPString)aURL$/;"	m
 setValue	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (BOOL)setValue:(CPString)aValue forParameter:(CPString)aParam$/;"	m
 setZoom	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)setZoom:(int)aZoomLevel $/;"	m
@@ -1180,24 +1305,31 @@ set_field_true	polygon_objects/admin.py	/^    def set_field_true(self, request, 
 settings	manage.py	/^    import settings # Assumed to be in the same directory.$/;"	i
 settings	urls.py	/^import settings$/;"	i
 showAddFilterPanel	gisedu/static/Gisedu/views/OverlayFiltersView.j	/^- (void)showAddFilterPanel:(CPString)dataType$/;"	m
+showRightSideTabView	gisedu/static/AppController.j	/^- (void)showRightSideTabView$/;"	m
 simplejson	cloud/views.py	/^from django.utils import simplejson$/;"	i
 simplejson	point_objects/views.py	/^from django.utils import simplejson$/;"	i
 simplejson	polygon_objects/views.py	/^from django.utils import simplejson$/;"	i
 simplejson	session/views.py	/^from django.utils import simplejson$/;"	i
+sortItems	gisedu/static/Gisedu/views/OverlayOutlineView.j	/^- (void) sortItems$/;"	m
 spritedImagesTestURLStringForBundle	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function spritedImagesTestURLStringForBundle( aBundle)$/;"	f
 spritedImagesURLForBundle	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function spritedImagesURLForBundle( aBundle)$/;"	f
 standardizePathComponents	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^function standardizePathComponents( pathComponents, inPlace)$/;"	f
 state	point_objects/models.py	/^    state = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
+stateColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)stateColumnName$/;"	m
 staticfiles_urlpatterns	urls.py	/^from django.contrib.staticfiles.urls import staticfiles_urlpatterns$/;"	i
 str	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^    function str(key, holder) {$/;"	f
+streetAddressColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)streetAddressColumnName$/;"	m
 street_name	point_objects/models.py	/^    street_name = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
 street_num	point_objects/models.py	/^    street_num = models.IntegerField(null=True)$/;"	v	class:GiseduPointItemAddress
 string	filters/views.py	/^import string$/;"	i
 string	utilities/grade_morpher.py	/^import string$/;"	i
 subTypeForOption	gisedu/static/Gisedu/GiseduFilterDescription.j	/^- (CPString) subTypeForOption:(CPString)optionName$/;"	m
+submit	gisedu/static/Gisedu/FileKit/FKUploadButton.j	/^- (void)submit$/;"	m
 success.complete	gisedu/static/Frameworks/Debug/Objective-J/Objective-J.js	/^        function complete()$/;"	f
 successfulAlertWithMessage	gisedu/static/AppController.j	/^- (void)successfulAlertWithMessage:(CPString)aMessage$/;"	m
+syncSession	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)syncSession$/;"	m
 sys	manage.py	/^    import sys$/;"	i
+tabViewBounds	gisedu/static/Gisedu/views/RightSideTabView.j	/^- (CGSize)tabViewBounds$/;"	m
 tableView	gisedu/static/Gisedu/FileKit/FKFilePanel.j	/^- (id)tableView:(CPTableView)aTableView objectValueForTableColumn:(CPTableColumn)aTableColumn row:(int)aRow$/;"	m
 tableView	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (BOOL)tableView:(CPTableView)aTableView shouldEditTableColumn:(CPTableColumn)aTableColumn row:(int)rowIndex$/;"	m
 tableView	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (CPMenu)tableView:(CPTableView)aTableView menuForTableColumn:(CPTableColumn)aColumn row:(int)aRow$/;"	m
@@ -1205,6 +1337,9 @@ tableView	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (id)tabl
 tableView	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)tableView:(CPTableView)aTableView setObjectValue:(CPControl)anObject forTableColumn:(CPTableColumn)aTableColumn row:(int)rowIndex$/;"	m
 target_filter	gisedu/models.py	/^    target_filter = models.ForeignKey(GiseduFilters, related_name='target_filter')$/;"	v	class:GiseduReduceItem
 testBrowser	templates/index.html	/^            function testBrowser() {$/;"	f
+testOneEqualsOne	gisedu/static/Gisedu/tests/GeoJsonParserTest.j	/^- (void)testOneEqualsOne$/;"	m
+testParseGeoJsonMultiPolygon	gisedu/static/Gisedu/tests/GeoJsonParserTest.j	/^- (void)testParseGeoJsonMultiPolygon$/;"	m
+testParseGeoJsonPoint	gisedu/static/Gisedu/tests/GeoJsonParserTest.j	/^- (void)testParseGeoJsonPoint$/;"	m
 test_basic_addition	cloud/tests.py	/^    def test_basic_addition(self):$/;"	m	class:SimpleTest
 test_basic_addition	data_import/tests.py	/^    def test_basic_addition(self):$/;"	m	class:SimpleTest
 test_basic_addition	filters/tests.py	/^    def test_basic_addition(self):$/;"	m	class:SimpleTest
@@ -1216,17 +1351,47 @@ the_geom	polygon_objects/models.py	/^    the_geom = models.MultiPolygonField(nul
 timedelta	session/views.py	/^from datetime import timedelta$/;"	i
 to	manage.py	/^    import settings # Assumed to be in the same directory.$/;"	i
 toHexStr	gisedu/static/Gisedu/HashKit/Sha1Hash.j	/^+ (CPString) toHexStr:(id)n$/;"	m
+toJson	gisedu/static/Gisedu/FilterManager.j	/^- (id)toJson$/;"	m
+toggleInfoWindow	gisedu/static/Gisedu/PointDataObject.j	/^- (void)toggleInfoWindow$/;"	m
 toolbar	gisedu/static/AppController.j	/^- (CPToolbarItem)toolbar:(CPToolbar)aToolbar itemForItemIdentifier:(CPString)anItemIdentifier willBeInsertedIntoToolbar:(BOOL)aFlag$/;"	m
 toolbarAllowedItemIdentifiers	gisedu/static/AppController.j	/^- (CPArray)toolbarAllowedItemIdentifiers:(CPToolbar)aToolbar$/;"	m
 toolbarDefaultItemIdentifiers	gisedu/static/AppController.j	/^- (CPArray)toolbarDefaultItemIdentifiers:(CPToolbar)aToolbar$/;"	m
+trigger	gisedu/static/Gisedu/GiseduFilterRequest.j	/^- (void)trigger$/;"	m
 trigger	gisedu/static/Gisedu/GiseduFilterRequest.j	/^- (void)trigger:(BOOL)reloadData$/;"	m
+triggerCloseProject	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)triggerCloseProject$/;"	m
+triggerFilters	gisedu/static/Gisedu/FilterManager.j	/^- (void)triggerFilters$/;"	m
+triggerLogin	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)triggerLogin$/;"	m
+triggerLogout	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)triggerLogout$/;"	m
+triggerOpenProject	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)triggerOpenProject$/;"	m
+triggerRegister	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (void)triggerRegister$/;"	m
+triggerSaveProject	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)triggerSaveProject$/;"	m
+triggerSaveProjectAs	gisedu/static/Gisedu/FileKit/FKFileController.j	/^- (void)triggerSaveProjectAs$/;"	m
+typeName	gisedu/static/Gisedu/MapKit/MKMapItem.j	/^- (String)typeName$/;"	m
+updateAdvancedOptionControls	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)updateAdvancedOptionControls$/;"	m
+updateAllFilterChains	gisedu/static/Gisedu/FilterManager.j	/^- (void)updateAllFilterChains$/;"	m
 updateAttributePopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (void)updateAttributePopUps:(CPArray)attributes$/;"	m
 updateAttributePopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (void)updateAttributePopUps:(CPArray)attributes$/;"	m
 updateAttributePopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (void)updateAttributePopUps:(CPArray)attributes$/;"	m
+updateFilterChains	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (void)updateFilterChains$/;"	m
+updateFilterChains	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (void)updateFilterChains$/;"	m
+updateFilterTypePopUp	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)updateFilterTypePopUp$/;"	m
+updateGoogleMarker	gisedu/static/Gisedu/PointOverlay.j	/^- (void)updateGoogleMarker$/;"	m
+updateGooglePolygon	gisedu/static/Gisedu/PolygonOverlay.j	/^- (void)updateGooglePolygon$/;"	m
+updateImportOptionsView	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)updateImportOptionsView$/;"	m
+updateLayout	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsView.j	/^- (void)updateLayout$/;"	m
+updateLocation	gisedu/static/Gisedu/MapKit/MKMarker.j	/^- (void)updateLocation$/;"	m
+updateMapTheory	gisedu/static/AppController.j	/^- (void)updateMapTheory$/;"	m
+updateMapViewFrame	gisedu/static/AppController.j	/^- (void)updateMapViewFrame$/;"	m
 updateMenu	gisedu/static/Gisedu/Modules/GiseduModule.j	/^- (void)updateMenu:(BOOL)sessionActive$/;"	m
+updateMenuBarTitle	gisedu/static/AppController.j	/^- (void)updateMenuBarTitle$/;"	m
 updateMenuItems	gisedu/static/AppController.j	/^- (void)updateMenuItems:(BOOL)sessionActive$/;"	m
 updateMenuItems	gisedu/static/Gisedu/Modules/CsvImporter/CsvImporterModule.j	/^- (void)updateMenuItems:(BOOL)sessionActive$/;"	m
 updateMenuItems	gisedu/static/Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j	/^- (void)updateMenuItems:(BOOL)sessionActive$/;"	m
+updateMenuItems	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j	/^- (void)updateMenuItems:(BOOL)sessionActive$/;"	m
+updateOptionAttributePopUps	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^- (void)updateOptionAttributePopUps$/;"	m
+updateOverlays	gisedu/static/Gisedu/GiseduFilterChain.j	/^- (void)updateOverlays$/;"	m
+updateTarget	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (void)updateTarget$/;"	m
+updateTarget	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (void)updateTarget$/;"	m
 uploadButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^-(void) uploadButton:(UploadButton)button didChangeSelection:(CPArray)selection$/;"	m
 uploadButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^-(void) uploadButton:(UploadButton)button didFailWithError:(CPString)anError$/;"	m
 uploadButton	gisedu/static/Gisedu/Modules/CsvImporter/CsvImportPanel.j	/^-(void) uploadButton:(UploadButton)button didFinishUploadWithData:(CPString)response$/;"	m
@@ -1238,6 +1403,14 @@ upload_csv	data_import/views.py	/^def upload_csv(request):$/;"	f
 url	urls.py	/^from django.conf.urls.defaults import patterns, include, url$/;"	i
 urlpatterns	urls.py	/^urlpatterns = patterns('',$/;"	v
 user	cloud/models.py	/^    user = models.ForeignKey(User)$/;"	v	class:CloudProjectStorageItem
+userDisplayName	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (CPString)userDisplayName$/;"	m
+userIsLoggedIn	gisedu/static/Gisedu/AuthKit/AKUserSessionManager.j	/^- (BOOL)userIsLoggedIn$/;"	m
+username	gisedu/static/Gisedu/AuthKit/AKLoginPanel.j	/^- (CPString)username$/;"	m
+username	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (CPString)username$/;"	m
+validateColumnAssignments	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (BOOL)validateColumnAssignments$/;"	m
+validateColumnAssignments	gisedu/static/Gisedu/Modules/CsvImporter/CsvPolygonInsertView.j	/^- (BOOL)validateColumnAssignments$/;"	m
+validateColumnAssignments	gisedu/static/Gisedu/Modules/CsvImporter/CsvUpdateView.j	/^- (BOOL)validateColumnAssignments$/;"	m
+validateRegistration	gisedu/static/Gisedu/AuthKit/AKRegisterPanel.j	/^- (CPString)validateRegistration$/;"	m
 value	point_objects/models.py	/^    value = models.BooleanField()$/;"	v	class:GiseduPointItemBooleanFields
 value	point_objects/models.py	/^    value = models.IntegerField()$/;"	v	class:GiseduPointItemIntegerFields
 value	polygon_objects/models.py	/^    value = models.BooleanField()$/;"	v	class:GiseduPolygonItemBooleanFields
@@ -1269,5 +1442,11 @@ verbose_name_plural	polygon_objects/models.py	/^        verbose_name_plural = "P
 verbose_name_plural	polygon_objects/models.py	/^        verbose_name_plural = "Polygon Integer Attributes"$/;"	v	class:GiseduPolygonItemIntegerFields.Meta
 verbose_name_plural	polygon_objects/models.py	/^        verbose_name_plural = "Polygon Items"$/;"	v	class:GiseduPolygonItem.Meta
 verbose_name_plural	polygon_objects/models.py	/^        verbose_name_plural = "Polygon String Attributes"/;"	v	class:GiseduPolygonItemStringFields.Meta
+viewDidMoveToSuperview	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)viewDidMoveToSuperview$/;"	m
+visible	gisedu/static/Gisedu/Modules/PointDisplayOptions/FilterOptionsController.j	/^- (BOOL)visible$/;"	m
+visible	gisedu/static/Gisedu/Modules/PointDisplayOptions/OverlayOptionsController.j	/^- (BOOL)visible$/;"	m
+visible	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/FilterOptionsController.j	/^- (BOOL)visible$/;"	m
+visible	gisedu/static/Gisedu/Modules/PolygonDisplayOptions/OverlayOptionsController.j	/^- (BOOL)visible$/;"	m
 webView	gisedu/static/Gisedu/MapKit/MKMapView.j	/^- (void)webView:(CPWebView)aWebView didFinishLoadForFrame:(id)aFrame$/;"	m
 zip10	point_objects/models.py	/^    zip10 = models.CharField(max_length=254, null=True)$/;"	v	class:GiseduPointItemAddress
+zipColumnName	gisedu/static/Gisedu/Modules/CsvImporter/CsvPointInsertView.j	/^- (CPString)zipColumnName$/;"	m
