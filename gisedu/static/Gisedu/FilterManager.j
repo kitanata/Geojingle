@@ -1,6 +1,9 @@
 @import <Foundation/CPObject.j>
 
-@import "GiseduFilter.j"
+@import "GiseduPointFilter.j"
+@import "GiseduPolygonFilter.j"
+@import "GiseduReduceFilter.j"
+
 @import "GiseduFilterDescription.j"
 @import "GiseduFilterRequest.j"
 @import "GiseduFilterChain.j"
@@ -156,16 +159,17 @@ var g_FilterManagerInstance = nil;
     var newFilter = nil;
     var filterDesc = [m_FilterDescriptions objectForKey:type];
 
-    if([filterDesc filterType] == "LIST")
-        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
-    else if([filterDesc filterType] == "DICT")
-        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
-    else if([filterDesc filterType] == "INTEGER")
-        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
-    else if([filterDesc filterType] == "CHAR")
-        newFilter = [[GiseduFilter alloc] initWithValue:'All'];
-    else if([filterDesc filterType] == "BOOL")
-        newFilter = [[GiseduFilter alloc] initWithValue:YES];
+    if([filterDesc dataType] == "POINT")
+        newFilter = [[GiseduPointFilter alloc] initWithValue:'All'];
+    else if([filterDesc dataType] == "POLYGON")
+        newFilter = [[GiseduPolygonFilter alloc] initWithValue:'All'];
+    else if([filterDesc dataType] == "REDUCE")
+    {
+        if([filterDesc filterType] == "BOOL")
+            newFilter = [[GiseduReduceFilter alloc] initWithValue:YES];
+        else
+            newFilter = [[GiseduReduceFilter alloc] initWithValue:'All'];
+    }
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
     [newFilter setType:type];

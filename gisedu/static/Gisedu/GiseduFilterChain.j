@@ -1,4 +1,6 @@
 @import <AppKit/CPTreeNode.j>
+@import "PointDisplayOptions.j"
+@import "PolygonDisplayOptions.j"
 
 /* If you walk the filter tree from parent to child. Each path to a leaf is represented
    as a seperate filter chain. Each filter chain make's it's own request to the server
@@ -42,6 +44,7 @@
 
         m_LoadPointOverlayList = {}
         m_LoadPolygonOverlayList = {}
+
     }
 
     return self;
@@ -227,25 +230,47 @@
 
 - (void)updateOverlays
 {
-    var overlayOptions = {}
+    pointDisplayOptions = [PointDisplayOptions defaultOptions];
+    polygonDisplayOptions = [PolygonDisplayOptions defaultOptions];
 
     m_LoadPointOverlayList = {}
     m_LoadPolygonOverlayList = {}
 
     var filterDescriptions = [m_FilterManager filterDescriptions];
 
+    //Build the display options for the overlays O(2n)
     for(var i=0; i < [m_Filters count]; i++)
     {
         var curFilter = [m_Filters objectAtIndex:i];
-        var curFilterType = [curFilter type];
+        var curFilterType = [[curFilter description] dataType];
 
-        overlayOptions[curFilterType] = [curFilter displayOptions];
+        console.log([curFilter displayOptions]);
+        console.log(curFilterType);
+
+        if(curFilterType == "POINT")
+            [pointDisplayOptions enchantOptions:[curFilter displayOptions]];
+        else if(curFilterType == "POLYGON")
+            [polygonDisplayOptions enchantOptions:[curFilter displayOptions]];
+    }
+
+    console.log(polygonDisplayOptions);
+
+    //second pass REDUCE enchantment only
+    for(var i=0; i < [m_Filters count]; i++)
+    {
+        var curFilter = [m_Filters objectAtIndex:i];
+        var curFilterType = [[curFilter description] dataType];
+
+        if(curFilterType == "REDUCE")
+        {
+            [pointDisplayOptions enchantOptions:[curFilter pointDisplayOptions]];
+            [polygonDisplayOptions enchantOptions:[curFilter polygonDisplayOptions]];
+        }
     }
 
     for(var i=0; i < [m_DataTypes count]; i++)
     {
         var curType = [m_DataTypes objectAtIndex:i];
-        var curOptions = overlayOptions[curType];
         var curIds = [m_OverlayIds objectForKey:curType];
 
         var curFilterDescription = [filterDescriptions objectForKey:curType];
@@ -266,7 +291,7 @@
 
                 if(overlay)
                 {
-                    [overlay setDisplayOptions:curOptions];
+                    [overlay setDisplayOptions:pointDisplayOptions];
 
                     if(![overlay markerValid])
                     {
@@ -292,8 +317,7 @@
 
                 if(overlay)
                 {
-                    [overlay setDisplayOptions:curOptions];
-                    [overlay setDisplayOption:"visible" value:YES];
+                    [overlay setDisplayOptions:polygonDisplayOptions];
 
                     [overlay updateGooglePolygon];
                 }
@@ -311,15 +335,13 @@
     for(curType in m_LoadPointOverlayList)
     {
         var curItemIds = m_LoadPointOverlayList[curType];
-        var curOptions = overlayOptions[curType];
-        [m_OverlayManager queuePointOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
+        [m_OverlayManager queuePointOverlayList:curType withIds:curItemIds withDisplayOptions:pointDisplayOptions];
     }
 
     for(curType in m_LoadPolygonOverlayList)
     {
         var curItemIds = m_LoadPolygonOverlayList[curType];
-        var curOptions = overlayOptions[curType];
-        [m_OverlayManager queuePolygonOverlayList:curType withIds:curItemIds withDisplayOptions:curOptions];
+        [m_OverlayManager queuePolygonOverlayList:curType withIds:curItemIds withDisplayOptions:polygonDisplayOptions];
     }
 }
 

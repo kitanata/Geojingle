@@ -3,21 +3,21 @@
 @import "MapKit/MKMapItem.j"
 @import "MapKit/MKLocation.j"
 
-@import "PointOverlay.j"
+@import "PolygonDisplayOptions.j"
 
 @implementation PolygonOverlay : CPControl
 {
-    CPInteger m_nPk                 @accessors(property=pk);
-    CPString m_szName               @accessors(property=name);
+    CPInteger m_nPk                         @accessors(property=pk);
+    CPString m_szName                       @accessors(property=name);
 
-    Polygon m_GooglePolygon         @accessors(property=googlePolygon);
+    Polygon m_GooglePolygon                 @accessors(property=googlePolygon);
 
-    CPArray     m_Paths             @accessors(property=paths);
-    id          m_DisplayOptions    @accessors(getter=displayOptions);                                       // JS object representing additional options for the icon (used with circles and rects)
+    CPArray     m_Paths                     @accessors(property=paths);
+    PolygonDisplayOption m_DisplayOptions   @accessors(property=displayOptions);                                       // JS object representing additional options for the icon (used with circles and rects)
 
-    BOOL m_bActive                  @accessors(property=active); //Is this polygon currently being edited?
+    BOOL m_bActive                          @accessors(property=active); //Is this polygon currently being edited?
 
-    id m_Delegate                   @accessors(property=delegate);
+    id m_Delegate                           @accessors(property=delegate);
 }
 
 - (id)init 
@@ -27,14 +27,7 @@
         m_Paths = [CPArray array];
         m_szName = "Unknown";
 
-        m_DisplayOptions = {
-            strokeColor: "#000000",
-            strokeOpacity: 0.8,
-            strokeWeight: 1.5,
-            fillColor: "#000000",
-            fillOpacity: 0.3,
-            visible: NO
-        };
+        m_DisplayOptions = [PolygonDisplayOptions defaultOptions];
     }
 
     return self;
@@ -78,14 +71,14 @@
             zIndex = 1;
         }
         
-        var polyOptions = m_DisplayOptions;
+        var polyOptions = [m_DisplayOptions rawOptions];
 
         polyOptions.paths = linePaths;
         polyOptions.zIndex = 1;
 
         m_GooglePolygon.setOptions(polyOptions);
 
-        if(m_DisplayOptions.visible)
+        if([m_DisplayOptions getDisplayOption:'visible'])
             [self addToMapView];
         else
             [self removeFromMapView];
@@ -105,27 +98,6 @@
 - (void)removeFromMapView
 {
     m_GooglePolygon.setMap(null);
-}
-
-- (void)setDisplayOptions:(id)displayOptions
-{
-    //Note to losers. This is a necessary psuedo-deep copy.
-    m_DisplayOptions.strokeColor    = displayOptions.strokeColor;
-    m_DisplayOptions.strokeOpacity  = displayOptions.strokeOpacity;
-    m_DisplayOptions.strokeWeight   = displayOptions.strokeWeight;
-    m_DisplayOptions.fillColor      = displayOptions.fillColor;
-    m_DisplayOptions.fillOpacity    = displayOptions.fillOpacity;
-    m_DisplayOptions.visible        = displayOptions.visible;
-}
-
-- (void)setDisplayOption:(CPString)option value:(id)value
-{
-    m_DisplayOptions[option] = value;
-}
-
-- (id)getDisplayOptions:(CPString)option
-{
-    return m_DisplayOptions[option];
 }
 
 // EVENTS

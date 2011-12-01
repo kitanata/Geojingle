@@ -114,7 +114,7 @@
 {
     m_OptionsController = optionsController;
 
-    var displayOptions = [m_OptionsController displayOptions];
+    var displayOptions = [[m_OptionsController displayOptions] rawOptions];
     [m_LineColorWell setColor:[CPColor colorWithHexString:[displayOptions.strokeColor substringFromIndex:1]]];
     [m_FillColorWell setColor:[CPColor colorWithHexString:[displayOptions.fillColor substringFromIndex:1]]];
 

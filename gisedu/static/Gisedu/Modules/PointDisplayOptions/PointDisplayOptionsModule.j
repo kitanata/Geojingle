@@ -1,8 +1,8 @@
 @import "../GiseduModule.j"
 
 @import "PointDisplayOptionsView.j"
-@import "OverlayOptionsController.j"
-@import "FilterOptionsController.j"
+@import "PointOverlayOptionsController.j"
+@import "PointFilterOptionsController.j"
 
 @implementation PointDisplayOptionsModule : GiseduModule
 {
@@ -49,7 +49,7 @@
 
 - (void) setOverlayTarget: (PointOverlay)overlayTarget
 {
-    var optionsController = [OverlayOptionsController controllerWithOverlay:overlayTarget];
+    var optionsController = [PointOverlayOptionsController controllerWithOverlay:overlayTarget];
 
     [m_OptionsView setOptionsController:optionsController];
     [self onMenuItem:self];
@@ -57,7 +57,7 @@
 
 - (void) setFilterTarget: (PointFilter)filterTarget
 {
-    var optionsController = [FilterOptionsController controllerWithFilter:filterTarget];
+    var optionsController = [PointFilterOptionsController controllerWithFilter:filterTarget];
 
     [m_OptionsView setOptionsController:optionsController];
     [self onMenuItem:self];

@@ -428,26 +428,32 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
 
             [[m_AppController pointDisplayOptions] setFilterTarget:filter];
         }
+        else if([filterDescription dataType] == "REDUCE")
+        {
+            if([filterDescription filterType] == "INTEGER")
+            {
+                m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[filterDescription options]];
+            }
+            else if([filterDescription filterType] == "CHAR")
+            {
+                //console.log("Char Filter Options = "); console.log([filterDescription options]);
+                m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[filterDescription options]];
+            }
+            else if([filterDescription filterType] == "BOOL")
+            {
+                m_CurrentFilterView = [[BooleanFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter];
+            }
+
+            [[m_AppController polygonDisplayOptions] setFilterTarget:filter];
+            [[m_AppController pointDisplayOptions] setFilterTarget:filter];
+        }
         else if([filterDescription filterType] == "LIST")
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                         andFilter:filter andAcceptedValues:[filterDescription options]];
-        }
-        else if([filterDescription filterType] == "INTEGER")
-        {
-            m_CurrentFilterView = [[IntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[filterDescription options]];
-        }
-        else if([filterDescription filterType] == "CHAR")
-        {
-            //console.log("Char Filter Options = "); console.log([filterDescription options]);
-            m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter andAcceptedValues:[filterDescription options]];
-        }
-        else if([filterDescription filterType] == "BOOL")
-        {
-            m_CurrentFilterView = [[BooleanFilterView alloc] initWithFrame:[m_PropertiesView bounds]
-                andFilter:filter];
         }
 
         [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];

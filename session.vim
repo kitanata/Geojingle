@@ -103,16 +103,25 @@ set window=57
 let s:so_save = &so | let s:siso_save = &siso | set so=0 siso=0
 let v:this_session=expand("<sfile>:p")
 silent only
-cd ~/
+cd ~/Projects/Python/Django/Gisedu
 if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
   let s:wipebuf = bufnr('%')
 endif
 set shortmess=aoO
-badd +4 Projects/Python/Django/Gisedu/tagit.sh
-badd +1340 Projects/Python/Django/Gisedu/tags
-badd +177 Projects/Python/Django/Gisedu/gisedu/static/Gisedu/FilterManager.j
+badd +4 tagit.sh
+badd +1383 tags
+badd +271 gisedu/static/Gisedu/FilterManager.j
+badd +538 gisedu/static/AppController.j
+badd +323 gisedu/static/Gisedu/GiseduFilterChain.j
+badd +1 gisedu/static/Gisedu/GiseduFilter.j
+badd +1 gisedu/static/Gisedu/GiseduPointFilter.j
+badd +1 gisedu/static/Gisedu/GiseduPolygonFilter.j
+badd +1 gisedu/static/Gisedu/GiseduReduceFilter.j
+badd +48 gisedu/static/Gisedu/PointOverlay.j
+badd +1 gisedu/static/Gisedu/PointDisplayOptions.j
+badd +1 gisedu/static/Gisedu/PolygonDisplayOptions.j
 silent! argdel *
-edit Projects/Python/Django/Gisedu/tags
+edit gisedu/static/Gisedu/PointOverlay.j
 set splitbelow splitright
 wincmd _ | wincmd |
 split
@@ -126,10 +135,10 @@ set nosplitbelow
 set nosplitright
 wincmd t
 set winheight=1 winwidth=1
-exe '1resize ' . ((&lines * 1 + 29) / 58)
-exe '2resize ' . ((&lines * 54 + 29) / 58)
+exe '1resize ' . ((&lines * 2 + 29) / 58)
+exe '2resize ' . ((&lines * 53 + 29) / 58)
 exe 'vert 2resize ' . ((&columns * 31 + 102) / 205)
-exe '3resize ' . ((&lines * 54 + 29) / 58)
+exe '3resize ' . ((&lines * 53 + 29) / 58)
 exe 'vert 3resize ' . ((&columns * 173 + 102) / 205)
 argglobal
 enew
@@ -401,8 +410,8 @@ setlocal nodiff
 setlocal equalprg=
 setlocal errorformat=
 setlocal expandtab
-if &filetype != 'tags'
-setlocal filetype=tags
+if &filetype != ''
+setlocal filetype=
 endif
 setlocal foldcolumn=0
 setlocal foldenable
@@ -421,7 +430,7 @@ setlocal formatoptions=tcq
 setlocal formatlistpat=^\\s*\\d\\+[\\]:.)}\\t\ ]\\s*
 setlocal grepprg=
 setlocal iminsert=2
-setlocal imsearch=0
+setlocal imsearch=2
 setlocal include=
 setlocal includeexpr=
 setlocal indentexpr=
@@ -464,8 +473,8 @@ setlocal statusline=
 setlocal suffixesadd=
 setlocal swapfile
 setlocal synmaxcol=3000
-if &syntax != 'tags'
-setlocal syntax=tags
+if &syntax != 'objj'
+setlocal syntax=objj
 endif
 setlocal tabstop=4
 setlocal tags=
@@ -477,18 +486,18 @@ setlocal nowinfixwidth
 set nowrap
 setlocal nowrap
 setlocal wrapmargin=0
-let s:l = 1362 - ((48 * winheight(0) + 27) / 54)
+let s:l = 48 - ((26 * winheight(0) + 26) / 53)
 if s:l < 1 | let s:l = 1 | endif
 exe s:l
 normal! zt
-1362
+48
 normal! 0
 wincmd w
 3wincmd w
-exe '1resize ' . ((&lines * 1 + 29) / 58)
-exe '2resize ' . ((&lines * 54 + 29) / 58)
+exe '1resize ' . ((&lines * 2 + 29) / 58)
+exe '2resize ' . ((&lines * 53 + 29) / 58)
 exe 'vert 2resize ' . ((&columns * 31 + 102) / 205)
-exe '3resize ' . ((&lines * 54 + 29) / 58)
+exe '3resize ' . ((&lines * 53 + 29) / 58)
 exe 'vert 3resize ' . ((&columns * 173 + 102) / 205)
 tabnext 1
 if exists('s:wipebuf')
