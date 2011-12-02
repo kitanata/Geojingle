@@ -36,8 +36,8 @@ recreating the node. This gets around that."*/
     return {
         "type" : m_FilterType,
         "value" : m_FilterValue,
-        "request_option" : m_FilterRequestOptions,
-        "display_options" : m_DisplayOptions,
+        "request_option" : m_FilterRequestOption,
+        "display_options" : [m_DisplayOptions rawOptions],
     };
 }
 

@@ -177,6 +177,8 @@ g_sharedFileController = nil;
 {
     if(request == m_OpenFileRequest)
     {
+        m_JsonData = jsonResponse;
+
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOpenFileRequestSuccessful:)])
             [m_Delegate onOpenFileRequestSuccessful:self];
     }

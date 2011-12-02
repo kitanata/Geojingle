@@ -320,15 +320,9 @@ var g_FilterManagerInstance = nil;
 
 - (id) _buildFilterJson:(id)curFilter
 {
-    var curFilterType = [curFilter type];
-    var curFilterValue = [curFilter value];
-    var curFilterDisplayOptions = [curFilter displayOptions];
-    var curFilterRequestOption = [curFilter requestOption];
-
-    var childNodes = [curFilter childNodes];
-
     var childJson = [];
 
+    var childNodes = [curFilter childNodes];
     for(var i=0; i < [childNodes count]; i++)
     {
         childJson.push([self _buildFilterJson:[childNodes objectAtIndex:i]]);
@@ -358,17 +352,20 @@ var g_FilterManagerInstance = nil;
     [newFilter setValue:jsonFilter.value];
     [self addFilter:newFilter parent:parentFilter];
 
-    if(jsonFilter.display_options)
-        [[newFilter displayOptions] enchantFromOptions:jsonFilter.display_options];
-    if(jsonFilter.point_display_options)
-        [[newFilter pointDisplayOptions] enchantFromOptions:jsonFilter.point_display_options];
-    if(jsonFilter.polygon_display_options)
-        [[newFilter polygonDisplayOptions] enchantFromOptions:jsonFilter.polygon_display_options];
+    var newFilterType = [[newFilter description] dataType];
+    if((newFilterType == "POINT" || newFilterType == "POLYGON") && jsonFilter.display_options)
+        [[newFilter displayOptions] enchantOptionsFromJson:jsonFilter.display_options];
+    else if(newFilterType == "REDUCE")
+    {
+        if(jsonFilter.point_display_options)
+            [[newFilter pointDisplayOptions] enchantOptionsFromJson:jsonFilter.point_display_options];
+        if(jsonFilter.polygon_display_options)
+            [[newFilter polygonDisplayOptions] enchantOptionsFromJson:jsonFilter.polygon_display_options];
+    }
 
     [newFilter setRequestOption:jsonFilter.request_option];
 
     var children = jsonFilter.children;
-
     for(var i=0; i < children.length; i++)
     {
         [self _buildFilterFromJson:children[i] parent:newFilter];

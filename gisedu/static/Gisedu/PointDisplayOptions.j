@@ -1,9 +1,7 @@
-@import <Foundation/CPObject.j>
+@import "DisplayOptions.j"
 
-@implementation PointDisplayOptions : CPObject
+@implementation PointDisplayOptions : DisplayOptions
 {
-    id m_DefaultDisplayOptions;
-    id m_DisplayOptions         @accessors(getter=rawOptions);
 }
 
 - (id)init
@@ -28,32 +26,6 @@
     }
 
     return self;
-}
-
-- (void)setDisplayOption:(CPString)option value:(id)value
-{
-    m_DisplayOptions[option] = value;
-}
-
-- (id)getDisplayOption:(CPString)option
-{
-    return m_DisplayOptions[option];
-}
-
-- (void)enchantOptionsFrom:(PointDisplayOptions)theOptions
-{
-    var options = [theOptions rawOptions];
-
-    for(key in options)
-        m_DisplayOptions[key] = options[key];
-}
-
-- (void)resetOptions
-{
-    m_DisplayOptions = {};
-
-    for(key in m_DefaultDisplayOptions)
-        m_DisplayOptions[key] = m_DefaultDisplayOptions[key];
 }
 
 + (id)defaultOptions

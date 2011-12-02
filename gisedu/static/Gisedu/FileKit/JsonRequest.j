@@ -105,6 +105,11 @@
 {
     if(aConnection == m_RequestConnection)
     {
+        console.log("Here?");
+
+        if(!aData || aData == "")
+            return;
+
         var aData = aData.replace('while(1);', '');
         var responseData = JSON.parse(aData);
 

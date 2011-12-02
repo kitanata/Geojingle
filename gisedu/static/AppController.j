@@ -762,6 +762,9 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 {
     var jsonData = [sender jsonData];
 
+    console.log(sender);
+    console.log(jsonData);
+
     var filters = jsonData['filters'];
 
     [m_FilterManager fromJson:filters];

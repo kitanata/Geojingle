@@ -45,9 +45,9 @@ recreating the node. This gets around that."*/
     return {
         "type" : m_FilterType,
         "value" : m_FilterValue,
-        "request_option" : m_FilterRequestOptions,
-        "point_display_options" : m_PointDisplayOptions,
-        "polygon_display_options" : m_PolygonDisplayOptions
+        "request_option" : m_FilterRequestOption,
+        "point_display_options" : [m_PointDisplayOptions rawOptions],
+        "polygon_display_options" : [m_PolygonDisplayOptions rawOptions]
     };
 }
 
