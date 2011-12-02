@@ -65,4 +65,6 @@ recreating the node. This gets around that."*/
 
 - (void)enchantFromFilter:(GiseduFilter)filter { }
 
+- (id)toJson {}
+
 @end

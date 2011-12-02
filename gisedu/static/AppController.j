@@ -380,15 +380,23 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onPolygonOverlaySelected:(id)sender
 {
-    [m_RightSideTabView setPolygonOverlayTarget:sender];
+    [m_PointDisplayOptions disable];
+    
+    [m_PolygonDisplayOptions enable];
+    [m_PolygonDisplayOptions setOverlayTarget:sender];
+
     [self showRightSideTabView];
 }
 
 - (void)onPointOverlaySelected:(id)pointDataObject
 {
-    console.log("AppController::onPointOverlaySelected Called");
+    [m_PolygonDisplayOptions disable];
+    
+    [m_PointDisplayOptions enable];
     [m_PointDisplayOptions setOverlayTarget:[pointDataObject overlay]];
+
     [[m_LeftSideTabView outlineView] selectItem:[pointDataObject name]];
+    [self showRightSideTabView];
 }
 
 - (void) onOutlineItemSelected:(id)sender
@@ -488,7 +496,8 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     m_MapWidth = m_MinMapWidth;
 
     [self updateMapViewFrame];
-    [m_ContentView addSubview:m_RightSideTabView];
+    if(![[m_ContentView subviews] containsObject:m_RightSideTabView])
+        [m_ContentView addSubview:m_RightSideTabView];
 }
 
 - (void)hideRightSideTabView

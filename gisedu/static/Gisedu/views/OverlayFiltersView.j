@@ -411,6 +411,8 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
                     andFilter:filter andAcceptedValues:[filterDescription options]];
 
+            [[m_AppController pointDisplayOptions] disable];
+            [[m_AppController polygonDisplayOptions] enable];
             [[m_AppController polygonDisplayOptions] setFilterTarget:filter];
         }
         else if([filterDescription dataType] == "POINT")
@@ -426,6 +428,8 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
                     andFilter:filter andAcceptedValues:[filterDescription options]];
             }
 
+            [[m_AppController polygonDisplayOptions] disable];
+            [[m_AppController pointDisplayOptions] enable];
             [[m_AppController pointDisplayOptions] setFilterTarget:filter];
         }
         else if([filterDescription dataType] == "REDUCE")
@@ -447,6 +451,9 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
                     andFilter:filter];
             }
 
+            [[m_AppController polygonDisplayOptions] enable];
+            [[m_AppController pointDisplayOptions] enable];
+            
             [[m_AppController polygonDisplayOptions] setFilterTarget:filter];
             [[m_AppController pointDisplayOptions] setFilterTarget:filter];
         }

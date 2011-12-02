@@ -334,13 +334,10 @@ var g_FilterManagerInstance = nil;
         childJson.push([self _buildFilterJson:[childNodes objectAtIndex:i]]);
     }
 
-    return {
-        "type" : curFilterType,
-        "value" : curFilterValue,
-        "request_option" : curFilterRequestOption,
-        "display_options" : curFilterDisplayOptions,
-        "children" : childJson
-    };
+    var jsonData = [curFilter toJson];
+    jsonData["children"] = childJson;
+
+    return jsonData;
 }
 
 - (void)fromJson:(id)jsonObject
@@ -361,10 +358,12 @@ var g_FilterManagerInstance = nil;
     [newFilter setValue:jsonFilter.value];
     [self addFilter:newFilter parent:parentFilter];
 
-    var displayOptions = jsonFilter.display_options;
-
-    if(displayOptions)
-        [newFilter setDisplayOptions:displayOptions];
+    if(jsonFilter.display_options)
+        [[newFilter displayOptions] enchantFromOptions:jsonFilter.display_options];
+    if(jsonFilter.point_display_options)
+        [[newFilter pointDisplayOptions] enchantFromOptions:jsonFilter.point_display_options];
+    if(jsonFilter.polygon_display_options)
+        [[newFilter polygonDisplayOptions] enchantFromOptions:jsonFilter.polygon_display_options];
 
     [newFilter setRequestOption:jsonFilter.request_option];
 

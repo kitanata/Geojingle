@@ -47,6 +47,16 @@
     [m_RightSideTabView selectTabItem:m_PointOptionsTab];
 }
 
+- (void)enable
+{
+    [m_RightSideTabView enableModuleTabItem:m_PointOptionsTab]; 
+}
+
+- (void)disable
+{
+    [m_RightSideTabView disableModuleTabItem:m_PointOptionsTab];
+}
+
 - (void) setOverlayTarget: (PointOverlay)overlayTarget
 {
     var optionsController = [PointOverlayOptionsController controllerWithOverlay:overlayTarget];

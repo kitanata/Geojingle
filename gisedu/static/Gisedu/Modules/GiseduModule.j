@@ -17,12 +17,11 @@
     return self;
 }
 
-- (void)loadIntoMenu:(CPMenu)theMenu
-{
-}
+- (void)loadIntoMenu:(CPMenu)theMenu { }
 
-- (void)updateMenu:(BOOL)sessionActive
-{
-}
+- (void)updateMenu:(BOOL)sessionActive { }
+
+- (void)enable {}
+- (void)disable {}
 
 @end

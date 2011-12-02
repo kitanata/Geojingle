@@ -47,6 +47,16 @@
     [m_RightSideTabView selectTabItem:m_PolygonOptionsTab];
 }
 
+- (void)enable
+{
+    [m_RightSideTabView enableModuleTabItem:m_PolygonOptionsTab]; 
+}
+
+- (void)disable
+{
+    [m_RightSideTabView disableModuleTabItem:m_PolygonOptionsTab];
+}
+
 - (void) setOverlayTarget: (PointOverlay)overlayTarget
 {
     var optionsController = [PolygonOverlayOptionsController controllerWithOverlay:overlayTarget];

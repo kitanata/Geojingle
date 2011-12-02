@@ -31,4 +31,14 @@ recreating the node. This gets around that."*/
         [m_DisplayOptions enchantOptionsFrom:[filter pointDisplayOptions]];
 }
 
+- (id)toJson 
+{
+    return {
+        "type" : m_FilterType,
+        "value" : m_FilterValue,
+        "request_option" : m_FilterRequestOptions,
+        "display_options" : m_DisplayOptions,
+    };
+}
+
 @end

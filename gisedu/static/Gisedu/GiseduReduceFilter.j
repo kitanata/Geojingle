@@ -40,4 +40,15 @@ recreating the node. This gets around that."*/
     }
 }
 
+- (id)toJson 
+{
+    return {
+        "type" : m_FilterType,
+        "value" : m_FilterValue,
+        "request_option" : m_FilterRequestOptions,
+        "point_display_options" : m_PointDisplayOptions,
+        "polygon_display_options" : m_PolygonDisplayOptions
+    };
+}
+
 @end
