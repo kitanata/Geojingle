@@ -9,7 +9,10 @@
 
 - (id)initWithFilter:(GiseduPointFilter)filter
 {
-    self = [super initWithOptions:[filter displayOptions]];
+    if([[filter description] dataType] == "REDUCE")
+        self = [super initWithOptions:[filter pointDisplayOptions]];
+    else
+        self = [super initWithOptions:[filter displayOptions]];
 
     if(self)
     {

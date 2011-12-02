@@ -244,13 +244,10 @@
         var curFilter = [m_Filters objectAtIndex:i];
         var curFilterType = [[curFilter description] dataType];
 
-        console.log([curFilter displayOptions]);
-        console.log(curFilterType);
-
         if(curFilterType == "POINT")
-            [pointDisplayOptions enchantOptions:[curFilter displayOptions]];
+            [pointDisplayOptions enchantOptionsFrom:[curFilter displayOptions]];
         else if(curFilterType == "POLYGON")
-            [polygonDisplayOptions enchantOptions:[curFilter displayOptions]];
+            [polygonDisplayOptions enchantOptionsFrom:[curFilter displayOptions]];
     }
 
     console.log(polygonDisplayOptions);
@@ -263,8 +260,8 @@
 
         if(curFilterType == "REDUCE")
         {
-            [pointDisplayOptions enchantOptions:[curFilter pointDisplayOptions]];
-            [polygonDisplayOptions enchantOptions:[curFilter polygonDisplayOptions]];
+            [pointDisplayOptions enchantOptionsFrom:[curFilter pointDisplayOptions]];
+            [polygonDisplayOptions enchantOptionsFrom:[curFilter polygonDisplayOptions]];
         }
     }
 

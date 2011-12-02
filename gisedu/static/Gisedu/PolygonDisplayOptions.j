@@ -40,17 +40,12 @@
     return m_DisplayOptions[option];
 }
 
-//This takes on all non-default options from those
-//provided to the function
-- (void)enchantOptions:(PolygonDisplayOptions)theOptions
+- (void)enchantOptionsFrom:(PolygonDisplayOptions)theOptions
 {
     var options = [theOptions rawOptions];
 
     for(key in options)
-    {
-        if(m_DefaultDisplayOptions[key] != options[key])
-            m_DisplayOptions[key] = options[key]
-    }
+        m_DisplayOptions[key] = options[key];
 }
 
 - (void)resetOptions

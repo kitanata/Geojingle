@@ -21,4 +21,14 @@ recreating the node. This gets around that."*/
     return self;
 }
 
+- (void)enchantFromFilter:(GiseduFilter)filter
+{
+    var filterType = [[filter description] dataType];
+
+    if(filterType == "POINT")
+        [m_DisplayOptions enchantOptionsFrom:[filter displayOptions]];
+    else if(filterType == "REDUCE")
+        [m_DisplayOptions enchantOptionsFrom:[filter pointDisplayOptions]];
+}
+
 @end

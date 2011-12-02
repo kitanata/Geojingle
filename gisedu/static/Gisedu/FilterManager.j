@@ -178,7 +178,7 @@ var g_FilterManagerInstance = nil;
     return newFilter;
 }
 
-- (void)addFilter:(CPTreeNode)filter parent:(CPTreeNode)parent
+- (void)addFilter:(GiseduFilter)filter parent:(GiseduFilter)parent
 {
     console.log("Adding Filter = "); console.log(filter);
     
@@ -189,6 +189,8 @@ var g_FilterManagerInstance = nil;
     else if([self containsFilter:parent])
     {
         [parent insertObject:filter inChildNodesAtIndex:0];
+
+        [filter enchantFromParents];
     }
 }
 

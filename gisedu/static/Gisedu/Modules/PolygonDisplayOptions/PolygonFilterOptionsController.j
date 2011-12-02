@@ -9,7 +9,10 @@
 
 - (id)initWithFilter:(GiseduPolygonFilter)filter
 {
-    self = [super initWithOptions:[filter displayOptions]];
+    if([[filter description] dataType] == "REDUCE")
+        self = [super initWithOptions:[filter polygonDisplayOptions]];
+    else
+        self = [super initWithOptions:[filter displayOptions]];
 
     if(self)
     {
