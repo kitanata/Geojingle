@@ -147,7 +147,6 @@
         [m_ShapeRadiusSlider setMaxValue:10000];
         [m_ShapeRadiusSlider setTarget:self];
         [m_ShapeRadiusSlider setAction:@selector(onShapeRadiusSlider:)];
-        //
 
         m_ShowButton = [[CPCheckBox alloc] initWithFrame:CGRectMakeZero()];
         [m_ShowButton setTitle:@"Show Marker"];

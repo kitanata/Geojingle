@@ -3,6 +3,8 @@
 @import "GiseduPointFilter.j"
 @import "GiseduPolygonFilter.j"
 @import "GiseduReduceFilter.j"
+@import "GiseduScaleFilter.j"
+@import "GiseduColorizeFilter.j"
 
 @import "GiseduFilterDescription.j"
 @import "GiseduFilterRequest.j"
@@ -105,14 +107,25 @@ var g_FilterManagerInstance = nil;
     for(var i=0; i < [filterDesc count]; i++)
     {
         var curDesc = [filterDesc objectAtIndex:i];
-
         if([curDesc name] == filterName)
-        {
             return [curDesc id];
-        }
     }
     
     return CPNotFound;
+}
+
+- (CPString)filterNameFromId:(int)filterId
+{
+    var filterDesc = [m_FilterDescriptions allValues];
+
+    for(var i=0; i < [filterDesc count]; i++)
+    {
+        var curDesc = [filterDesc objectAtIndex:i];
+        if([curDesc id] == filterId)
+            return [curDesc name];
+    }
+
+    return "NotFound";
 }
 
 - (BOOL)containsFilter:(CPTreeNode)filter
@@ -169,6 +182,13 @@ var g_FilterManagerInstance = nil;
             newFilter = [[GiseduReduceFilter alloc] initWithValue:YES];
         else
             newFilter = [[GiseduReduceFilter alloc] initWithValue:'All'];
+    }
+    else if([filterDesc dataType] == "POST")
+    {
+        if([filterDesc filterType] == "SCALE_INTEGER")
+            newFilter = [[GiseduScaleFilter alloc] initWithValue:'All'];
+        else if([filterDesc filterType] == "COLORIZE_INTEGER")
+            newFilter = [[GiseduColorizeFilter alloc] initWithValue:'All'];
     }
 
     console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);

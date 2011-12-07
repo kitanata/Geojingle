@@ -73,11 +73,18 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     CPMenuItem m_FileSeparatorItem;
     CPMenuItem m_FileExitMenuItem;      //exit Gisedu (closes browser tab)
 
+  	CPMenu m_EditMenu;
+  	CPMenuItem m_EditMenuAddPointFilter;    //adds point filter
+    CPMenuItem m_EditMenuAddPolygonFilter;  //adds polygon filter
+    CPMenuItem m_EditMenuAddReduceFilter;   //adds reduce filter
+    CPMenuItem m_EditMenuAddPostFilter;     //adds post filter
+    CPMenuItem m_EditMenuDeleteFilter;      //deletes the selected filter
+
     CPMenu m_AccountMenu;
-    CPMenuItem m_AccountLoginMenuItem;
-    CPMenuItem m_AccountRegisterMenuItem;
-    CPMenuItem m_AccountLogOutMenuItem;
-    CPMenuItem m_AccountAdminMenuItem;
+    CPMenuItem m_AccountLoginMenuItem;      //logs a user in
+    CPMenuItem m_AccountRegisterMenuItem;   //registers a new account
+    CPMenuItem m_AccountLogOutMenuItem;     //logs a user out
+    CPMenuItem m_AccountAdminMenuItem;      //takes user to django admin page
 
     CPAlert m_ExitAlert;
 
@@ -336,11 +343,13 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
   	    m_EditMenuAddPointFilter = [[CPMenuItem alloc] initWithTitle:@"Add Point Filter" action:@selector(onAddPointFilter:) keyEquivalent:@"p"];
   	    m_EditMenuAddPolygonFilter = [[CPMenuItem alloc] initWithTitle:@"Add Polygon Filter" action:@selector(onAddPolygonFilter:) keyEquivalent:@"P"];
   	    m_EditMenuAddReduceFilter = [[CPMenuItem alloc] initWithTitle:@"Add Reduce Filter" action:@selector(onAddReduceFilter:) keyEquivalent:@"R"];
+        m_EditMenuAddPostFilter = [[CPMenuItem alloc] initWithTitle:@"Add Post Filter" action:@selector(onAddPostFilter:) keyEquivalent:@"o"];
   	    m_EditMenuDeleteFilter = [[CPMenuItem alloc] initWithTitle:@"Delete Filter" action:@selector(onDeleteFilter:) keyEquivalent:@"D"];
 
         [m_EditMenu addItem:m_EditMenuAddPointFilter];
         [m_EditMenu addItem:m_EditMenuAddPolygonFilter];
         [m_EditMenu addItem:m_EditMenuAddReduceFilter];
+        [m_EditMenu addItem:m_EditMenuAddPostFilter];
         [m_EditMenu addItem:m_EditMenuDeleteFilter];
 
         [m_EditMenu addItem:[CPMenuItem separatorItem]];
@@ -723,6 +732,11 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 - (void)onAddReduceFilter:(id)sender
 {
     [[m_LeftSideTabView filtersView] onAddReduceFilter:sender];
+}
+
+- (void)onAddPostFilter:(id)sender
+{
+    [[m_LeftSideTabView filtersView] onAddPostFilter:sender];
 }
 
 - (void)onDeleteFilter:(id)sender

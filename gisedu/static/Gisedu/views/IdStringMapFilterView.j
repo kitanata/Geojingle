@@ -33,16 +33,12 @@
 
 - (void)onUpdate:(id)sender
 {
-    console.log("onFilterUpdateButton called");
-
     var curSelItem = nil;
 
     if(m_bPopUp)
         curSelItem = [m_SelectionControl titleOfSelectedItem];
     else
         curSelItem = [m_SelectionControl stringValue];
-
-    //console.log("AcceptedValues is " + m_AcceptedValues);
 
     if(curSelItem == "All")
     {
@@ -54,8 +50,6 @@
         if([keyList count] > 0)
             [m_Filter setValue:[keyList objectAtIndex:0]];
     }
-
-    console.log("Filter Values is " + [m_Filter value]);
 
     if(_action && _target)
     {

@@ -6,12 +6,16 @@
 @import "IdStringMapFilterView.j"
 @import "BooleanFilterView.j"
 
+@import "ScaleIntegerFilterView.j"
+@import "ColorizeIntegerFilterView.j"
+
 @import "../FilterManager.j"
 @import "../OverlayManager.j"
 
 var m_AddPointFilterToolbarId = 'addPointFilter';
 var m_AddPolygonFilterToolbarId = 'addPolygonFilter';
 var m_AddReduceFilterToolbarId = 'addReduceFilter';
+var m_AddPostFilterToolbarId = 'addPostFilter';
 var m_DeleteFilterToolbarId = 'deleteFilter';
 
 @implementation OverlayFiltersView : CPView
@@ -26,6 +30,12 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     CPOutlineView m_OutlineView;
     CPView m_PropertiesView;
     CPView m_CurrentFilterView;
+        
+    CPButton m_AddPointFilterButton;
+    CPButton m_AddPolygonFilterButton;
+    CPButton m_AddReduceFilterButton;
+    CPButton m_AddPostFilterButton;
+    CPButton m_DeleteFilterButton;
 
     FilterManager m_FilterManager;
     OverlayManager m_OverlayManager;
@@ -89,6 +99,15 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
         [m_AddReduceFilterButton setAction:@selector(onAddReduceFilter:)];
         [m_AddReduceFilterButton sizeToFit];
 
+        m_AddPostFilterButton = [CPButton buttonWithTitle:""];
+        image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/post_filter.png"] size:CPSizeMake(24, 24)];
+        highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/post_filter.png"] size:CPSizeMake(24, 24)];
+        [m_AddPostFilterButton setImage:image];
+        [m_AddPostFilterButton setAlternateImage:highlighted];
+        [m_AddPostFilterButton setTarget:self];
+        [m_AddPostFilterButton setAction:@selector(onAddPostFilter:)];
+        [m_AddPostFilterButton sizeToFit];
+
         m_DeleteFilterButton = [CPButton buttonWithTitle:""];
         image = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/rest/delete_filter.png"] size:CPSizeMake(24, 24)];
         highlighted = [[CPImage alloc] initWithContentsOfFile:[mainBundle pathForResource:@"buttons/highlighted/delete_filter.png"] size:CPSizeMake(24, 24)];
@@ -98,7 +117,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
         [m_DeleteFilterButton setAction:@selector(onDeleteFilter:)];
         [m_DeleteFilterButton sizeToFit];
 
-        [m_ButtonBar setButtons:[m_AddPointFilterButton, m_AddPolygonFilterButton, m_AddReduceFilterButton, m_DeleteFilterButton]];
+        [m_ButtonBar setButtons:[m_AddPointFilterButton, m_AddPolygonFilterButton, m_AddReduceFilterButton, m_AddPostFilterButton, m_DeleteFilterButton]];
 
         [m_ScrollContainerView addSubview:m_ButtonBar];
         [m_ScrollContainerView addSubview:m_ScrollView];
@@ -220,11 +239,16 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
         var requestOption = [item requestOption];
 
         if(requestOption == "lt")
-            requestOption = "Less than "
+            requestOption = "< "
         else if(requestOption == "gt")
-            requestOption = "Greater than "
+            requestOption = "> "
+        else if(requestOption == "gte")
+            requestOption = ">= "
+        else if(requestOption == "lte")
+            requestOption = "<= "
         else
-            requestOption = "Exactly "
+            requestOption = "== "
+
             
         if(filterValue != "All")
             filterLabel = requestOption + [item value] + " " + filterTypeName + " Filter";
@@ -457,6 +481,18 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             [[m_AppController polygonDisplayOptions] setFilterTarget:filter];
             [[m_AppController pointDisplayOptions] setFilterTarget:filter];
         }
+        else if([filterDescription dataType] == "POST")
+        {
+            if([filterDescription filterType] == "SCALE_INTEGER")
+                m_CurrentFilterView = [[ScaleIntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[filterDescription attributeFilters]];
+            else if([filterDescription filterType] == "COLORIZE_INTEGER")
+                m_CurrentFilterView = [[ColorizeIntegerFilterView alloc] initWithFrame:[m_PropertiesView bounds]
+                    andFilter:filter andAcceptedValues:[filterDescription attributeFilters]];
+
+            [[m_AppController polygonDisplayOptions] disable];
+            [[m_AppController pointDisplayOptions] disable];
+        }
         else if([filterDescription filterType] == "LIST")
         {
             m_CurrentFilterView = [[IdStringMapFilterView alloc] initWithFrame:[m_PropertiesView bounds]
@@ -484,10 +520,15 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
     [self showAddFilterPanel:"REDUCE"];
 }
 
+- (void)onAddPostFilter:(id)sender
+{
+    [self showAddFilterPanel:"POST"];
+}
+
 - (void)showAddFilterPanel:(CPString)dataType
 {
     var addFilterList = [self buildAddFilterList:dataType];
-
+    
     if(addFilterList)
     {
         m_AddFilterPanel = [[AddFilterPanel alloc] initWithFilterNames:addFilterList];
@@ -520,16 +561,10 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
         while(parentIter != nil)
         {
             var parentDesc = [parentIter description];
-
-            //console.log("parentDesc excludedFilters ="); console.log([parentDesc excludeFilters]);
-
             [excludedFilterIds addObjectsFromArray:[parentDesc excludeFilters]];
-
             parentIter = [parentIter parentNode];
         }
     }
-
-    //console.log("excludedFilterIds = "); console.log(excludedFilterIds);
 
     var itemList = [CPArray array];
     var filterIds = [filterDescriptions allKeys];
@@ -543,17 +578,10 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             [itemList addObject:curFilterId];
     }
 
-    //console.log("itemList = "); console.log(itemList);
-
     for(var i=0; i < [excludedFilterIds count]; i++)
     {
         var excludedId = [excludedFilterIds objectAtIndex:i].toString();
-
-        //console.log("excludedId = "); console.log(excludedId);
-
         [itemList removeObject:excludedId];
-
-        //console.log("itemList ="); console.log(itemList);
     }
 
     if(itemList.length == 0)
@@ -623,6 +651,8 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
 
 - (void) onAddFilterConfirm:(CPString)filterType
 {
+    console.log("onAddFilterConfirm filterType = " + filterType);
+
     var newFilter = [m_FilterManager createFilter:filterType];
 
     curSelRow = [m_OutlineView selectedRow];

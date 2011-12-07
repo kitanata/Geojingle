@@ -247,9 +247,10 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
     integer_options = GiseduFilters.objects.filter(filter_type="REDUCE", data_type="INTEGER")
     integer_options = [option.name for option in integer_options]
 
-    integer_options.extend([option + "__lt" for option in integer_options])
-    integer_options.extend([option + "__gt" for option in integer_options])
-    integer_options.extend([option + "__eq" for option in integer_options])
+    option_extenders = ["lt", "gt", "lte", "gte", "eq"]
+
+    for ext in option_extenders:
+        integer_options.extend([option + "__" + ext for option in integer_options])
 
     options = {k:v for k, v in options.iteritems() if k in integer_options}
 
@@ -273,6 +274,10 @@ def process_reduce_integer_filters(fields, objects, options, geom_type="POINT"):
             filter_fields = filter_fields.filter(value__lt=value)
         elif integer_query_option == "gt":
             filter_fields = filter_fields.filter(value__gt=value)
+        elif integer_query_option == "lte":
+            filter_fields = filter_fields.filter(value__lte=value)
+        elif integer_query_option == "gte":
+            filter_fields = filter_fields.filter(value__gte=value)
         else:
             filter_fields = filter_fields.filter(value=value)
 
