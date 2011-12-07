@@ -296,9 +296,6 @@ var g_FilterManagerInstance = nil;
         for(var i=0; i < [m_FilterChains count]; i++)
             [[m_FilterChains objectAtIndex:i] updateOverlays];
 
-        [m_OverlayManager loadPointOverlayQueue];
-        [m_OverlayManager loadPolygonOverlayQueue];
-
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
             [m_Delegate onFilterRequestProcessed:self];
     }

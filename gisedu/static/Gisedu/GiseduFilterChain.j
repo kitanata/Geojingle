@@ -22,6 +22,8 @@
     var m_LoadPointOverlayList;
     var m_LoadPolygonOverlayList;
 
+    CPArray m_OverlayListLoaders;
+
     GiseduFilterRequest m_Request;
 
     FilterManager m_FilterManager;
@@ -45,6 +47,7 @@
         m_LoadPointOverlayList = {}
         m_LoadPolygonOverlayList = {}
 
+        m_OverlayListLoaders = [CPArray array];
     }
 
     return self;
@@ -332,16 +335,99 @@
     for(curType in m_LoadPointOverlayList)
     {
         var curItemIds = m_LoadPointOverlayList[curType];
-        [m_OverlayManager queuePointOverlayList:curType withIds:curItemIds withDisplayOptions:pointDisplayOptions];
+        [self loadPointOverlayList:curType withIds:curItemIds withDisplayOptions:pointDisplayOptions];
     }
 
     for(curType in m_LoadPolygonOverlayList)
     {
         var curItemIds = m_LoadPolygonOverlayList[curType];
-        [m_OverlayManager queuePolygonOverlayList:curType withIds:curItemIds withDisplayOptions:polygonDisplayOptions];
+        [self loadPolygonOverlayList:curType withIds:curItemIds withDisplayOptions:polygonDisplayOptions];
     }
 }
 
+- (void)loadPointOverlayList:(CPString)dataType withIds:(CPArray)itemIds withDisplayOptions:(id)displayOptions
+{
+    var loaderUrl = g_UrlPrefix + "/point_geom/" + dataType + "/list/";
+    var loader = [[PointOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
+    [loader setAction:@selector(onPointOverlayListLoaded:)];
+    [loader setTarget:self];
+    [loader setIdList:itemIds];
+    [loader setDataType:dataType];
+    [loader loadWithDisplayOptions:displayOptions];
+
+    [m_OverlayListLoaders addObject:loader];
+}
+
+- (void)loadPolygonOverlayList:(CPString)dataType withIds:(id)itemIds withDisplayOptions:(id)displayOptions
+{
+    var loaderUrl = g_UrlPrefix + "/polygon_geom/" + dataType + "/list/";
+    var loader = [[PolygonOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
+    [loader setAction:@selector(onPolygonOverlayListLoaded:)];
+    [loader setTarget:self];
+    [loader setIdList:itemIds];
+    [loader setDataType:dataType];
+    [loader loadWithDisplayOptions:displayOptions];
+
+    [m_OverlayListLoaders addObject:loader];
+}
+
+- (void)onPointOverlayListLoaded:(id)sender
+{
+    console.log("onPointOverlayListLoaded called");
+
+    var overlays = [sender pointOverlays];
+    var overlayObjects = [CPArray array];
+    var overlayIds = [overlays allKeys];
+
+    for(var i=0; i < [overlayIds count]; i++)
+    {
+        var curId = [overlayIds objectAtIndex:i];
+        var curObject = [m_OverlayManager getOverlayObject:[sender dataType] objId:curId];
+        [curObject setOverlay:[overlays objectForKey:curId]];
+        [overlayObjects addObject:curObject];
+    }
+
+    [m_OverlayListLoaders removeObject:sender];
+    [self postProcessDisplayOptions];
+
+    if([m_Delegate respondsToSelector:@selector(onOverlayListLoaded:dataType:)])
+        [m_Delegate onOverlayListLoaded:overlayObjects dataType:[sender dataType]];
+}
+
+- (void)onPolygonOverlayListLoaded:(id)sender
+{
+    console.log("onPolygonOverlayListLoaded called");
+
+    var idNameMap = [[[m_FilterManager filterDescriptions] objectForKey:[sender dataType]] options];
+
+    var overlays = [sender polygonOverlays];
+    var overlayIds = [overlays allKeys];
+
+    var polygonDataObjects = [m_OverlayManager basicDataOverlayMap:[sender dataType]];
+    [polygonDataObjects addEntriesFromDictionary:overlays];
+
+    for(var i=0; i < [overlayIds count]; i++)
+    {
+        var curOverlayId = [overlayIds objectAtIndex:i];
+        var curOverlay = [overlays objectForKey:curOverlayId];
+        [curOverlay setPk:curOverlayId];
+        [curOverlay setName:[idNameMap objectForKey:curOverlayId]];
+        [curOverlay setDelegate:[m_Delegate delegate]];
+        [curOverlay addToMapView];
+    }
+
+    [m_OverlayListLoaders removeObject:sender];
+    [self postProcessDisplayOptions];
+
+    if([m_Delegate respondsToSelector:@selector(onOverlayListLoaded:dataType:)])
+        [m_Delegate onOverlayListLoaded:[overlays allValues] dataType:[sender dataType]];
+}
+
+- (void)postProcessDisplayOptions
+{
+    if([m_OverlayListLoaders count] > 0)
+        return; //haven't finished loading everything
+}
 
 + (id)filterChain
 {
