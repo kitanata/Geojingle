@@ -30,6 +30,8 @@ urlpatterns = patterns('',
     #Point Data
     url(r'^point_geom/(?P<data_type>\w+)/list/', 'point_objects.views.point_geom_list'),
     url(r'^point_infobox/(?P<data_type>\w+)/id/(?P<point_id>\d+)/', 'point_objects.views.point_infobox_by_type'),
+    url(r'^point_scale_integer/(?P<data_type>\w+)', 'point_objects.views.point_scale_integer'),
+    url(r'^point_colorize_integer/(?P<data_type>\w+)', 'point_objects.views.point_colorize_integer'),
 
     #Polygon Data
     url(r'^polygon_geom/(?P<data_type>\w+)/list/', 'polygon_objects.views.polygon_geom_list'),

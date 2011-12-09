@@ -2,6 +2,8 @@
 @import "PointDisplayOptions.j"
 @import "PolygonDisplayOptions.j"
 
+@import "FileKit/JsonRequest.j"
+
 /* If you walk the filter tree from parent to child. Each path to a leaf is represented
    as a seperate filter chain. Each filter chain make's it's own request to the server
    for information regarding the types of overlays Gisedu should load onto the display.
@@ -22,7 +24,11 @@
     var m_LoadPointOverlayList;
     var m_LoadPolygonOverlayList;
 
+    var m_PointOverlayIds;  //The id's under the "control" of this filter chain
+    var m_PolygonOverlayIds;//ditto. These are used for post processing filters.
+
     CPArray m_OverlayListLoaders;
+    var m_PostProcessingRequests; //a JS object mapping requestObject to request type for Post processing requests
 
     GiseduFilterRequest m_Request;
 
@@ -47,7 +53,11 @@
         m_LoadPointOverlayList = {}
         m_LoadPolygonOverlayList = {}
 
+        m_PointOverlayIds = {};
+        m_PolygonOverlayIds = {};
+
         m_OverlayListLoaders = [CPArray array];
+        m_PostProcessingRequests = {};
     }
 
     return self;
@@ -231,6 +241,48 @@
         [m_Delegate onFilterRequestProcessed:self];
 }
 
+- (void)_addPointOverlayId:(int)objId dataType:(CPString)type
+{
+    [self _addPointOverlayId:objId dataType:type andLoad:NO];
+}
+
+- (void)_addPolygonOverlayId:(int)objId dataType:(CPString)type
+{
+    [self _addPolygonOverlayId:objId dataType:type andLoad:NO];
+}
+
+- (void)_addPointOverlayId:(int)objId dataType:(CPString)type andLoad:(BOOL)load
+{
+    if(!m_PointOverlayIds[type])
+        m_PointOverlayIds[type] = new Array();
+
+    m_PointOverlayIds[type].push(objId);
+
+    if(load)
+    {
+        if(!m_LoadPointOverlayList[type])
+            m_LoadPointOverlayList[type] = new Array();
+
+        m_LoadPointOverlayList[type].push(objId);
+    }
+}
+
+- (void)_addPolygonOverlayId:(int)objId dataType:(CPString)type andLoad:(BOOL)load
+{
+    if(!m_PolygonOverlayIds[type])
+        m_PolygonOverlayIds[type] = new Array();
+
+    m_PolygonOverlayIds[type].push(objId);
+
+    if(load)
+    {
+        if(!m_LoadPolygonOverlayList[type])
+            m_LoadPolygonOverlayList[type] = new Array();
+
+        m_LoadPolygonOverlayList[type].push(objId);
+    }
+}
+
 - (void)updateOverlays
 {
     pointDisplayOptions = [PointDisplayOptions defaultOptions];
@@ -238,6 +290,9 @@
 
     m_LoadPointOverlayList = {}
     m_LoadPolygonOverlayList = {}
+    
+    m_PointOverlayIds = {};
+    m_PolygonOverlayIds = {};
 
     var filterDescriptions = [m_FilterManager filterDescriptions];
 
@@ -300,13 +355,11 @@
                     }
 
                     [overlay updateGoogleMarker];
+                    [self _addPointOverlayId:curItemId dataType:curType];
                 }
                 else
                 {
-                    if(!m_LoadPointOverlayList[curType])
-                        m_LoadPointOverlayList[curType] = new Array();
-
-                    m_LoadPointOverlayList[curType].push(curItemId);
+                    [self _addPointOverlayId:curItemId dataType:curType andLoad:YES];
                 }
             }
             else if([curFilterDescription dataType] == "POLYGON")
@@ -320,13 +373,11 @@
                     [overlay setDisplayOptions:polygonDisplayOptions];
 
                     [overlay updateGooglePolygon];
+                    [self _addPolygonOverlayId:curItemId dataType:curType];
                 }
                 else
                 {
-                    if(!m_LoadPolygonOverlayList[curType])
-                        m_LoadPolygonOverlayList[curType] = new Array();
-
-                    m_LoadPolygonOverlayList[curType].push(curItemId);
+                    [self _addPolygonOverlayId:curItemId dataType:curType andLoad:YES];
                 }
             }
         }
@@ -335,40 +386,33 @@
     for(curType in m_LoadPointOverlayList)
     {
         var curItemIds = m_LoadPointOverlayList[curType];
-        [self loadPointOverlayList:curType withIds:curItemIds withDisplayOptions:pointDisplayOptions];
+        var loaderUrl = g_UrlPrefix + "/point_geom/" + curType + "/list/";
+        var loader = [[PointOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
+        [loader setAction:@selector(onPointOverlayListLoaded:)];
+        [loader setTarget:self];
+        [loader setIdList:curItemIds];
+        [loader setDataType:curType];
+        [loader loadWithDisplayOptions:pointDisplayOptions];
+
+        [m_OverlayListLoaders addObject:loader];
     }
 
     for(curType in m_LoadPolygonOverlayList)
     {
         var curItemIds = m_LoadPolygonOverlayList[curType];
-        [self loadPolygonOverlayList:curType withIds:curItemIds withDisplayOptions:polygonDisplayOptions];
+        var loaderUrl = g_UrlPrefix + "/polygon_geom/" + curType + "/list/";
+        var loader = [[PolygonOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
+        [loader setAction:@selector(onPolygonOverlayListLoaded:)];
+        [loader setTarget:self];
+        [loader setIdList:curItemIds];
+        [loader setDataType:curType];
+        [loader loadWithDisplayOptions:polygonDisplayOptions];
+
+        [m_OverlayListLoaders addObject:loader];
     }
-}
 
-- (void)loadPointOverlayList:(CPString)dataType withIds:(CPArray)itemIds withDisplayOptions:(id)displayOptions
-{
-    var loaderUrl = g_UrlPrefix + "/point_geom/" + dataType + "/list/";
-    var loader = [[PointOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
-    [loader setAction:@selector(onPointOverlayListLoaded:)];
-    [loader setTarget:self];
-    [loader setIdList:itemIds];
-    [loader setDataType:dataType];
-    [loader loadWithDisplayOptions:displayOptions];
-
-    [m_OverlayListLoaders addObject:loader];
-}
-
-- (void)loadPolygonOverlayList:(CPString)dataType withIds:(id)itemIds withDisplayOptions:(id)displayOptions
-{
-    var loaderUrl = g_UrlPrefix + "/polygon_geom/" + dataType + "/list/";
-    var loader = [[PolygonOverlayListLoader alloc] initWithRequestUrl:loaderUrl];
-    [loader setAction:@selector(onPolygonOverlayListLoaded:)];
-    [loader setTarget:self];
-    [loader setIdList:itemIds];
-    [loader setDataType:dataType];
-    [loader loadWithDisplayOptions:displayOptions];
-
-    [m_OverlayListLoaders addObject:loader];
+    //if we don't need to load the overlays then immediate process the POST filters
+    [self postProcessDisplayOptions];
 }
 
 - (void)onPointOverlayListLoaded:(id)sender
@@ -427,6 +471,101 @@
 {
     if([m_OverlayListLoaders count] > 0)
         return; //haven't finished loading everything
+
+    m_PostProcessingRequests = {}
+    //An important note is that, for now, post processing filters are atomic
+    //in that they do not rely on each other and the order in which they
+    //are processed do not matter. This may change in the future if atomicness
+    //is not possible i.e. translation, rotation, and scale do not combine together
+    //well unless ran is a specifc order(the one above)
+
+    for(var i=0; i < [m_Filters count]; i++)
+    {
+        var curFilter = [m_Filters objectAtIndex:i];
+        var curFilterDesc = [curFilter description];
+
+        if([curFilterDesc dataType] == "POST")
+        {
+            if([curFilterDesc filterType] == "SCALE_INTEGER")
+            {
+                for(curType in m_PointOverlayIds)
+                {
+                    var curItemIds = m_PointOverlayIds[curType];
+                    var requestUrl = g_UrlPrefix + "/point_scale_integer/" + curType;
+                    var requestObject = {
+                        'reduce_filter' : [curFilter reduceFilterId],
+                        'minimum_scale' : [curFilter minimumScale],
+                        'maximum_scale' : [curFilter maximumScale], 
+                        'object_ids' : curItemIds
+                    };
+                    var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
+
+                    m_PostProcessingRequests[request] = "POINT_SCALE_INTEGER";
+                }
+            }
+            else if([curFilterDesc filterType] == "COLORIZE_INTEGER")
+            {
+                for(curType in m_PointOverlayIds)
+                {
+                    var curItemIds = m_PointOverlayIds[curType];
+                    var requestUrl = g_UrlPrefix + "/point_colorize_integer/" + curType;
+                    var requestObject = {
+                        'reduce_filter' : [curFilter reduceFilterId],
+                        'minimum_color' : [curFilter minimumColor],
+                        'maximum_scale' : [curFilter maximumColor], 
+                        'object_ids' : curItemIds
+                    };
+                    var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
+
+                    m_PostProcessingRequests[request] = "POINT_COLORIZE_INTEGER";
+                }
+
+                for(curType in m_PolygonOverlayIds)
+                {
+                    var curItemIds = m_PolygonOverlayIds[curType];
+                    var requestUrl = g_UrlPrefix + "/polygon_colorize_integer/" + curType;
+                    var requestObject = {
+                        'reduce_filter' : [curFilter reduceFilterId],
+                        'minimum_color' : [curFilter minimumColor],
+                        'maximum_scale' : [curFilter maximumColor], 
+                        'object_ids' : curItemIds
+                    };
+                    var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
+
+                    m_PostProcessingRequests[request] = "POLYGON_COLORIZE_INTEGER";
+                }
+            }
+        }
+    }
+}
+
+- (void)onJsonRequestSuccessful:(id)sender withResponse:(id)responseData
+{
+    if(m_PostProcessingRequests[sender] == "POINT_SCALE_INTEGER") 
+    {
+        for(curType in m_PointOverlayIds)
+        {
+            var curItemIds = m_PointOverlayIds[curType];
+
+            for(var i=0; i < curItemIds.length; i++)
+            {
+                var curOverlayId = curItemIds[i];
+                var newScale = responseData[curOverlayId];
+
+                if(newScale)
+                {
+                    var pointOverlay = [[m_OverlayManager getOverlayObject:curType objId:curOverlayId] overlay];
+                    var displayOptions = [pointOverlay displayOptions];
+                    [displayOptions setDisplayOption:'radius' value:newScale];
+                    [pointOverlay updateGoogleMarker];
+                }
+            }
+        }
+    }
+    else if(m_PostProcessingRequests[sender] == "POINT_COLORIZE_INTEGER") {}
+        //apply the display properties
+    else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER") {}
+        //apply the display properties
 }
 
 + (id)filterChain

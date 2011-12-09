@@ -48,3 +48,48 @@ def point_infobox_by_type(request, data_type, point_id):
         'string_fields' : string_fields }
     
     return render_to_response('edu_org_info.html', response, context_instance=RequestContext(request))
+
+def point_scale_integer(request, data_type):
+    """
+    Processes a single POST SCALE_INTEGER filter on a list of point ids and returns the each ID's normalized
+    scaled value. This is used for situations where you have a collection of point data and want to scale
+    them based on some integer value
+    """
+
+    if request.method == "POST":
+        jsonObj = simplejson.loads(request.raw_post_data)
+        reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
+        min_scale = jsonObj['minimum_scale']
+        max_scale = jsonObj['maximum_scale']
+        point_ids = jsonObj['object_ids']
+
+        point_fields = GiseduPointItemIntegerFields.objects.filter(attribute_filter=reduce_filter)
+        point_fields = list(point_fields.filter(point__pk__in=point_ids))
+        point_fields = { field.point.pk : field.value for field in point_fields }
+
+        min_value = min(point_fields.itervalues())
+        max_value = max(point_fields.itervalues())
+        value_range = max_value - min_value
+
+        if value_range == 0:
+            point_fields = { k : min_value for k, v in point_fields }
+        else:
+            for key, value in point_fields.iteritems():
+                t1 = (value - min_value) * max_scale
+                t0 = (value - min_value) * min_scale
+                point_fields[key] = min_scale + (t1 - t0) / value_range
+
+        print(point_fields)
+
+        return render_to_response('json/base.json', {'json': json.dumps(point_fields)})
+
+    return HttpResponseNotFound(mimetype = 'application/json')
+
+def point_colorize_integer(request, data_type):
+    """
+    Processes a single POST COLORIZE_INTEGER filter on a list of point ids and returns each ID's normalized scaled
+    color value between a specified range. Used to apply color gradients to data sets
+    """
+
+    if request.method == "POST":
+        print request.raw_post_data;

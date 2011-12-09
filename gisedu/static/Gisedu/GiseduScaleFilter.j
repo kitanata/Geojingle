@@ -1,12 +1,10 @@
-@import "GiseduFilter.j"
+@import "GiseduPostFilter.j"
 
 /* CPTreeNode does not allow us to reassign a new object to the same node without
 recreating the node. This gets around that."*/
 
-@implementation GiseduScaleFilter : GiseduFilter
+@implementation GiseduScaleFilter : GiseduPostFilter
 {
-    int m_ReduceFilterId                @accessors(property=reduceFilterId);
-
     int m_MinimumScale                  @accessors(property=minimumScale);
     int m_MaximumScale                  @accessors(property=maximumScale);
 }
@@ -17,8 +15,6 @@ recreating the node. This gets around that."*/
 
     if(self)
     {
-        m_ReduceFilterId = -1;
-
         m_MinimumScale = 1000;
         m_MaximumScale= 1000;
     }

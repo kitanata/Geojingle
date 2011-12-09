@@ -1,12 +1,10 @@
-@import "GiseduFilter.j"
+@import "GiseduPostFilter.j"
 
 /* CPTreeNode does not allow us to reassign a new object to the same node without
 recreating the node. This gets around that."*/
 
-@implementation GiseduColorizeFilter : GiseduFilter
+@implementation GiseduColorizeFilter : GiseduPostFilter
 {
-    int m_ReduceFilterId                @accessors(property=reduceFilterId);
-
     CPColor m_MinimumColorValue         @accessors(property=minimumColor);
     CPColor m_MaximumColorValue         @accessors(property=maximumColor);
 }
@@ -17,8 +15,6 @@ recreating the node. This gets around that."*/
 
     if(self)
     {
-        m_ReduceFilterId = -1;
-
         m_MinimumColorValue = [CPColor whiteColor];
         m_MaximumColorValue = [CPColor blackColor];
     }
