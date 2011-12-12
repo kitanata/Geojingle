@@ -71,7 +71,7 @@
             if(polygonOverlay != nil)
             {
                 if(m_DisplayOptions)
-                    [polygonOverlay setDisplayOptions:m_DisplayOptions];
+                    [[polygonOverlay displayOptions] enchantOptionsFrom:m_DisplayOptions];
             }
 
             [m_PolygonOverlays setObject:polygonOverlay forKey:id];

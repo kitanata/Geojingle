@@ -346,7 +346,7 @@
 
                 if(overlay)
                 {
-                    [overlay setDisplayOptions:pointDisplayOptions];
+                    [[overlay displayOptions] enchantOptionsFrom:pointDisplayOptions];
 
                     if(![overlay markerValid])
                     {
@@ -370,7 +370,7 @@
 
                 if(overlay)
                 {
-                    [overlay setDisplayOptions:polygonDisplayOptions];
+                    [[overlay displayOptions] enchantOptionsFrom:polygonDisplayOptions];
 
                     [overlay updateGooglePolygon];
                     [self _addPolygonOverlayId:curItemId dataType:curType];
@@ -505,14 +505,30 @@
             }
             else if([curFilterDesc filterType] == "COLORIZE_INTEGER")
             {
+                var minColorComponents = [[curFilter minimumColor] components];
+                var maxColorComponents = [[curFilter maximumColor] components];
+
+                var minColor = Array();
+                var maxColor = Array();
+
+                for(var i=0; i < [minColorComponents count]; i++)
+                    minColor.push([minColorComponents objectAtIndex:i]);
+
+                for(var i=0; i < [maxColorComponents count]; i++)
+                    maxColor.push([maxColorComponents objectAtIndex:i]);
+
+                //Note: The above looks redudant, but isn't. Cappucinno puts extra things in it's array implementation. When this
+                //extra stuff is serialized it fails because of a cyclical pattern in the object. We remove this stuff
+                //and put things into a plain old JS array so it can easily be serialized to JSON.
+
                 for(curType in m_PointOverlayIds)
                 {
                     var curItemIds = m_PointOverlayIds[curType];
                     var requestUrl = g_UrlPrefix + "/point_colorize_integer/" + curType;
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
-                        'minimum_color' : [curFilter minimumColor],
-                        'maximum_scale' : [curFilter maximumColor], 
+                        'minimum_color' : minColor,
+                        'maximum_color' : maxColor,
                         'object_ids' : curItemIds
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
@@ -526,8 +542,8 @@
                     var requestUrl = g_UrlPrefix + "/polygon_colorize_integer/" + curType;
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
-                        'minimum_color' : [curFilter minimumColor],
-                        'maximum_scale' : [curFilter maximumColor], 
+                        'minimum_color' : minColor,
+                        'maximum_color' : maxColor,
                         'object_ids' : curItemIds
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
@@ -543,6 +559,8 @@
 {
     if(m_PostProcessingRequests[sender] == "POINT_SCALE_INTEGER") 
     {
+        console.log("POINT_SCALE_INTEGER jsonRequestSuccessful");
+
         for(curType in m_PointOverlayIds)
         {
             var curItemIds = m_PointOverlayIds[curType];
@@ -556,14 +574,38 @@
                 {
                     var pointOverlay = [[m_OverlayManager getOverlayObject:curType objId:curOverlayId] overlay];
                     var displayOptions = [pointOverlay displayOptions];
+
                     [displayOptions setDisplayOption:'radius' value:newScale];
                     [pointOverlay updateGoogleMarker];
                 }
             }
         }
     }
-    else if(m_PostProcessingRequests[sender] == "POINT_COLORIZE_INTEGER") {}
-        //apply the display properties
+    else if(m_PostProcessingRequests[sender] == "POINT_COLORIZE_INTEGER")
+    {
+        console.log("POINT_COLORIZE_INTEGER jsonRequestSuccessful");
+
+        for(curType in m_PointOverlayIds)
+        {
+            var curItemIds = m_PointOverlayIds[curType];
+
+            for(var i=0; i < curItemIds.length; i++)
+            {
+                var curOverlayId = curItemIds[i];
+                var col = responseData[curOverlayId];
+
+                if(col)
+                {
+                    var newFillColor = [CPColor colorWithCalibratedRed:col[0] green:col[1] blue:col[2] alpha:col[3]];
+                    var pointOverlay = [[m_OverlayManager getOverlayObject:curType objId:curOverlayId] overlay];
+                    var displayOptions = [pointOverlay displayOptions];
+                    
+                    [displayOptions setDisplayOption:'fillColor' value:"#" + [newFillColor hexString]];
+                    [pointOverlay updateGoogleMarker];
+                }
+            }
+        }
+    }
     else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER") {}
         //apply the display properties
 }

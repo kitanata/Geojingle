@@ -20,4 +20,18 @@ recreating the node. This gets around that."*/
     return self;
 }
 
+- (id)toJson
+{
+    json = [super toJson];
+    json.reduce_filter = m_ReduceFilterId;
+    return json;
+}
+
+- (void)fromJson:(id)json
+{
+    [super fromJson:json];
+
+    m_ReduceFilterId = json.reduce_filter;
+}
+
 @end

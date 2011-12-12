@@ -33,12 +33,15 @@ recreating the node. This gets around that."*/
 
 - (id)toJson 
 {
-    return {
-        "type" : m_FilterType,
-        "value" : m_FilterValue,
-        "request_option" : m_FilterRequestOption,
-        "display_options" : [m_DisplayOptions rawOptions],
-    };
+    json = [super toJson];
+    json.display_options = [m_DisplayOptions rawOptions];
+    return json;
+}
+
+- (void)fromJson:(id)json
+{
+    [super fromJson:json];
+    [m_DisplayOptions enchantOptionsFromJson:json.display_options];
 }
 
 @end

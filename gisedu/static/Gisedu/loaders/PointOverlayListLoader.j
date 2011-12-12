@@ -73,7 +73,7 @@
             if(pointOverlay != nil)
             {
                 if(m_DisplayOptions)
-                    [pointOverlay setDisplayOptions:m_DisplayOptions];
+                    [[pointOverlay displayOptions] enchantOptionsFrom:m_DisplayOptions];
             }
 
             [m_PointOverlays setObject:pointOverlay forKey:id];

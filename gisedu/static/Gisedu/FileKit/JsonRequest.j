@@ -105,8 +105,6 @@
 {
     if(aConnection == m_RequestConnection)
     {
-        console.log("Here?");
-
         if(!aData || aData == "")
             return;
 

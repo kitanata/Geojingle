@@ -42,13 +42,17 @@ recreating the node. This gets around that."*/
 
 - (id)toJson 
 {
-    return {
-        "type" : m_FilterType,
-        "value" : m_FilterValue,
-        "request_option" : m_FilterRequestOption,
-        "point_display_options" : [m_PointDisplayOptions rawOptions],
-        "polygon_display_options" : [m_PolygonDisplayOptions rawOptions]
-    };
+    json = [super toJson];
+    json.point_display_options = [m_PointDisplayOptions rawOptions];
+    json.polygon_display_options = [m_PolygonDisplayOptions rawOptions];
+    return json;
+}
+
+- (void)fromJson:(id)json
+{
+    [super fromJson:json];
+    [m_PointDisplayOptions enchantOptionsFromJson:json.point_display_options];
+    [m_PolygonDisplayOptions enchantOptionsFromJson:json.polygon_display_options];
 }
 
 @end

@@ -47,7 +47,7 @@ var METERS_TO_DEG = 0.000008999;
     CPString m_szTitle              @accessors(property=title);
     CPString m_szMode;              //optimization
 
-    PointDisplayOptions m_DisplayOptions @accessors(property=displayOptions);
+    PointDisplayOptions m_DisplayOptions @accessors(getter=displayOptions);
 
     id m_Delegate                   @accessors(property=delegate);
 }

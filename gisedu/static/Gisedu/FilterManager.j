@@ -366,21 +366,9 @@ var g_FilterManagerInstance = nil;
 - (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter
 {
     var newFilter = [self createFilter:jsonFilter.type];
-    [newFilter setValue:jsonFilter.value];
+    [newFilter fromJson:jsonFilter];
+
     [self addFilter:newFilter parent:parentFilter];
-
-    var newFilterType = [[newFilter description] dataType];
-    if((newFilterType == "POINT" || newFilterType == "POLYGON") && jsonFilter.display_options)
-        [[newFilter displayOptions] enchantOptionsFromJson:jsonFilter.display_options];
-    else if(newFilterType == "REDUCE")
-    {
-        if(jsonFilter.point_display_options)
-            [[newFilter pointDisplayOptions] enchantOptionsFromJson:jsonFilter.point_display_options];
-        if(jsonFilter.polygon_display_options)
-            [[newFilter polygonDisplayOptions] enchantOptionsFromJson:jsonFilter.polygon_display_options];
-    }
-
-    [newFilter setRequestOption:jsonFilter.request_option];
 
     var children = jsonFilter.children;
     for(var i=0; i < children.length; i++)

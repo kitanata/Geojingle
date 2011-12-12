@@ -11,9 +11,7 @@ from cloud.models import CloudProjectStorageItem
 def project_list(request):
     """ Returns a list of projects stored on the server by the currently connected user """
     project_items = CloudProjectStorageItem.objects.filter(user=request.user)
-    project_names = map(lambda project: str(project.name), project_items)
-    project_dates = map(lambda project: str(project.last_modified), project_items)
-    list_data = dict(zip(project_names, project_dates))
+    list_data = dict([(project.name, str(project.last_modified)) for project in project_items])
 
     return render_to_response('json/base.json', {'json': json.dumps(list_data)}, context_instance=RequestContext(request))
 

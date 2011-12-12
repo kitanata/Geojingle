@@ -22,4 +22,22 @@ recreating the node. This gets around that."*/
     return self;
 }
 
+- (id)toJson 
+{
+    json = [super toJson];
+    json.min_color = [m_MinimumColorValue components];
+    json.max_color = [m_MaximumColorValue components];
+    return json;
+}
+
+- (void)fromJson:(id)json
+{
+    [super fromJson:json];
+
+    m_MinimumColorValue = [CPColor colorWithCalibratedRed:json.min_color[0] green:json.min_color[1]
+        blue:json.min_color[2] alpha:json.min_color[3]];
+    m_MaximumColorValue = [CPColor colorWithCalibratedRed:json.max_color[0] green:json.max_color[1]
+        blue:json.max_color[2] alpha:json.max_color[3]];
+}
+
 @end

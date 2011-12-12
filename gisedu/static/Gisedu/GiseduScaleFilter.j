@@ -22,4 +22,20 @@ recreating the node. This gets around that."*/
     return self;
 }
 
+- (id)toJson 
+{
+    json = [super toJson];
+    json.min_scale = m_MinimumScale;
+    json.max_scale = m_MaximumScale;
+    return json;
+}
+
+- (void)fromJson:(id)json
+{
+    [super fromJson:json];
+
+    m_MinimumScale = json.min_scale;
+    m_MaximumScale = json.max_scale;
+}
+
 @end
