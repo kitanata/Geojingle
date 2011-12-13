@@ -134,7 +134,6 @@ def parse_filter(request, filter_chain):
 
     query_results.extend(polygon_results)
     query_results.extend(final_point_items)
-    print "Query Results " + str(query_results)
 
     typeId_results = []
     for result in query_results:

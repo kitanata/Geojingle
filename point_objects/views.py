@@ -84,8 +84,6 @@ def point_scale_integer(request):
                 tf = (value - min_value) / float(value_range)
                 point_fields[key] = scale_range * tf + min_scale
 
-        print(point_fields)
-
         return render_to_response('json/base.json', {'json': json.dumps(point_fields)})
 
     return HttpResponseNotFound(mimetype = 'application/json')
