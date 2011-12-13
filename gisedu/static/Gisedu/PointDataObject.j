@@ -67,7 +67,7 @@
 
     [m_Overlay addToMapView];
 
-    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;
+    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
     m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
     [m_InfoLoader setTarget:self];
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
@@ -84,7 +84,7 @@
 
     [m_Overlay addToMapView];
 
-    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_szDataType + "/id/" + m_nIdentifier;
+    var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
     m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
     [m_InfoLoader setTarget:self];
     [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];

@@ -19,6 +19,7 @@ var g_FilterManagerInstance = nil;
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
     CPArray m_FilterChains;                                             //Cached Filter Chains
     CPArray m_FilterChainsWaitingResponse;                              //Chains waiting a response from the server
+    CPArray m_FilterChainsWaitingProcess;                               //Chains waiting to finish their pipeline
 
     id m_Delegate                       @accessors(property=delegate);
 
@@ -36,6 +37,7 @@ var g_FilterManagerInstance = nil;
         m_UserFilters = [CPArray array];
         m_FilterChains = [CPArray array];
         m_FilterChainsWaitingResponse = [CPArray array];
+        m_FilterChainsWaitingProcess = [CPArray array];
 
         m_FilterDescriptions = [CPDictionary dictionary];
 
@@ -293,11 +295,28 @@ var g_FilterManagerInstance = nil;
 
     if([m_FilterChainsWaitingResponse count] == 0)
     {
-        for(var i=0; i < [m_FilterChains count]; i++)
-            [[m_FilterChains objectAtIndex:i] updateOverlays];
+        [m_FilterChainsWaitingProcess removeAllObjects];
+
+        [self updateAllFilterChains];
 
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
             [m_Delegate onFilterRequestProcessed:self];
+    }
+}
+
+- (void)onFilterChainProcessed:(id)sender
+{
+    [m_FilterChainsWaitingProcess removeObject:sender];
+
+    if([m_FilterChainsWaitingProcess count] == 0)
+    {
+        var activeOverlays = [CPDictionary dictionary];
+
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [activeOverlays addEntriesFromDictionary:[[m_FilterChains objectAtIndex:i] overlayIds]];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
+            [m_Delegate onFilterManagerFinished:activeOverlays];
     }
 }
 
@@ -314,7 +333,9 @@ var g_FilterManagerInstance = nil;
     for(var i=0; i < [m_FilterChains count]; i++)
     {
         var curChain = [m_FilterChains objectAtIndex:i];
+
         [curChain updateOverlays];
+        [m_FilterChainsWaitingProcess addObject:curChain];
     }
 }
 
@@ -366,9 +387,8 @@ var g_FilterManagerInstance = nil;
 - (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter
 {
     var newFilter = [self createFilter:jsonFilter.type];
-    [newFilter fromJson:jsonFilter];
-
     [self addFilter:newFilter parent:parentFilter];
+    [newFilter fromJson:jsonFilter]; //This must come after addFilter
 
     var children = jsonFilter.children;
     for(var i=0; i < children.length; i++)

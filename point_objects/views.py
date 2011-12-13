@@ -4,6 +4,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseNotFound
 from filters.models import GiseduFilters
 from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 
@@ -24,7 +25,7 @@ def point_geom_list(request, data_type):
     return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
 
 
-def point_infobox_by_type(request, data_type, point_id):
+def point_infobox(request, point_id):
     """
     Returns HTML to show for a specific point's infobox inside Google Maps.
     Currently returns address information as well as attribute information.
@@ -49,7 +50,7 @@ def point_infobox_by_type(request, data_type, point_id):
     
     return render_to_response('edu_org_info.html', response, context_instance=RequestContext(request))
 
-def point_scale_integer(request, data_type):
+def point_scale_integer(request):
     """
     Processes a single POST SCALE_INTEGER filter on a list of point ids and returns the each ID's normalized
     scaled value. This is used for situations where you have a collection of point data and want to scale
@@ -67,6 +68,9 @@ def point_scale_integer(request, data_type):
         point_fields = GiseduPointItemIntegerFields.objects.filter(attribute_filter=reduce_filter)
         point_fields = list(point_fields.filter(point__pk__in=point_ids))
         point_fields = { field.point.pk : field.value for field in point_fields }
+
+        if len(point_fields) == 0:
+            return HttpResponseNotFound()
 
         min_value = min(point_fields.itervalues())
         max_value = max(point_fields.itervalues())
@@ -91,7 +95,7 @@ def point_scale_integer(request, data_type):
 
     return HttpResponseNotFound(mimetype = 'application/json')
 
-def point_colorize_integer(request, data_type):
+def colorize_integer(request):
     """
     Processes a single POST COLORIZE_INTEGER filter on a list of point ids and returns each ID's normalized scaled
     color value between a specified range. Used to apply color gradients to data sets
@@ -108,6 +112,9 @@ def point_colorize_integer(request, data_type):
         point_fields = GiseduPointItemIntegerFields.objects.filter(attribute_filter=reduce_filter)
         point_fields = list(point_fields.filter(point__pk__in=point_ids))
         point_fields = { field.point.pk : field.value for field in point_fields }
+
+        if len(point_fields) == 0:
+            return HttpResponseNotFound()
 
         min_value = min(point_fields.itervalues())
         max_value = max(point_fields.itervalues())

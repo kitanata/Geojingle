@@ -51,6 +51,7 @@ recreating the node. This gets around that."*/
 - (void)fromJson:(id)json
 {
     [super fromJson:json];
+    console.log("Json Display Options = "); console.log(json.point_display_options);
     [m_PointDisplayOptions enchantOptionsFromJson:json.point_display_options];
     [m_PolygonDisplayOptions enchantOptionsFromJson:json.polygon_display_options];
 }

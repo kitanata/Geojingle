@@ -19,13 +19,15 @@
 {
     CPArray             m_Filters              @accessors(property=filters);
     CPArray             m_DataTypes;           //m_OverlayIds Keys
-    CPDictionary        m_OverlayIds;          //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
+
+    //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
+    CPDictionary        m_OverlayIds           @accessors(getter=overlayIds);
 
     var m_LoadPointOverlayList;
     var m_LoadPolygonOverlayList;
 
-    var m_PointOverlayIds;  //The id's under the "control" of this filter chain
-    var m_PolygonOverlayIds;//ditto. These are used for post processing filters.
+    var m_PointOverlayIds;
+    var m_PolygonOverlayIds;
 
     CPArray m_OverlayListLoaders;
     var m_PostProcessingRequests; //a JS object mapping requestObject to request type for Post processing requests
@@ -433,9 +435,6 @@
 
     [m_OverlayListLoaders removeObject:sender];
     [self postProcessDisplayOptions];
-
-    if([m_Delegate respondsToSelector:@selector(onOverlayListLoaded:dataType:)])
-        [m_Delegate onOverlayListLoaded:overlayObjects dataType:[sender dataType]];
 }
 
 - (void)onPolygonOverlayListLoaded:(id)sender
@@ -463,8 +462,8 @@
     [m_OverlayListLoaders removeObject:sender];
     [self postProcessDisplayOptions];
 
-    if([m_Delegate respondsToSelector:@selector(onOverlayListLoaded:dataType:)])
-        [m_Delegate onOverlayListLoaded:[overlays allValues] dataType:[sender dataType]];
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
+        [m_Delegate onFilterChainProcessed:self];
 }
 
 - (void)postProcessDisplayOptions
@@ -491,7 +490,7 @@
                 for(curType in m_PointOverlayIds)
                 {
                     var curItemIds = m_PointOverlayIds[curType];
-                    var requestUrl = g_UrlPrefix + "/point_scale_integer/" + curType;
+                    var requestUrl = g_UrlPrefix + "/point_scale_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_scale' : [curFilter minimumScale],
@@ -524,7 +523,7 @@
                 for(curType in m_PointOverlayIds)
                 {
                     var curItemIds = m_PointOverlayIds[curType];
-                    var requestUrl = g_UrlPrefix + "/point_colorize_integer/" + curType;
+                    var requestUrl = g_UrlPrefix + "/point_colorize_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_color' : minColor,
@@ -539,7 +538,7 @@
                 for(curType in m_PolygonOverlayIds)
                 {
                     var curItemIds = m_PolygonOverlayIds[curType];
-                    var requestUrl = g_UrlPrefix + "/polygon_colorize_integer/" + curType;
+                    var requestUrl = g_UrlPrefix + "/polygon_colorize_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_color' : minColor,
@@ -606,8 +605,31 @@
             }
         }
     }
-    else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER") {}
-        //apply the display properties
+    else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER")
+    {
+        console.log("POLYGON_COLORIZE_INTEGER jsonRequestSuccessful");
+
+        for(curType in m_PolygonOverlayIds)
+        {
+            var curItemIds = m_PolygonOverlayIds[curType];
+
+            for(var i=0; i < curItemIds.length; i++)
+            {
+                var curOverlayId = curItemIds[i];
+                var col = responseData[curOverlayId];
+
+                if(col)
+                {
+                    var newFillColor = [CPColor colorWithCalibratedRed:col[0] green:col[1] blue:col[2] alpha:col[3]];
+                    var polygonOverlay = [m_OverlayManager getOverlayObject:curType objId:curOverlayId];
+                    var displayOptions = [polygonOverlay displayOptions];
+                    
+                    [displayOptions setDisplayOption:'fillColor' value:"#" + [newFillColor hexString]];
+                    [polygonOverlay updateGoogleMarker];
+                }
+            }
+        }
+    }
 }
 
 + (id)filterChain

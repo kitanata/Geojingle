@@ -413,90 +413,62 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     var item = [sender itemAtRow:[sender selectedRow]];
     var itemParent = [sender parentForItem:item];
 
-    var filterDesc = [[m_FilterManager filterDescriptions] allValues];
-
     if(itemParent == nil)
         return;
 
-    var theItemId = -1;
+    var descriptions = [[m_FilterManager filterDescriptions] allValues];
 
-    for(var i=0; i < [filterDesc count]; i++)
+    for(var i=0; i < [descriptions count]; i++)
     {
-        var curFilterDesc = [filterDesc objectAtIndex:i];
+        var curDesc = [descriptions objectAtIndex:i];
 
-        var itemId = [self findItemIdOfItem:item withParent:itemParent inFilterDesc:curFilterDesc];
+        console.log(curDesc);
 
-        if(itemId != -1)
+        if([curDesc dataType] == "REDUCE" || [curDesc dataType] == "POST")
+            continue;
+
+        var curOptions = [curDesc options];
+        console.log(curOptions);
+
+        if([curOptions containsKey:itemParent])
+            curOptions = [curOptions objectForKey:itemParent];
+
+        if([[curOptions allValues] containsObject:item])
         {
-            var curDataType = [curFilterDesc dataType];
-
-            if(curDataType == "POINT")
+            var curDataType = [curDesc dataType];
+            var itemIds = [curOptions allKeysForObject:item];
+            for(var j=0; j < [itemIds count]; j++)
             {
-                var pointDataObject = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
+                var itemId = [itemIds objectAtIndex:j];
+                if(curDataType == "POINT")
+                {
+                    var pointDataObject = [m_OverlayManager getOverlayObject:[curDesc id] objId:itemId];
 
-                [pointDataObject toggleInfoWindow];
-                [m_PointDisplayOptions setOverlayTarget:[pointDataObject overlay]];
+                    [pointDataObject toggleInfoWindow];
 
-                [self showRightSideTabView];
-            }
-            else if(curDataType == "POLYGON")
-            {
-                var overlay = [m_OverlayManager getOverlayObject:[curFilterDesc id] objId:itemId];
+                    [m_PolygonDisplayOptions disable];
+                    [m_PointDisplayOptions enable];
+                    [m_PointDisplayOptions setOverlayTarget:[pointDataObject overlay]];
 
-                [m_RightSideTabView setPolygonOverlayTarget:overlay];
+                    [self showRightSideTabView];
+                }
+                else if(curDataType == "POLYGON")
+                {
+                    var overlay = [m_OverlayManager getOverlayObject:[curDesc id] objId:itemId];
 
-                [self showRightSideTabView];
+                    [m_PolygonDisplayOptions enable];
+                    [m_PointDisplayOptions disable];
+                    [m_PolygonDisplayOptions setOverlayTarget:overlay];
+
+                    [self showRightSideTabView];
+                }
             }
 
             m_CurSelectedItem = item;
-            return;
-        }
-    }
-}
-
-- (id) findItemIdOfItem:(id)item withParent:(id)itemParent inFilterDesc:(id)desc
-{
-    var filterDesc = [[m_FilterManager filterDescriptions] allValues];
-
-    if(itemParent == nil)
-        return -1;
-
-    var curFilterType = [desc filterType];
-
-    var filterOptions = [[desc options] allKeys];
-
-    if(curFilterType == "LIST" && [desc name] == itemParent)
-    {
-        for(var j=0; j < [filterOptions count]; j++)
-        {
-            var curItemId = [filterOptions objectAtIndex:j];
-            var curItemName = [[desc options] objectForKey:curItemId];
-
-            if(curItemName == item)
-                return curItemId;
-        }
-    }
-    else if(curFilterType == "DICT")
-    {
-        for(var j=0; j < [filterOptions count]; j++)
-        {
-            var curFilterSubType = [filterOptions objectAtIndex:j];
-            var curFilterDict = [[desc options] objectForKey:curFilterSubType];
-
-            var curFilterDictKeys = [curFilterDict allKeys];
-
-            for(var k=0; k < [curFilterDictKeys count]; k++)
-            {
-                var curItemId = [curFilterDictKeys objectAtIndex:k];
-                var curItemName = [curFilterDict objectForKey:curItemId];
-
-                if(curItemName == item)
-                    return curItemId;
-            }
         }
     }
 
-    return -1;
+    return;
 }
 
 - (void)showRightSideTabView
@@ -556,21 +528,31 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
     [m_FilterManager triggerFilters];
 }
 
-- (void)onOverlayListLoaded:(CPArray)overlays dataType:(CPString)dataType
+- (void)onFilterManagerFinished:(CPDictionary)activeOverlays
 {
-    var filterDesc = [[m_FilterManager filterDescriptions] objectForKey:dataType];
+    var overlayDataTypes = [activeOverlays allKeys];
 
-    for(var i=0; i < [overlays count]; i++)
+    for(var i=0; i < [overlayDataTypes count]; i++)
     {
-        var curOverlayName = [[overlays objectAtIndex:i] name];
-        var dataTypeName = [filterDesc subTypeForOption:curOverlayName];
+        var curDataType = [overlayDataTypes objectAtIndex:i];
+        var curOverlayIds = [activeOverlays objectForKey:curDataType];
 
-        [[m_LeftSideTabView outlineView] addItem:curOverlayName forCategory:dataTypeName];
+        var desc = [[m_FilterManager filterDescriptions] objectForKey:curDataType];
+
+        for(var j=0; j < [curOverlayIds count]; j++)
+        {
+            var curOverlay = [m_OverlayManager getOverlayObject:curDataType objId:[curOverlayIds objectAtIndex:j]];
+
+            if([desc filterType] == "POINT") //really a point data object
+                curOverlay = [curOverlay overlay];
+
+            var curOverlayName = [curOverlay name];
+            var dataTypeName = [desc subTypeForOption:curOverlayName];
+
+            [[m_LeftSideTabView outlineView] addItem:curOverlayName forCategory:dataTypeName];
+        }
     }
-}
 
-- (void)onFilterRequestProcessed:(id)sender
-{
     [[m_LeftSideTabView outlineView] sortItems];
 }
 
