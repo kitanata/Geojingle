@@ -59,7 +59,6 @@ def point_scale_integer(request):
 
     if request.method == "POST":
         jsonObj = simplejson.loads(request.raw_post_data)
-        print(jsonObj)
         reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
         min_scale = jsonObj['minimum_scale']
         max_scale = jsonObj['maximum_scale']
@@ -75,9 +74,6 @@ def point_scale_integer(request):
         min_value = min(point_fields.itervalues())
         max_value = max(point_fields.itervalues())
 
-        print(min_value)
-        print(max_value)
-
         value_range = max_value - min_value
         scale_range = max_scale - min_scale
 
@@ -86,7 +82,6 @@ def point_scale_integer(request):
         else:
             for key, value in point_fields.iteritems():
                 tf = (value - min_value) / float(value_range)
-                print(tf)
                 point_fields[key] = scale_range * tf + min_scale
 
         print(point_fields)
@@ -103,7 +98,6 @@ def colorize_integer(request):
 
     if request.method == "POST":
         jsonObj = simplejson.loads(request.raw_post_data)
-        print(jsonObj)
         reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
         min_color = jsonObj['minimum_color']
         max_color = jsonObj['maximum_color']
@@ -126,8 +120,6 @@ def colorize_integer(request):
             for key, value in point_fields.iteritems():
                 tf = (value - min_value) / float(value_range)
                 point_fields[key] = [(c1 - c0) * tf + c0 for c1, c0 in zip(max_color, min_color)]
-
-        print(point_fields)
 
         return render_to_response('json/base.json', {'json': json.dumps(point_fields)})
 

@@ -32,7 +32,6 @@ def colorize_integer(request):
     print(request.method)
     if request.method == "POST":
         jsonObj = simplejson.loads(request.raw_post_data)
-        print(jsonObj)
         reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
         min_color = jsonObj['minimum_color']
         max_color = jsonObj['maximum_color']
@@ -45,12 +44,10 @@ def colorize_integer(request):
         if len(polygon_fields) == 0:
             return HttpResponseNotFound()
 
-        print("Is it even getting here?")
         min_value = min(polygon_fields.itervalues())
         max_value = max(polygon_fields.itervalues())
         value_range = max_value - min_value
 
-        print("Is it even getting here?")
         if value_range == 0:
             polygon_fields = { k : min_color for k, v in polygon_fields }
         else:
