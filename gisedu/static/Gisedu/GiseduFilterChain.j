@@ -478,6 +478,8 @@
     //is not possible i.e. translation, rotation, and scale do not combine together
     //well unless ran is a specifc order(the one above)
 
+    console.log(m_Filters);
+
     for(var i=0; i < [m_Filters count]; i++)
     {
         var curFilter = [m_Filters objectAtIndex:i];
@@ -487,6 +489,8 @@
         {
             if([curFilterDesc filterType] == "SCALE_INTEGER")
             {
+                console.log("Ever getting here?");
+
                 for(curType in m_PointOverlayIds)
                 {
                     var curItemIds = m_PointOverlayIds[curType];
@@ -510,11 +514,11 @@
                 var minColor = Array();
                 var maxColor = Array();
 
-                for(var i=0; i < [minColorComponents count]; i++)
-                    minColor.push([minColorComponents objectAtIndex:i]);
+                for(var j=0; j < [minColorComponents count]; j++)
+                    minColor.push([minColorComponents objectAtIndex:j]);
 
-                for(var i=0; i < [maxColorComponents count]; i++)
-                    maxColor.push([maxColorComponents objectAtIndex:i]);
+                for(var j=0; j < [maxColorComponents count]; j++)
+                    maxColor.push([maxColorComponents objectAtIndex:j]);
 
                 //Note: The above looks redudant, but isn't. Cappucinno puts extra things in it's array implementation. When this
                 //extra stuff is serialized it fails because of a cyclical pattern in the object. We remove this stuff

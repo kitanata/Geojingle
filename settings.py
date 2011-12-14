@@ -102,7 +102,6 @@ TEMPLATE_LOADERS = (
 PRODUCTION_MIDDLEWARE_CLASSES = ('django.middleware.cache.CacheMiddleware')
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.CacheMiddleware',
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
