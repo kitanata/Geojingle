@@ -50,6 +50,8 @@ def point_infobox(request, point_id):
     
     return render_to_response('edu_org_info.html', response, context_instance=RequestContext(request))
 
+
+@csrf_exempt
 def point_scale_integer(request):
     """
     Processes a single POST SCALE_INTEGER filter on a list of point ids and returns the each ID's normalized
@@ -88,6 +90,8 @@ def point_scale_integer(request):
 
     return HttpResponseNotFound(mimetype = 'application/json')
 
+
+@csrf_exempt
 def colorize_integer(request):
     """
     Processes a single POST COLORIZE_INTEGER filter on a list of point ids and returns each ID's normalized scaled
