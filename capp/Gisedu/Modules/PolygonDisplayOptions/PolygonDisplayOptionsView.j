@@ -1,7 +1,7 @@
 @import <Foundation/CPObject.j>
 @import <AppKit/CPView.j>
 
-@import "/static/Gisedu/MapKit/MKMapView.j"
+@import "../../MapKit/MKMapView.j"
 
 @implementation PolygonDisplayOptionsView: CPView
 {

@@ -1,5 +1,5 @@
 @import "PointOptionsController.j"
-@import "/static/Gisedu/FilterManager.j"
+@import "../../FilterManager.j"
 
 @implementation PointFilterOptionsController : PointOptionsController
 {

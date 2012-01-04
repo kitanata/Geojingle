@@ -1,5 +1,5 @@
 @import "PolygonOptionsController.j"
-@import "/static/Gisedu/FilterManager.j"
+@import "../../FilterManager.j"
 
 @implementation PolygonFilterOptionsController : PolygonOptionsController
 {

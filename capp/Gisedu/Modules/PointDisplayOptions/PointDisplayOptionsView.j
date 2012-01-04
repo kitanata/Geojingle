@@ -1,5 +1,5 @@
 @import <Foundation/CPObject.j>
-@import "/static/Gisedu/PointOverlay.j"
+@import "../../PointOverlay.j"
 
 @implementation PointDisplayOptionsView : CPView
 {
