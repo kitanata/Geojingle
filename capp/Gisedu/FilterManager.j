@@ -245,8 +245,9 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters
 {
+    //THIS SECOND! - TODO
     [m_FilterChains removeAllObjects];
-    [m_OverlayManager removeAllOverlaysFromMapView];
+    [m_OverlayManager removeMapOverlays];
 
     [self _triggerFilters:m_UserFilters];
     [self sendFilterRequests];
@@ -306,6 +307,8 @@ var g_FilterManagerInstance = nil;
 
 - (void)onFilterChainProcessed:(id)sender
 {
+    console.log("FilterManager::onFilterChainProcesses");
+
     [m_FilterChainsWaitingProcess removeObject:sender];
 
     if([m_FilterChainsWaitingProcess count] == 0)

@@ -31,7 +31,10 @@
     var options = [theOptions rawOptions];
 
     for(key in options)
-        m_DisplayOptions[key] = options[key];
+    {
+        if(options[key] != m_DefaultDisplayOptions[key])
+            m_DisplayOptions[key] = options[key];
+    }
 }
 
 - (void)resetOptions

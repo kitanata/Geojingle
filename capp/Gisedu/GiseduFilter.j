@@ -9,6 +9,8 @@ recreating the node. This gets around that."*/
     id m_FilterValue                @accessors(property=value);
     CPString m_FilterRequestOption  @accessors(property=requestOption); //optional argument to request_modifier
     id m_FilterDescription          @accessors(property=description);
+
+    BOOL m_bDirty                   @accessors(property=dirty);
 }
 
 - (id)initWithValue:(id)value
@@ -19,9 +21,16 @@ recreating the node. This gets around that."*/
     {
         m_FilterValue = value;
         m_FilterRequestOption = "";
+
+        m_bDirty = YES;
     }
 
     return self;
+}
+
+- (void)setDirty
+{
+    m_bDirty = YES;
 }
 
 - (void)enchantChildren

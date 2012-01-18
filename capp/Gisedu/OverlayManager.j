@@ -8,6 +8,7 @@
 @import "loaders/PolygonOverlayListLoader.j"
 
 @import "HashKit/Sha1Hash.j"
+@import "HashKit/BloomFilter.j"
 
 @import "FilterManager.j"
 @import "PointDataObject.j"
@@ -29,6 +30,13 @@ var overlayManagerInstance = nil;
                                                     //             40 : <Middle School 1>, 50 : <Middle School 2>, 60 : <Middle School 3>,
                                                     //             70 : <High School 1>, 80 : <High School 2>, 90 : <High School 3> }
 
+
+    CPArray     m_PrevMapOverlays;
+    CPArray     m_MapOverlays;
+
+    BloomFilter m_PrevMapOverlaysBF;          //Overlays shown on the previous map's update
+    BloomFilter m_MapOverlaysBF;              //Overlays shown on current on this map's update
+
     id m_Delegate @accessors(property=delegate);
 }
 
@@ -45,6 +53,12 @@ var overlayManagerInstance = nil;
 
         m_PointLoadQueue = [CPDictionary dictionary];
         m_PolygonLoadQueue = [CPDictionary dictionary];
+
+        m_PrevMapOverlays = [CPArray array];
+        m_MapOverlays = [CPArray array];
+
+        m_PrevMapOverlaysBF = [[BloomFilter alloc] init];
+        m_MapOverlaysBF = [[BloomFilter alloc] init];
     }
 
     return self;
@@ -148,15 +162,54 @@ var overlayManagerInstance = nil;
         [m_Delegate onPointOverlaySelected:sender];
 }
 
-- (void)removeAllOverlaysFromMapView
+/* Adds a overlay to the list of currently displayed map items */
+- (void)addMapOverlay:(id)overlay
 {
-    var overlayDicts = [m_OverlayDataObjects allValues];
+    [m_MapOverlays addObject:overlay];
+    [m_MapOverlaysBF add:overlay.toString()];
+}
 
-    for(var i=0; i < [overlayDicts count]; i++)
+/* Does not remove overlays from the map... this simply moves
+    the list of overlays currently on the map into the previous list
+    then clears the current list: See updateMapView */
+- (void)removeMapOverlays
+{
+    m_PrevMapOverlaysBF = m_MapOverlaysBF;
+    m_MapOverlaysBF = [[BloomFilter alloc] init];
+
+    m_PrevMapOverlays = m_MapOverlays;
+    m_MapOverlays = [CPArray array];
+}
+
+/* Updates the mapview by adding and removing overlays
+    based on what was shown on the previous update
+    and what should be shown now. 
+    i.e. Removes stale overlays. Adds brand new ones.
+    
+    Percieved Speed Optimization: Previously all overlays
+    were cleared then re-added. This will keep still relvant
+    overlays on the map during the update process.
+*/
+- (void)updateMapView
+{
+    //remove stale
+    for(var i=0; i < [m_PrevMapOverlays count]; i++)
     {
-        var curDict = [overlayDicts objectAtIndex:i];
+        var curOverlay = [m_PrevMapOverlays objectAtIndex:i];
 
-        [self removeDataOverlaysFromMapView:curDict];
+        if(![m_MapOverlaysBF test:curOverlay.toString()])
+            [curOverlay removeFromMapView];
+    }
+
+    //add new
+    for(var i=0; i < [m_MapOverlays count]; i++)
+    {
+        var curOverlay = [m_MapOverlays objectAtIndex:i];
+
+        [curOverlay update];
+
+        if(![m_PrevMapOverlaysBF test:curOverlay.toString()])
+            [curOverlay addToMapView];
     }
 }
 

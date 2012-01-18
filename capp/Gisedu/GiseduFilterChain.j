@@ -30,7 +30,10 @@
     var m_PolygonOverlayIds;
 
     CPArray m_OverlayListLoaders;
-    var m_PostProcessingRequests; //a JS object mapping requestObject to request type for Post processing requests
+    var m_PostProcessingRequests;       //a JS object mapping requestObject to request type for Post processing requests
+    CPInteger m_PostProcessesPending;   //Reference count of how many post processing items are pending
+
+    CPArray m_MapOverlays;        //a current list of overlays currently shown on map view attached to this filter chain
 
     GiseduFilterRequest m_Request;
 
@@ -55,11 +58,14 @@
         m_LoadPointOverlayList = {}
         m_LoadPolygonOverlayList = {}
 
+        m_MapOverlays = [CPArray array];
+
         m_PointOverlayIds = {};
         m_PolygonOverlayIds = {};
 
         m_OverlayListLoaders = [CPArray array];
         m_PostProcessingRequests = {};
+        m_PostProcessesPending = 0;
     }
 
     return self;
@@ -285,6 +291,14 @@
     }
 }
 
+/* Marks all overlays currently attached to this filter chain displaying
+    on the map as dirty and needing redraw */
+- (void)dirtyMapOverlays
+{
+    for(var i=0; i < [m_MapOverlays count]; i++)
+        [[m_MapOverlays objectAtIndex:i] setDirty];
+}
+
 - (void)updateOverlays
 {
     pointDisplayOptions = [PointDisplayOptions defaultOptions];
@@ -295,6 +309,8 @@
     
     m_PointOverlayIds = {};
     m_PolygonOverlayIds = {};
+
+    [m_MapOverlays removeAllObjects];
 
     var filterDescriptions = [m_FilterManager filterDescriptions];
 
@@ -348,15 +364,10 @@
 
                 if(overlay)
                 {
-                    [[overlay displayOptions] enchantOptionsFrom:pointDisplayOptions];
+                    [overlay setFilterDisplayOptions:pointDisplayOptions];
 
-                    if(![overlay markerValid])
-                    {
-                        [overlay removeFromMapView];
-                        [overlay createGoogleMarker];
-                    }
-
-                    [overlay updateGoogleMarker];
+                    [m_OverlayManager addMapOverlay:overlay];
+                    [m_MapOverlays addObject:overlay];
                     [self _addPointOverlayId:curItemId dataType:curType];
                 }
                 else
@@ -372,10 +383,12 @@
 
                 if(overlay)
                 {
-                    [[overlay displayOptions] enchantOptionsFrom:polygonDisplayOptions];
+                    [overlay setFilterDisplayOptions:polygonDisplayOptions];
 
-                    [overlay updateGooglePolygon];
                     [self _addPolygonOverlayId:curItemId dataType:curType];
+
+                    [m_OverlayManager addMapOverlay:overlay];
+                    [m_MapOverlays addObject:overlay];
                 }
                 else
                 {
@@ -422,15 +435,16 @@
     console.log("onPointOverlayListLoaded called");
 
     var overlays = [sender pointOverlays];
-    var overlayObjects = [CPArray array];
     var overlayIds = [overlays allKeys];
 
     for(var i=0; i < [overlayIds count]; i++)
     {
         var curId = [overlayIds objectAtIndex:i];
         var curObject = [m_OverlayManager getOverlayObject:[sender dataType] objId:curId];
-        [curObject setOverlay:[overlays objectForKey:curId]];
-        [overlayObjects addObject:curObject];
+        var curOverlay = [overlays objectForKey:curId];
+        [curObject setOverlay:curOverlay];
+        [m_OverlayManager addMapOverlay:curOverlay];
+        [m_MapOverlays addObject:curOverlay];
     }
 
     [m_OverlayListLoaders removeObject:sender];
@@ -456,14 +470,12 @@
         [curOverlay setPk:curOverlayId];
         [curOverlay setName:[idNameMap objectForKey:curOverlayId]];
         [curOverlay setDelegate:[m_Delegate delegate]];
-        [curOverlay addToMapView];
+        [m_OverlayManager addMapOverlay:curOverlay];
+        [m_MapOverlays addObject:curOverlay];
     }
 
     [m_OverlayListLoaders removeObject:sender];
     [self postProcessDisplayOptions];
-
-    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
-        [m_Delegate onFilterChainProcessed:self];
 }
 
 - (void)postProcessDisplayOptions
@@ -477,8 +489,6 @@
     //are processed do not matter. This may change in the future if atomicness
     //is not possible i.e. translation, rotation, and scale do not combine together
     //well unless ran is a specifc order(the one above)
-
-    console.log(m_Filters);
 
     for(var i=0; i < [m_Filters count]; i++)
     {
@@ -503,6 +513,7 @@
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
+                    m_PostProcessesPending++;
                     m_PostProcessingRequests[request] = "POINT_SCALE_INTEGER";
                 }
             }
@@ -536,6 +547,7 @@
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
+                    m_PostProcessesPending++;
                     m_PostProcessingRequests[request] = "POINT_COLORIZE_INTEGER";
                 }
 
@@ -551,10 +563,19 @@
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
+                    m_PostProcessesPending++;
                     m_PostProcessingRequests[request] = "POLYGON_COLORIZE_INTEGER";
                 }
             }
         }
+    }
+
+    if(!m_PostProcessesPending)
+    {
+        [m_OverlayManager updateMapView];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
+            [m_Delegate onFilterChainProcessed:self];
     }
 }
 
@@ -562,6 +583,8 @@
 {
     if(m_PostProcessingRequests[sender] == "POINT_SCALE_INTEGER") 
     {
+        m_PostProcessesPending--;
+
         console.log("POINT_SCALE_INTEGER jsonRequestSuccessful");
 
         for(curType in m_PointOverlayIds)
@@ -578,14 +601,19 @@
                     var pointOverlay = [[m_OverlayManager getOverlayObject:curType objId:curOverlayId] overlay];
                     var displayOptions = [pointOverlay displayOptions];
 
-                    [displayOptions setDisplayOption:'radius' value:newScale];
-                    [pointOverlay updateGoogleMarker];
+                    if([displayOptions getDisplayOption:'radius'] != newScale)
+                    {
+                        [displayOptions setDisplayOption:'radius' value:newScale];
+                        [pointOverlay setDirty];
+                    }
                 }
             }
         }
     }
     else if(m_PostProcessingRequests[sender] == "POINT_COLORIZE_INTEGER")
     {
+        m_PostProcessesPending--;
+
         console.log("POINT_COLORIZE_INTEGER jsonRequestSuccessful");
 
         for(curType in m_PointOverlayIds)
@@ -602,15 +630,21 @@
                     var newFillColor = [CPColor colorWithCalibratedRed:col[0] green:col[1] blue:col[2] alpha:col[3]];
                     var pointOverlay = [[m_OverlayManager getOverlayObject:curType objId:curOverlayId] overlay];
                     var displayOptions = [pointOverlay displayOptions];
-                    
-                    [displayOptions setDisplayOption:'fillColor' value:"#" + [newFillColor hexString]];
-                    [pointOverlay updateGoogleMarker];
+                    var newFillColorStr = "#" + [newFillColor hexString];
+                   
+                    if([displayOptions getDisplayOption:'fillColor'] != newFillColorStr)
+                    {
+                        [displayOptions setDisplayOption:'fillColor' value:newFillColorStr];
+                        [pointOverlay setDirty];
+                    }
                 }
             }
         }
     }
     else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER")
     {
+        m_PostProcessesPending--;
+
         console.log("POLYGON_COLORIZE_INTEGER jsonRequestSuccessful");
 
         for(curType in m_PolygonOverlayIds)
@@ -627,12 +661,37 @@
                     var newFillColor = [CPColor colorWithCalibratedRed:col[0] green:col[1] blue:col[2] alpha:col[3]];
                     var polygonOverlay = [m_OverlayManager getOverlayObject:curType objId:curOverlayId];
                     var displayOptions = [polygonOverlay displayOptions];
+                    var newFillColorStr = "#" + [newFillColor hexString];
                     
-                    [displayOptions setDisplayOption:'fillColor' value:"#" + [newFillColor hexString]];
-                    [polygonOverlay updateGoogleMarker];
+                    if([displayOptions getDisplayOption:'fillColor'] != newFillColorStr)
+                    {
+                        [displayOptions setDisplayOption:'fillColor' value:newFillColorStr];
+                        [polygonOverlay setDirty];
+                    }
                 }
             }
         }
+    }
+
+    if(!m_PostProcessesPending)
+    {
+        [m_OverlayManager updateMapView];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
+            [m_Delegate onFilterChainProcessed:self];
+    }
+}
+
+- (void)onJsonRequestFailed:(id)sender withError:(CPString)error 
+{
+    m_PostProcessesPending--;
+
+    if(!m_PostProcessesPending)
+    {
+        [m_OverlayManager updateMapView];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
+            [m_Delegate onFilterChainProcessed:self];
     }
 }
 

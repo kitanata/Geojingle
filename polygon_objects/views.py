@@ -23,6 +23,7 @@ def polygon_geom_list(request, data_type):
 
     return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
 
+@csrf_exempt
 def colorize_integer(request):
     """
     Processes a single POST COLORIZE_INTEGER filter on a list of polygon ids and returns each ID's normalized scaled
@@ -42,7 +43,7 @@ def colorize_integer(request):
         polygon_fields = { field.polygon.pk : field.value for field in polygon_fields }
 
         if len(polygon_fields) == 0:
-            return HttpResponseNotFound()
+            return HttpResponseNotFound(mimetype = 'application/json')
 
         min_value = min(polygon_fields.itervalues())
         max_value = max(polygon_fields.itervalues())

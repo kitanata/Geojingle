@@ -38,7 +38,7 @@ var m_OpenProjectToolbarId = 'openProject';
 var m_OverlayOptionsToolbarId = 'overlayOptions';
 var m_UpdateMapToolbarId = 'updateMap';
 
-g_UrlPrefix = 'http://127.0.0.1:8000';
+g_UrlPrefix = 'http://127.0.0.1';
 
 @implementation AppController : CPObject
 {
@@ -530,6 +530,7 @@ g_UrlPrefix = 'http://127.0.0.1:8000';
 
 - (void)onFilterManagerFinished:(CPDictionary)activeOverlays
 {
+    console.log("AppController::onFilterManagerFinished called");
     var overlayDataTypes = [activeOverlays allKeys];
 
     for(var i=0; i < [overlayDataTypes count]; i++)

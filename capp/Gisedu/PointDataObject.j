@@ -65,8 +65,6 @@
     [m_Overlay setTitle:m_szName];
     [m_Overlay setDelegate:self];
 
-    [m_Overlay addToMapView];
-
     var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
     m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
     [m_InfoLoader setTarget:self];
@@ -81,8 +79,6 @@
     m_Overlay = overlay;
     [m_Overlay setTitle:m_szName];
     [m_Overlay setDelegate:self];
-
-    [m_Overlay addToMapView];
 
     var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
     m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];

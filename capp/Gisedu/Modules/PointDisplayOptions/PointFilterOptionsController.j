@@ -28,11 +28,7 @@
     var filterChains = [m_FilterManager filterChainsWithFilter:m_FilterTarget];
 
     for(var i=0; i < [filterChains count]; i++)
-    {
-        var curChain = [filterChains objectAtIndex:i];
-
-        [curChain updateOverlays];
-    }
+        [[filterChains objectAtIndex:i] dirtyMapOverlays];
 }
 
 + (id)controllerWithFilter:(GiseduFilter)filter

@@ -18,11 +18,7 @@
 - (void)update
 {
     if(m_OverlayTarget)
-    {
-        [m_OverlayTarget removeFromMapView];
-        [m_OverlayTarget createGooglePolygon];
-        [m_OverlayTarget addToMapView];
-    }
+        [m_OverlayTarget setDirty];
 }
 
 + (id)controllerWithOverlay:(PointOverlay)overlay

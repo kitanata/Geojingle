@@ -12,7 +12,10 @@ recreating the node. This gets around that."*/
     CPString m_RequestModifier      @accessors(getter=requestModifier);
     CPArray m_AttributeFilters      @accessors(getter=attributeFilters);
     CPArray m_ExcludeFilters        @accessors(getter=excludeFilters);
+
     id m_FilterOptions              @accessors(getter=options); //either CPDictionary or CPArray
+    CPDictionary m_FilterSubTypes;  //if m_FilterType == "DICT" then used otherwise null
+                                    //used for reverse lookups
 }
 
 - (id)initWithValue:(id)value
@@ -31,6 +34,7 @@ recreating the node. This gets around that."*/
         m_ExcludeFilters = nil;
 
         m_FilterOptions = nil;
+        m_FilterSubTypes = nil;
     }
 
     return self;
@@ -40,24 +44,7 @@ recreating the node. This gets around that."*/
 {
     if(m_FilterType == "DICT")
     {
-        var filterKeys = [m_FilterOptions allKeys];
-
-        for(var i=0; i < [filterKeys count]; i++)
-        {
-            var curKey = [filterKeys objectAtIndex:i];
-
-            var nameValues = [[m_FilterOptions objectForKey:curKey] allValues];
-
-            for(var j=0; j < [nameValues count]; j++)
-            {
-                if([nameValues objectAtIndex:j] == optionName)
-                {
-                    return curKey;
-                }
-            }
-        }
-
-        return m_Name;
+        return [m_FilterSubTypes objectForKey:optionName];
     }
     else
     {
@@ -79,7 +66,30 @@ recreating the node. This gets around that."*/
     if(Array.isArray(jsonData.filter_options))
         m_FilterOptions = [CPArray arrayWithObjects:jsonData.filter_options count:jsonData.filter_options.length];
     else
+    {
         m_FilterOptions = [CPDictionary dictionaryWithJSObject:jsonData.filter_options recursively:YES];
+
+        if(m_FilterType == "DICT")
+        {
+            m_FilterSubTypes = [CPDictionary dictionary];
+
+            var filterOptionKeys = [m_FilterOptions allKeys];
+
+            for(var i=0; i < [filterOptionKeys count]; i++)
+            {
+                var curKey = [filterOptionKeys objectAtIndex:i];
+
+                var nameValues = [[m_FilterOptions objectForKey:curKey] allValues];
+
+                for(var j=0; j < [nameValues count]; j++)
+                {
+                    var curNameValue = [nameValues objectAtIndex:j];
+
+                    [m_FilterSubTypes setObject:curKey forKey:curNameValue];
+                }
+            }
+        }
+    }
 }
 
 @end
