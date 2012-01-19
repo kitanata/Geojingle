@@ -1,10 +1,43 @@
 /*
  * Jakefile
- * NewApplication
+ * Gisedu
  *
- * Created by You on February 22, 2011.
- * Copyright 2011, Your Company All rights reserved.
- */
+
+ ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The Gisedu project is subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use any content of the Gisedu project
+ * except in compliance with the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is the "Gisedu Project".
+ *
+ * The Initial Developer of the Original Code is "eTech Ohio Commission".
+ * Portions created by the Initial Developer are Copyright (C) 2011
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *      Raymond E Chandler III
+ *
+ * Alternatively, the contents of this project may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
 
 var ENV = require("system").env,
     FILE = require("file"),
@@ -15,17 +48,17 @@ var ENV = require("system").env,
     configuration = ENV["CONFIG"] || ENV["CONFIGURATION"] || ENV["c"] || "Debug",
     OS = require("os");
 
-app ("NewApplication", function(task)
+app ("Gisedu", function(task)
 {
-    task.setBuildIntermediatesPath(FILE.join("Build", "NewApplication.build", configuration));
+    task.setBuildIntermediatesPath(FILE.join("Build", "Gisedu.build", configuration));
     task.setBuildPath(FILE.join("Build", configuration));
 
-    task.setProductName("NewApplication");
-    task.setIdentifier("com.yourcompany.NewApplication");
+    task.setProductName("Gisedu");
+    task.setIdentifier("gov.ohio.etech.Gisedu");
     task.setVersion("1.0");
-    task.setAuthor("Your Company");
-    task.setEmail("feedback @nospam@ yourcompany.com");
-    task.setSummary("NewApplication");
+    task.setAuthor("eTech Ohio Laboratories");
+    task.setEmail("raymond.chandler @nospam@ etech.ohio.gov");
+    task.setSummary("Gisedu");
     task.setSources((new FileList("**/*.j")).exclude(FILE.join("Build", "**")));
     task.setResources(new FileList("Resources/**"));
     task.setIndexFilePath("index.html");
@@ -37,7 +70,7 @@ app ("NewApplication", function(task)
         task.setCompilerFlags("-O");
 });
 
-task ("default", ["NewApplication"], function()
+task ("default", ["Gisedu"], function()
 {
     printResults(configuration);
 });
@@ -58,36 +91,36 @@ task ("release", function()
 
 task ("run", ["debug"], function()
 {
-    OS.system(["open", FILE.join("Build", "Debug", "NewApplication", "index.html")]);
+    OS.system(["open", FILE.join("Build", "Debug", "Gisedu", "index.html")]);
 });
 
 task ("run-release", ["release"], function()
 {
-    OS.system(["open", FILE.join("Build", "Release", "NewApplication", "index.html")]);
+    OS.system(["open", FILE.join("Build", "Release", "Gisedu", "index.html")]);
 });
 
 task ("deploy", ["release"], function()
 {
-    FILE.mkdirs(FILE.join("Build", "Deployment", "NewApplication"));
-    OS.system(["press", "-f", FILE.join("Build", "Release", "NewApplication"), FILE.join("Build", "Deployment", "NewApplication")]);
+    FILE.mkdirs(FILE.join("Build", "Deployment", "Gisedu"));
+    OS.system(["press", "-f", FILE.join("Build", "Release", "Gisedu"), FILE.join("Build", "Deployment", "Gisedu")]);
     printResults("Deployment")
 });
 
 task ("desktop", ["release"], function()
 {
-    FILE.mkdirs(FILE.join("Build", "Desktop", "NewApplication"));
-    require("cappuccino/nativehost").buildNativeHost(FILE.join("Build", "Release", "NewApplication"), FILE.join("Build", "Desktop", "NewApplication", "NewApplication.app"));
+    FILE.mkdirs(FILE.join("Build", "Desktop", "Gisedu"));
+    require("cappuccino/nativehost").buildNativeHost(FILE.join("Build", "Release", "Gisedu"), FILE.join("Build", "Desktop", "Gisedu", "Gisedu.app"));
     printResults("Desktop")
 });
 
 task ("run-desktop", ["desktop"], function()
 {
-    OS.system([FILE.join("Build", "Desktop", "NewApplication", "NewApplication.app", "Contents", "MacOS", "NativeHost"), "-i"]);
+    OS.system([FILE.join("Build", "Desktop", "Gisedu", "Gisedu.app", "Contents", "MacOS", "NativeHost"), "-i"]);
 });
 
 function printResults(configuration)
 {
     print("----------------------------");
-    print(configuration+" app built at path: "+FILE.join("Build", configuration, "NewApplication"));
+    print(configuration+" app built at path: "+FILE.join("Build", configuration, "Gisedu"));
     print("----------------------------");
 }
