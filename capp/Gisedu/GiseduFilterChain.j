@@ -124,15 +124,11 @@
         var curFilter = [filterChain lastObject];
         [filterChain removeLastObject];
 
-        console.log("Current Filter = "); console.log(curFilter);
-
         if(!curFilter)
             break;
 
         var curFilterType = [curFilter type];
         var curFilterDescription = [filterDescriptions objectForKey:[curFilter type]];
-
-        console.log("Current Filter Type is " + curFilterType);
 
         if([curFilterDescription dataType] == "POINT" || [curFilterDescription dataType] == "POLYGON")
         {
@@ -143,14 +139,10 @@
                 //curFilter is a key base filter
                 keyFilterType = curFilterType;
                 filterRequestStrings[curFilterType] = "/" + [curFilterDescription requestModifier] + "=" + [curFilter value];
-
-                console.log("Built KeyFilter Request String: " + filterRequestStrings[curFilterType]);
             }
             else
             {
                 filterRequestStrings[curFilterType] = "/" + [curFilterDescription requestModifier] + "=" + [curFilter value];
-
-                console.log("Built BaseFilter Request String: " + filterRequestStrings[curFilterType]);
             }
 
             [filterChain addObjectsFromArray:filterChainBuffer];
@@ -160,15 +152,9 @@
         {
             var bNoBase = true;
 
-            console.log("filterRequestStrings = "); console.log(filterRequestStrings);
-
             for(baseFilterType in filterRequestStrings)
             {
-                console.log("baseFilterType = "); console.log(baseFilterType);
-                
                 var baseFilterDescription = [filterDescriptions objectForKey:baseFilterType];
-
-                console.log("baseFilterDesc = "); console.log(baseFilterDescription);
 
                 if([[baseFilterDescription attributeFilters] containsObject:curFilterType])
                 {
@@ -178,7 +164,6 @@
                     else
                         filterRequestStrings[baseFilterType] += ":" + [curFilterDescription requestModifier] + "=" + [curFilter value];
 
-                    console.log("Updated BaseFilter Request String To: " + filterRequestStrings[curFilterType]);
                     bNoBase = false;
                 }
             }
@@ -220,12 +205,8 @@
 
 - (void)onFilterRequestSuccessful:(id)sender
 {
-    console.log("onFilterRequestSuccessful");
     var filterResult = [CPSet setWithArray:[sender resultSet]]; //to remove duplicates dummy. Array->Set->Array
     var resultSet = [filterResult allObjects];
-
-    /* console.log("resultSet = "); console.log(resultSet);
-    console.log("overlayIds = "); console.log(m_OverlayIds); */
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
@@ -326,8 +307,6 @@
             [polygonDisplayOptions enchantOptionsFrom:[curFilter displayOptions]];
     }
 
-    console.log(polygonDisplayOptions);
-
     //second pass REDUCE enchantment only
     for(var i=0; i < [m_Filters count]; i++)
     {
@@ -348,18 +327,13 @@
 
         var curFilterDescription = [filterDescriptions objectForKey:curType];
 
-        //console.log(curType);
-
         for(var j=0; j < [curIds count]; j++)
         {
             var curItemId = [curIds objectAtIndex:j];
             var dataObj = [m_OverlayManager getOverlayObject:curType objId:curItemId];
 
-            //console.log(dataObj);
-
             if([curFilterDescription dataType] == "POINT")
             {
-               // console.log("UpdateOverlay processing pointDataType");
                 var overlay = [dataObj overlay];
 
                 if(overlay)
@@ -377,9 +351,7 @@
             }
             else if([curFilterDescription dataType] == "POLYGON")
             {
-                //console.log("UpdateOverlay processing polygonDataType");
                 var overlay = dataObj;
-                //console.log(overlay);
 
                 if(overlay)
                 {
@@ -499,8 +471,6 @@
         {
             if([curFilterDesc filterType] == "SCALE_INTEGER")
             {
-                console.log("Ever getting here?");
-
                 for(curType in m_PointOverlayIds)
                 {
                     var curItemIds = m_PointOverlayIds[curType];
@@ -572,8 +542,6 @@
 
     if(!m_PostProcessesPending)
     {
-        [m_OverlayManager updateMapView];
-
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
             [m_Delegate onFilterChainProcessed:self];
     }
@@ -675,8 +643,6 @@
 
     if(!m_PostProcessesPending)
     {
-        [m_OverlayManager updateMapView];
-
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
             [m_Delegate onFilterChainProcessed:self];
     }
@@ -688,8 +654,6 @@
 
     if(!m_PostProcessesPending)
     {
-        [m_OverlayManager updateMapView];
-
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
             [m_Delegate onFilterChainProcessed:self];
     }

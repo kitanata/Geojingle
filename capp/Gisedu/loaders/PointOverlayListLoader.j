@@ -35,8 +35,6 @@
 
     var requestJson     = {'point_ids' : pointIds};
 
-    console.log(requestJson);
-
     [request setHTTPMethod:@"POST"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
     [request setHTTPBody:[CPString JSONFromObject:requestJson]];

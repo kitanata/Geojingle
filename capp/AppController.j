@@ -21,6 +21,7 @@
 @import "Gisedu/views/OverlayOutlineView.j"
 
 @import "Gisedu/views/AddFilterPanel.j"
+@import "Gisedu/views/LoadingPanel.j"
 
 @import "Gisedu/loaders/PolygonOverlayLoader.j"
 @import "Gisedu/loaders/PointOverlayLoader.j"
@@ -106,12 +107,16 @@ g_UrlPrefix = 'http://127.0.0.1';
 
     [m_ContentView setBackgroundColor:[CPColor whiteColor]];
 
+    m_MapLoadingPanel = [[LoadingPanel alloc] init];
+
     m_OverlayManager = [OverlayManager getInstance];
     [m_OverlayManager setDelegate:self];
+    [m_OverlayManager setStatusPanel:m_MapLoadingPanel];
 
     m_FilterManager = [FilterManager getInstance];
     [m_FilterManager setDelegate:self];
     [m_FilterManager loadFilterDescriptions];
+    [m_FilterManager setStatusPanel:m_MapLoadingPanel];
 
     //Initialize the mapview
     m_MinMapHeight = Math.max(CGRectGetHeight([m_ContentView bounds]) / 3 * 2, 200);
@@ -328,7 +333,6 @@ g_UrlPrefix = 'http://127.0.0.1';
         [m_FileMenu addItem:m_FileSaveMenuItem];
         [m_FileMenu addItem:m_FileSaveAsMenuItem];
 
-        console.log("Importer = "); console.log(m_CsvImporter);
         [m_CsvImporter loadIntoMenu:m_FileMenu];
         [m_FileMenu addItem:[CPMenuItem separatorItem]];
         [m_FileMenu addItem:m_FileExitMenuItem];
@@ -422,13 +426,10 @@ g_UrlPrefix = 'http://127.0.0.1';
     {
         var curDesc = [descriptions objectAtIndex:i];
 
-        console.log(curDesc);
-
         if([curDesc dataType] == "REDUCE" || [curDesc dataType] == "POST")
             continue;
 
         var curOptions = [curDesc options];
-        console.log(curOptions);
 
         if([curOptions containsKey:itemParent])
             curOptions = [curOptions objectForKey:itemParent];
@@ -524,6 +525,7 @@ g_UrlPrefix = 'http://127.0.0.1';
 
 - (void)onUpdateMapFilters:(id)sender
 {
+    [m_MapLoadingPanel showWithStatus:"Updating Maps"];
     [[m_LeftSideTabView outlineView] clearItems];
     [m_FilterManager triggerFilters];
 }
@@ -554,7 +556,9 @@ g_UrlPrefix = 'http://127.0.0.1';
         }
     }
 
+    [m_MapLoadingPanel showWithStatus:"Updating Feature Outline"];
     [[m_LeftSideTabView outlineView] sortItems];
+    [m_MapLoadingPanel close];
 }
 
 
@@ -758,9 +762,6 @@ g_UrlPrefix = 'http://127.0.0.1';
 - (void)onOpenFileRequestSuccessful:(id)sender
 {
     var jsonData = [sender jsonData];
-
-    console.log(sender);
-    console.log(jsonData);
 
     var filters = jsonData['filters'];
 

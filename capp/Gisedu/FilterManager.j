@@ -14,6 +14,7 @@ var g_FilterManagerInstance = nil;
 
 @implementation FilterManager : CPObject
 {
+    id m_StatusPanel                @accessors(setter=setStatusPanel:);
     OverlayManager m_OverlayManager;
 
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
@@ -193,7 +194,6 @@ var g_FilterManagerInstance = nil;
             newFilter = [[GiseduColorizeFilter alloc] initWithValue:'All'];
     }
 
-    console.log("FilterManager Created New Filter: " + newFilter + " of Type: " + type);
     [newFilter setType:type];
     [newFilter setDescription:filterDesc];
 
@@ -202,8 +202,6 @@ var g_FilterManagerInstance = nil;
 
 - (void)addFilter:(GiseduFilter)filter parent:(GiseduFilter)parent
 {
-    console.log("Adding Filter = "); console.log(filter);
-    
     if(!parent)
     {
         [m_UserFilters addObject:filter];
@@ -245,10 +243,10 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters
 {
-    //THIS SECOND! - TODO
     [m_FilterChains removeAllObjects];
     [m_OverlayManager removeMapOverlays];
 
+    [m_StatusPanel setStatus:"Building Filters"];
     [self _triggerFilters:m_UserFilters];
     [self sendFilterRequests];
 }
@@ -277,6 +275,7 @@ var g_FilterManagerInstance = nil;
 
 - (void)sendFilterRequests
 {
+    [m_StatusPanel setStatus:"Sending Filter Requests"];
     [m_FilterChainsWaitingResponse removeAllObjects];
 
     while([m_FilterChains count] != 0)
@@ -296,12 +295,9 @@ var g_FilterManagerInstance = nil;
 
     if([m_FilterChainsWaitingResponse count] == 0)
     {
+        [m_StatusPanel setStatus:"Building Filter Chains"];
         [m_FilterChainsWaitingProcess removeAllObjects];
-
         [self updateAllFilterChains];
-
-        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
-            [m_Delegate onFilterRequestProcessed:self];
     }
 }
 
@@ -313,10 +309,14 @@ var g_FilterManagerInstance = nil;
 
     if([m_FilterChainsWaitingProcess count] == 0)
     {
+        [m_StatusPanel setStatus:"Cleaning Up Filters"];
         var activeOverlays = [CPDictionary dictionary];
 
         for(var i=0; i < [m_FilterChains count]; i++)
             [activeOverlays addEntriesFromDictionary:[[m_FilterChains objectAtIndex:i] overlayIds]];
+
+        [m_StatusPanel setStatus:"Updating Map View"];
+        [m_OverlayManager updateMapView];
 
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
             [m_Delegate onFilterManagerFinished:activeOverlays];
@@ -353,8 +353,6 @@ var g_FilterManagerInstance = nil;
         filterJson.push([self _buildFilterJson:curFilter]);
         //[{'type': theType, 'value': theValue, 'request_option': theOption, 'children' : [filter, filter, filter]}]
     }
-
-    console.log(filterJson);
 
     return filterJson;
 }

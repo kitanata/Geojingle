@@ -17,6 +17,7 @@ var overlayManagerInstance = nil;
 
 @implementation OverlayManager : CPObject
 {
+    id m_StatusPanel                    @accessors(setter=setStatusPanel:);
     MKMapView m_MapView                 @accessors(property=mapView);
 
     CPDictionary m_PointDataTypeLists;      //'school' : {1 : 'Elementary', 2 : 'Middle', 3 : 'High'}
@@ -193,6 +194,7 @@ var overlayManagerInstance = nil;
 - (void)updateMapView
 {
     //remove stale
+    [m_StatusPanel setStatus:"Removing State Overlays"];
     for(var i=0; i < [m_PrevMapOverlays count]; i++)
     {
         var curOverlay = [m_PrevMapOverlays objectAtIndex:i];
@@ -202,6 +204,7 @@ var overlayManagerInstance = nil;
     }
 
     //add new
+    [m_StatusPanel setStatus:"Applying New Overlays"];
     for(var i=0; i < [m_MapOverlays count]; i++)
     {
         var curOverlay = [m_MapOverlays objectAtIndex:i];
