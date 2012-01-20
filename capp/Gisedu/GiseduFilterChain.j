@@ -414,7 +414,7 @@
         [loader setTarget:self];
         [loader setIdList:curItemIds];
         [loader setDataType:curType];
-        [loader loadWithDisplayOptions:pointDisplayOptions];
+        [loader load];
 
         [m_OverlayListLoaders addObject:loader];
     }
@@ -428,7 +428,7 @@
         [loader setTarget:self];
         [loader setIdList:curItemIds];
         [loader setDataType:curType];
-        [loader loadWithDisplayOptions:polygonDisplayOptions];
+        [loader load];
 
         [m_OverlayListLoaders addObject:loader];
     }

@@ -39,7 +39,6 @@
 
 @implementation PointOverlayListLoader : CPControl
 {
-    id m_DisplayOptions             @accessors(property=displayOptions);
     CPArray m_PointIdList           @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PointOverlays    @accessors(property=pointOverlays);
@@ -56,10 +55,8 @@
     return self;
 }
 
-- (void)loadWithDisplayOptions:(id)displayOptions
+- (void)load
 {
-    m_DisplayOptions = displayOptions;
-
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
@@ -102,12 +99,6 @@
         for(id in objectData)
         {
             var pointOverlay = [geoJsonParser parsePoint:objectData[id]];
-
-            if(pointOverlay != nil)
-            {
-                if(m_DisplayOptions)
-                    [[pointOverlay displayOptions] enchantOptionsFrom:m_DisplayOptions];
-            }
 
             [m_PointOverlays setObject:pointOverlay forKey:id];
         }

@@ -39,7 +39,6 @@
 
 @implementation PolygonOverlayListLoader : CPControl
 {
-    id m_DisplayOptions             @accessors(property=displayOptions);
     CPArray m_PolygonIdList         @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PolygonOverlays  @accessors(property=polygonOverlays);
@@ -56,10 +55,8 @@
     return self;
 }
 
-- (void)loadWithDisplayOptions:(id)displayOptions
+- (void)load
 {
-    m_DisplayOptions = displayOptions;
-
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
@@ -102,12 +99,6 @@
         for(id in objectData)
         {
             var polygonOverlay = [geoJsonParser parsePolygon:objectData[id]];
-
-            if(polygonOverlay != nil)
-            {
-                if(m_DisplayOptions)
-                    [[polygonOverlay displayOptions] enchantOptionsFrom:m_DisplayOptions];
-            }
 
             [m_PolygonOverlays setObject:polygonOverlay forKey:id];
         }
