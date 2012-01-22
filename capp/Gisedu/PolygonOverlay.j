@@ -134,6 +134,9 @@
 
 - (void)update
 {
+    console.log("PolygonOverlay update Called");
+    console.log(m_FilterDisplayOptions);
+
     var displayOptions = [PolygonDisplayOptions defaultOptions];
     [displayOptions enchantOptionsFrom:m_FilterDisplayOptions];
     [displayOptions enchantOptionsFrom:m_DisplayOptions];

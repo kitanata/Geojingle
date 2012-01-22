@@ -36,9 +36,11 @@
 @import <Foundation/CPObject.j>
 
 @import "../GeoJsonParser.j"
+@import "../PointDisplayOptions.j"
 
 @implementation PointOverlayListLoader : CPControl
 {
+    PointDisplayOptions m_DisplayOptions;
     CPArray m_PointIdList           @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PointOverlays    @accessors(property=pointOverlays);
@@ -55,8 +57,10 @@
     return self;
 }
 
-- (void)load
+- (void)loadWithDisplayOptions:(id)displayOptions
 {
+    m_DisplayOptions = displayOptions;
+
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
@@ -99,6 +103,9 @@
         for(id in objectData)
         {
             var pointOverlay = [geoJsonParser parsePoint:objectData[id]];
+
+            if(pointOverlay && m_DisplayOptions)
+                [pointOverlay setFilterDisplayOptions:m_DisplayOptions];
 
             [m_PointOverlays setObject:pointOverlay forKey:id];
         }

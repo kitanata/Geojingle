@@ -18,7 +18,10 @@
 - (void)update
 {
     if(m_OverlayTarget)
+    {
         [m_OverlayTarget setDirty];
+        [m_OverlayTarget update];
+    }
 }
 
 + (id)controllerWithOverlay:(PointOverlay)overlay

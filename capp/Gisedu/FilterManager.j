@@ -54,6 +54,7 @@ var g_FilterManagerInstance = nil;
 
     CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
     CPArray m_FilterChains;                                             //Cached Filter Chains
+
     CPArray m_FilterChainsWaitingResponse;                              //Chains waiting a response from the server
     CPArray m_FilterChainsWaitingProcess;                               //Chains waiting to finish their pipeline
 
@@ -72,6 +73,7 @@ var g_FilterManagerInstance = nil;
         m_OverlayManager = [OverlayManager getInstance];
         m_UserFilters = [CPArray array];
         m_FilterChains = [CPArray array];
+
         m_FilterChainsWaitingResponse = [CPArray array];
         m_FilterChainsWaitingProcess = [CPArray array];
 
@@ -278,6 +280,8 @@ var g_FilterManagerInstance = nil;
 
 - (void)triggerFilters
 {
+    console.log("Trigger Filters Called");
+
     [m_FilterChains removeAllObjects];
     [m_OverlayManager removeMapOverlays];
 
@@ -288,8 +292,6 @@ var g_FilterManagerInstance = nil;
 
 - (void)_triggerFilters:(CPArray)filters
 {
-    console.log("Trigger Filters Called");
-    
     for(var i=0; i < [filters count]; i++)
     {
         var curFilter = [filters objectAtIndex:i];
@@ -311,42 +313,43 @@ var g_FilterManagerInstance = nil;
 - (void)sendFilterRequests
 {
     [m_StatusPanel setStatus:"Sending Filter Requests"];
+
     [m_FilterChainsWaitingResponse removeAllObjects];
+    for(var i=0; i < [m_FilterChains count]; i++)
+        [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
 
-    while([m_FilterChains count] != 0)
-    {
-        var curChain = [m_FilterChains lastObject];
-        [m_FilterChains removeLastObject];
-
-        [curChain sendFilterRequest];
-        [m_FilterChainsWaitingResponse addObject:curChain];
-    }
+    for(var i=0; i < [m_FilterChains count]; i++)
+        [[m_FilterChains objectAtIndex:i] sendFilterRequest];
 }
 
-- (void)onFilterRequestProcessed:(id)sender
+- (void)onFilterRequestReceived:(id)sender
 {
     [m_FilterChainsWaitingResponse removeObject:sender];
-    [m_FilterChains addObject:sender];
 
     if([m_FilterChainsWaitingResponse count] == 0)
     {
         [m_StatusPanel setStatus:"Building Filter Chains"];
+
         [m_FilterChainsWaitingProcess removeAllObjects];
-        [self updateAllFilterChains];
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [m_FilterChainsWaitingProcess addObject:[m_FilterChains objectAtIndex:i]];
+
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [[m_FilterChains objectAtIndex:i] updateOverlays];
     }
 }
 
 - (void)onFilterChainProcessed:(id)sender
 {
-    console.log("FilterManager::onFilterChainProcesses");
+    console.log("FilterManager::onFilterChainProcessed");
 
     [m_FilterChainsWaitingProcess removeObject:sender];
 
     if([m_FilterChainsWaitingProcess count] == 0)
     {
         [m_StatusPanel setStatus:"Cleaning Up Filters"];
-        var activeOverlays = [CPDictionary dictionary];
 
+        var activeOverlays = [CPDictionary dictionary];
         for(var i=0; i < [m_FilterChains count]; i++)
             [activeOverlays addEntriesFromDictionary:[[m_FilterChains objectAtIndex:i] overlayIds]];
 
@@ -364,17 +367,6 @@ var g_FilterManagerInstance = nil;
         [self _buildFilterChain:[filter parentNode] withChain:filterChain];
 
     [filterChain addFilter:filter];
-}
-
-- (void)updateAllFilterChains
-{
-    for(var i=0; i < [m_FilterChains count]; i++)
-    {
-        var curChain = [m_FilterChains objectAtIndex:i];
-
-        [curChain updateOverlays];
-        [m_FilterChainsWaitingProcess addObject:curChain];
-    }
 }
 
 - (id)toJson

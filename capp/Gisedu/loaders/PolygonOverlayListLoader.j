@@ -36,9 +36,11 @@
 @import <Foundation/CPObject.j>
 
 @import "../GeoJsonParser.j"
+@import "../PolygonDisplayOptions.j"
 
 @implementation PolygonOverlayListLoader : CPControl
 {
+    PolygonDisplayOptions m_DisplayOptions;
     CPArray m_PolygonIdList         @accessors(property=idList);
     CPString m_DataType             @accessors(property=dataType);
     CPDictionary m_PolygonOverlays  @accessors(property=polygonOverlays);
@@ -55,8 +57,10 @@
     return self;
 }
 
-- (void)load
+- (void)loadWithDisplayOptions:(id)displayOptions
 {
+    m_DisplayOptions = displayOptions;
+
     [m_Connection cancel];
 
     var request         = [CPURLRequest requestWithURL:m_ConnectionURL];
@@ -99,6 +103,9 @@
         for(id in objectData)
         {
             var polygonOverlay = [geoJsonParser parsePolygon:objectData[id]];
+
+            if(polygonOverlay && m_DisplayOptions)
+                [polygonOverlay setFilterDisplayOptions:m_DisplayOptions];
 
             [m_PolygonOverlays setObject:polygonOverlay forKey:id];
         }

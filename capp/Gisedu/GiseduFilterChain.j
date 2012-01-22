@@ -261,8 +261,8 @@
 
     m_DataTypes = [m_OverlayIds allKeys];
 
-    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestProcessed:)])
-        [m_Delegate onFilterRequestProcessed:self];
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestReceived:)])
+        [m_Delegate onFilterRequestReceived:self];
 }
 
 - (void)_addPointOverlayId:(int)objId dataType:(CPString)type
@@ -405,6 +405,9 @@
         }
     }
 
+    console.log("FilterChains' Display Options");
+    console.log(pointDisplayOptions);
+
     for(curType in m_LoadPointOverlayList)
     {
         var curItemIds = m_LoadPointOverlayList[curType];
@@ -414,7 +417,7 @@
         [loader setTarget:self];
         [loader setIdList:curItemIds];
         [loader setDataType:curType];
-        [loader load];
+        [loader loadWithDisplayOptions:pointDisplayOptions];
 
         [m_OverlayListLoaders addObject:loader];
     }
@@ -428,7 +431,7 @@
         [loader setTarget:self];
         [loader setIdList:curItemIds];
         [loader setDataType:curType];
-        [loader load];
+        [loader loadWithDisplayOptions:polygonDisplayOptions];
 
         [m_OverlayListLoaders addObject:loader];
     }

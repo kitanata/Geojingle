@@ -16,12 +16,12 @@
     var m_Locations;
 }
 
-- (void)init
+- (id)init
 {
-    [self initWithBits:256*32 andHashs:16];
+    return [self initWithBits:256*32 andHashs:16];
 }
 
-- (void)initWithBits:(CPInteger)bits andHashs:(CPInteger)hashs
+- (id)initWithBits:(CPInteger)bits andHashs:(CPInteger)hashs
 {
     /*m = m_nBits k = m_nHashs */
     m_nBits = bits;
@@ -50,12 +50,14 @@
         while (++i < n) buckets[i] = 0;
         m_Locations = [];
     }
+
+    return self;
 }
 
 - (void)locations:(CPString)v
 {
-    var a = fnv_1a(v);
-    var b = fnv_1a_b(a);
+    var a = [self fnv_1a:v];
+    var b = [self fnv_1a_b:a];
     var i = -1;
     var x = a % m_nBits;
 
@@ -128,7 +130,7 @@
     return a & 0xffffffff;
 }
 
-- (void)fnv_1a_b:(CPString)v
+- (void)fnv_1a_b:(CPString)a
 {
     a += (a << 1) + (a << 4) + (a << 7) + (a << 8) + (a << 24);
     a += a << 13;

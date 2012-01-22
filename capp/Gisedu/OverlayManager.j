@@ -157,8 +157,6 @@ var overlayManagerInstance = nil;
             {
                 [m_OverlayDataObjects setObject:[CPDictionary dictionary] forKey:filterId];
 
-                //console.log("overlayDataObjects = "); console.log(m_OverlayDataObjects);
-
                 if([m_Delegate respondsToSelector:@selector(onBasicDataTypeMapsLoaded:)])
                     [m_Delegate onBasicDataTypeMapsLoaded:filterId];
 
@@ -230,12 +228,15 @@ var overlayManagerInstance = nil;
 {
     //remove stale
     [m_StatusPanel setStatus:"Removing State Overlays"];
+
     for(var i=0; i < [m_PrevMapOverlays count]; i++)
     {
         var curOverlay = [m_PrevMapOverlays objectAtIndex:i];
 
         if(![m_MapOverlaysBF test:curOverlay.toString()])
+        {
             [curOverlay removeFromMapView];
+        }
     }
 
     //add new
@@ -245,9 +246,6 @@ var overlayManagerInstance = nil;
         var curOverlay = [m_MapOverlays objectAtIndex:i];
 
         [curOverlay update];
-
-        if(![m_PrevMapOverlaysBF test:curOverlay.toString()])
-            [curOverlay addToMapView];
     }
 }
 

@@ -51,9 +51,6 @@
 @import "Gisedu/views/AddFilterPanel.j"
 @import "Gisedu/views/LoadingPanel.j"
 
-@import "Gisedu/loaders/PolygonOverlayLoader.j"
-@import "Gisedu/loaders/PointOverlayLoader.j"
-
 @import "Gisedu/Modules/CsvImporter/CsvImporterModule.j"
 @import "Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j"
 @import "Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j"
