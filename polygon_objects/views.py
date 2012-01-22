@@ -9,21 +9,6 @@ from filters.models import GiseduFilters
 from polygon_objects.models import GiseduPolygonItem, GiseduPolygonItemIntegerFields
 
 @csrf_exempt
-def polygon_geom_list(request, data_type):
-    """
-    Responds to a post request containing a list of Polygon Item PKs by returning a list corresponding to each item's geometry field stored in the database.
-    """
-    jsonObj = simplejson.loads(request.raw_post_data)
-    poly_ids = jsonObj['polygon_ids']
-
-    gis_filter = GiseduFilters.objects.get(pk=data_type)
-    poly_objects = GiseduPolygonItem.objects.filter(filter=gis_filter)
-    poly_objects = poly_objects.filter(pk__in=poly_ids)
-    object_result = dict([(x.pk, json.loads(x.the_geom.json)) for x in poly_objects])
-
-    return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
-
-@csrf_exempt
 def colorize_integer(request):
     """
     Processes a single POST COLORIZE_INTEGER filter on a list of polygon ids and returns each ID's normalized scaled

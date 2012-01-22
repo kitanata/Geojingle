@@ -27,14 +27,14 @@ urlpatterns = patterns('',
     url(r'^cloud/project_list/', 'cloud.views.project_list'),
     url(r'^cloud/project/(?P<project_name>(\w+\s?\W*)*\w+\W*)', 'cloud.views.project'),
 
+    url(r'geom_list/', 'gisedu.views.geom_list'),
+
     #Point Data
-    url(r'^point_geom/(?P<data_type>\w+)/list/', 'point_objects.views.point_geom_list'),
     url(r'^point_infobox/(?P<point_id>\d+)/', 'point_objects.views.point_infobox'),
     url(r'^point_scale_integer/', 'point_objects.views.point_scale_integer'),
     url(r'^point_colorize_integer/', 'point_objects.views.colorize_integer'),
 
     #Polygon Data
-    url(r'^polygon_geom/(?P<data_type>\w+)/list/', 'polygon_objects.views.polygon_geom_list'),
     url(r'^polygon_colorize_integer/', 'polygon_objects.views.colorize_integer'),
 
     #Filter Data

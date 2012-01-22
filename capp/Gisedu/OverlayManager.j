@@ -35,12 +35,7 @@
 * ***** END LICENSE BLOCK ***** */
 @import <Foundation/CPObject.j>
 
-@import "loaders/ListLoader.j"
 @import "loaders/DictionaryLoader.j"
-
-//TODO: Merge these two classes together
-@import "loaders/PointOverlayListLoader.j"
-@import "loaders/PolygonOverlayListLoader.j"
 
 @import "HashKit/Sha1Hash.j"
 @import "HashKit/BloomFilter.j"

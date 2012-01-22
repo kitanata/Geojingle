@@ -8,23 +8,6 @@ from django.http import HttpResponseNotFound
 from filters.models import GiseduFilters
 from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 
-@csrf_exempt
-def point_geom_list(request, data_type):
-    """
-    Responds to a post request containing a list of Point Item PKs by returning a list corresponding to each item's geometry field stored in the database.
-    TODO: Make another function that responds to single items(vs. the list of them) for access via HTTP.
-    """
-    jsonObj = simplejson.loads(request.raw_post_data)
-    point_ids = jsonObj['point_ids']
-
-    gis_filter = GiseduFilters.objects.get(pk=data_type)
-    point_objects = GiseduPointItem.objects.filter(filter=gis_filter)
-    point_objects = point_objects.filter(pk__in=point_ids)
-    object_result = dict([(x.pk, json.loads(x.the_geom.json)) for x in point_objects])
-
-    return render_to_response('json/base.json', {'json': json.dumps(object_result)}, context_instance=RequestContext(request))
-
-
 def point_infobox(request, point_id):
     """
     Returns HTML to show for a specific point's infobox inside Google Maps.
