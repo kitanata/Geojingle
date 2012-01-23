@@ -35,8 +35,6 @@
 * ***** END LICENSE BLOCK ***** */
 @import <Foundation/CPObject.j>
 
-@import "loaders/DictionaryLoader.j"
-
 @import "HashKit/Sha1Hash.j"
 @import "HashKit/BloomFilter.j"
 

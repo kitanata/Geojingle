@@ -1,7 +1,6 @@
 @import <Foundation/CPObject.j>
 
 @import "FKFilePanel.j"
-@import "../loaders/DictionaryLoader.j"
 @import "JsonRequest.j"
 
 g_sharedFileController = nil;
@@ -13,6 +12,7 @@ g_sharedFileController = nil;
 {
     AKUserSessionManager m_SessionManager;
 
+    JsonRequest m_ProjectDictLoader;
     JsonRequest m_OpenFileRequest;
     JsonRequest m_SaveFileRequest;
 
@@ -38,6 +38,7 @@ g_sharedFileController = nil;
         [self loadProjectDictData];
         m_SessionManager = [AKUserSessionManager defaultManager];
         m_ProjectFilename = "Untitled";
+        m_ProjectFiles = [CPDictionary dictionary];
     }
 
     return self;
@@ -45,20 +46,13 @@ g_sharedFileController = nil;
 
 - (void)loadProjectDictData
 {
-    var projectDictLoader = [[DictionaryLoader alloc] initWithUrl:(g_UrlPrefix + "/cloud/project_list/")];
-    [projectDictLoader setAction:@selector(onProjectDictLoaded:)];
-    [projectDictLoader setTarget:self];
-    [projectDictLoader load];
+    var requestUrl = (g_UrlPrefix + "/cloud/project_list/");
+    m_ProjectDictLoader = [JsonRequest getRequestFromUrl:requestUrl delegate:self send:YES];
 }
 
 - (void)clearProjectDictData
 {
-    m_ProjectFiles = nil;
-}
-
-- (void)onProjectDictLoaded:(id)sender
-{
-    m_ProjectFiles = [sender dictionary];
+    m_ProjectFiles = [CPDictionary dictionary];
 }
 
 - (void)triggerOpenProject
@@ -181,6 +175,13 @@ g_sharedFileController = nil;
 
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onOpenFileRequestSuccessful:)])
             [m_Delegate onOpenFileRequestSuccessful:self];
+    }
+    else if(request == m_ProjectDictLoader)
+    {
+        for(filename in jsonResponse)
+        {
+            [m_ProjectFiles setObject:jsonResponse[filename] forKey:filename];
+        }
     }
 }
 
