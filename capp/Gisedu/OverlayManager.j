@@ -208,6 +208,28 @@ var overlayManagerInstance = nil;
     m_MapOverlays = [CPArray array];
 }
 
+- (void)resetOverlayDisplayOptions
+{
+    var overlayFilterKeys = [m_OverlayDataObjects allKeys];
+
+    for(var i=0; i < [overlayFilterKeys count]; i++)
+    {
+        var overlayKey = [overlayFilterKeys objectAtIndex:i];
+        var overlayObjects = [[m_OverlayDataObjects objectForKey:overlayKey] allValues];
+
+        for(var j=0; j < [overlayObjects count]; j++)
+        {
+            var overlay = [overlayObjects objectAtIndex:j];
+
+            if([overlay respondsToSelector:@selector(overlay)])
+                overlay = [overlay overlay]; //it's a point data object
+
+            [[overlay displayOptions] resetOptions];
+            [overlay setDirty];
+        }
+    }
+}
+
 /* Updates the mapview by adding and removing overlays
     based on what was shown on the previous update
     and what should be shown now. 
