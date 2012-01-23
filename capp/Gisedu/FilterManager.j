@@ -312,6 +312,8 @@ var g_FilterManagerInstance = nil;
 
 - (void)sendFilterRequests
 {
+    console.log("FilterManager::sendFilterRequests");
+
     [m_StatusPanel setStatus:"Sending Filter Requests"];
 
     [m_FilterChainsWaitingResponse removeAllObjects];

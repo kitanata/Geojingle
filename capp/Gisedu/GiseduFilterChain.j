@@ -497,11 +497,7 @@
         }
     }
 
-    if(!m_PostProcessesPending)
-    {
-        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
-            [m_Delegate onFilterChainProcessed:self];
-    }
+    [self checkFinished];
 }
 
 - (void)onJsonRequestSuccessful:(id)sender withResponse:(id)responseData
@@ -600,6 +596,8 @@
                 }
             }
         }
+
+        [self checkFinished];
     }
     else if(m_PostProcessingRequests[sender] == "POINT_COLORIZE_INTEGER")
     {
@@ -631,6 +629,8 @@
                 }
             }
         }
+
+        [self checkFinished];
     }
     else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER")
     {
@@ -662,12 +662,8 @@
                 }
             }
         }
-    }
 
-    if(!m_PostProcessesPending)
-    {
-        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
-            [m_Delegate onFilterChainProcessed:self];
+        [self checkFinished];
     }
 }
 
@@ -680,6 +676,11 @@
     else if(m_PostProcessingRequests[sender] == "POLYGON_COLORIZE_INTEGER")
         m_PostProcessesPending--;
 
+    [self checkFinished];
+}
+
+- (void)checkFinished
+{
     if(!m_PostProcessesPending)
     {
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
