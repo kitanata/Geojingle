@@ -34,6 +34,8 @@
 *
 * ***** END LICENSE BLOCK ***** */
 @import <Foundation/CPObject.j>
+@import "FileKit/HtmlRequest.j"
+@import "InfoWindowOverlay.j"
 
 //More of a manager for a point overlay, markers, infowindows, handles loading, etc
 @implementation PointDataObject : CPObject
@@ -45,7 +47,7 @@
 
     PointOverlay m_Overlay  @accessors(getter=overlay);
 
-    InfoWindowOverlayLoader m_InfoLoader;
+    HtmlRequest m_InfoLoader;
     InfoWindowOverlay m_InfoWindow;
 
     id m_Delegate           @accessors(property=delegate);
@@ -61,9 +63,7 @@
         [m_Overlay setEventTarget:self];
 
         var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
-        m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
-        [m_InfoLoader setTarget:self];
-        [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
+        m_InfoLoader = [HtmlRequest getRequestFromUrl:loaderUrl delegate:self];
     }
 
     return self;
@@ -96,16 +96,7 @@
     [m_Overlay setDelegate:self];
 
     var loaderUrl = g_UrlPrefix + "/point_infobox/" + m_nIdentifier;
-    m_InfoLoader = [[InfoWindowOverlayLoader alloc] initWithRequestUrl:loaderUrl];
-    [m_InfoLoader setTarget:self];
-    [m_InfoLoader setAction:@selector(onInfoWindowLoaded:)];
-}
-
-- (void)onInfoWindowLoaded:(id)sender
-{
-    m_InfoWindow = [sender overlay];
-
-    [m_InfoWindow open:[m_Overlay marker]];
+    m_InfoLoader = [HtmlRequest getRequestFromUrl:loaderUrl delegate:self];
 }
 
 - (void)openInfoWindow
@@ -116,7 +107,7 @@
     }
     else if(m_InfoLoader)
     {
-        [m_InfoLoader load];
+        [m_InfoLoader send];
     }
 }
 
@@ -144,6 +135,15 @@
 {
     if(m_Overlay)
         [m_Overlay removeFromMapView];
+}
+
+- (void)onHtmlRequestSuccessful:(HtmlRequest)request withResponse:(id)htmlResponse
+{
+    if(request == m_InfoLoader)
+    {
+        m_InfoWindow = [[InfoWindowOverlay alloc] initWithContent:htmlResponse];
+        [m_InfoWindow open:[m_Overlay marker]];
+    }
 }
 
 + (id)pointDataObjectWithIdentifier:(CPInteger)id dataType:(CPString)dataType

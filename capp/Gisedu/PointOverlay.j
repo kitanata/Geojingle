@@ -39,8 +39,6 @@
 @import "MapKit/MKLocation.j"
 @import "MapKit/MKMarker.j"
 
-@import "loaders/InfoWindowOverlayLoader.j"
-
 @import "PointDisplayOptions.j"
 
 g_IconTypes = { "Map Marker" : "marker",
