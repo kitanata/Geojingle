@@ -1,0 +1,31 @@
+Gisedu Changelog
+================
+
+
+Janurary 23rd 2012
+==================
+- Fixed issue where display options were not cleared on overlays when a new
+project was loaded.
+- Fixed issue where under certain circumstances the FilterOutline displayed
+items more than once.
+- Removed all the 'loader' code and replaced all usages with JsonRequest for
+JSON POST and GETs and HtmlRequest for HTML GETs. Name is dependant on type of
+data recieved.
+- Removed DictionaryLoader. Replaced usage with JsonRequest
+- Removed a bunch of the old 'Loader' code. Reducing request sized for new
+overlays and adding a small speed improvement. Cleaner, Faster code.
+- Fixed issue with some items being removed from the map when they shouldnt
+be. 
+- Fixed an issue where display options were not applied to overlays correctly
+when loading new data. 
+- Removed old dead code responsible for loading individual overlays.
+- Fixed error where display options where overridden on overlays during
+loading.
+- Updated C-Tags
+- Added MPL license headers to a bunch of files... some code that we forked we
+are keeping with their original licenses out of respect to the community. It
+would be a nasty thing to take MIT license stuff and relicense it under
+MPL(even though MIT License says we can).
+- Added new Cappucinno 0.95 packages to Frameworks directory
+- Added loading screen from UpdateMap event.
+- Optimized the hell out of the map refreshes client-side
