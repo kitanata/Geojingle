@@ -1,6 +1,6 @@
 GeoJingle is geospatial business intelligence tool used to provide transparent access to eTech data sets in a geospatial format - that is through a mapping technology. The mapping technology that we leverage to accomplish this, Google Maps, allows us to display and manage all kinds of data.
 
-![GeoJingle in the raw](https://github.com/etechAdmin/GeoJingle/raw/master/tutorial/overview.png)
+![GeoJingle in the raw](https://github.com/Kitanata/GeoJingle/raw/master/tutorial/overview.png)
 
 Design Choices
 ==============
