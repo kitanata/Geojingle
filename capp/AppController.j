@@ -351,7 +351,7 @@ g_UrlPrefix = 'http://127.0.0.1';
         m_FileOpenMenuItem = [[CPMenuItem alloc] initWithTitle:@"Open Project" action:@selector(onOpenProject:) keyEquivalent:@"O"];
         m_FileSaveMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project" action:@selector(onSaveProject:) keyEquivalent:@"S"];
         m_FileSaveAsMenuItem = [[CPMenuItem alloc] initWithTitle:@"Save Project As..." action:@selector(onSaveProjectAs:) keyEquivalent:nil];
-        m_FileExitMenuItem = [[CPMenuItem alloc] initWithTitle:@"Exit Gisedu" action:@selector(onExitGisedu:) keyEquivalent:nil];
+        m_FileExitMenuItem = [[CPMenuItem alloc] initWithTitle:@"Exit GeoJingle" action:@selector(onExitGisedu:) keyEquivalent:nil];
 
         [m_FileMenu addItem:m_FileNewMenuItem];
         [m_FileMenu addItem:m_FileOpenMenuItem];

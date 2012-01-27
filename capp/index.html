@@ -9,7 +9,7 @@
         <link rel="apple-touch-icon" href="Resources/icon.png" />
         <link rel="apple-touch-startup-image" href="Resources/default.png" />
 
-        <title>Project Gisedu (GIS:Ed:You)</title>
+        <title>GeoJingle: Mapping your data the easy way!</title>
 
         <script type="text/javascript">
             OBJJ_AUTO_BOOTSTRAP = false;
@@ -39,22 +39,22 @@
                 {
                     if(ver < 6.0 && winXp)
                     {
-                        msg = "Your browser is too old to run Project Gisedu and IE9 is unavailable on Windows XP. To use"
-                                + " Project Gisedu efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                        msg = "Your browser is too old to run GeoJingle and IE9 is unavailable on Windows XP. To use"
+                                + " GeoJingle efficiently will need to use a modern browser like Google Chrome or Mozilla Firefox"
                                 + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
                     }
                     else if(ver == 7.0 || ver == 8.0 && winXp)
                     {
-                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                        msg = "Your browser is too slow to run GeoJingle efficiently. GeoJingle will still run but it may appear"
                                 + " slow or fail to load at all depending on the speed of your computer. To use"
-                                + " Project Gisedu efficiently you will need to use a modern browser like Google Chrome or Mozilla Firefox"
+                                + " GeoJingle efficiently you will need to use a modern browser like Google Chrome or Mozilla Firefox"
                                 + " which you can download at <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
                     }
                     else if(ver == 7.0 || ver == 8.0)
                     {
-                        msg = "Your browser is too slow to run Project Gisedu efficiently. Project Gisedu will still run but it may appear"
+                        msg = "Your browser is too slow to run GeoJingle efficiently. GeoJingle will still run but it may appear"
                                 + " slow or fail to load at all depending on the speed of your computer. To use"
-                                + " Project Gisedu efficiently please upgrade to Internet Explorer 9+ or download an alternative modern"
+                                + " GeoJingle efficiently please upgrade to Internet Explorer 9+ or download an alternative modern"
                                 + " browser from <a href=\"http://www.browsehappy.com/\">Browse Happy</a>.";
                     }
                 }
@@ -63,21 +63,21 @@
                 {
                     var messageId = document.getElementById('loadingcontainer');
 
-                    msg += "<p /> <a href=\"#\" onclick=\"load_gisedu()\">Click Here to continue to Project Gisedu anyway.<a>";
+                    msg += "<p /> <a href=\"#\" onclick=\"load_geojingle()\">Click Here to continue to GeoJingle anyway.<a>";
                     messageId.innerHTML = msg;
                 }
                 else
                 {
-                    load_gisedu();
+                    load_geojingle();
                 }
             }
 
-            function load_gisedu() {
-                console.log("Load Gisedu Called");
+            function load_geojingle() {
+                console.log("Load GeoJingle Called");
                 var gis_loader = document.getElementById('loadingcontainer');
                 gis_loader.innerHTML = "<div id='container'><p id='content'>" +
                        "<img id='loadgraphic' width='16' height='16' src='Resources/spinner.gif' /> " +
-                       "Loading Gisedu (GIS:ed:you)...</p></div>";
+                       "Loading GeoJingle: Data mapping made easy!</p></div>";
             
                 ObjectiveJ.bootstrap();
             }

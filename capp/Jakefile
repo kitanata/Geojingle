@@ -1,13 +1,13 @@
 /*
  * Jakefile
- * Gisedu
+ * GeoJingle
  *
 
  ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
- * The Gisedu project is subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use any content of the Gisedu project
+ * The GeoJingle project is subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use any content of the GeoJingle project
  * except in compliance with the License. You may obtain a copy of the License at
  * http://www.mozilla.org/MPL/
  *
@@ -48,17 +48,17 @@ var ENV = require("system").env,
     configuration = ENV["CONFIG"] || ENV["CONFIGURATION"] || ENV["c"] || "Debug",
     OS = require("os");
 
-app ("Gisedu", function(task)
+app ("GeoJingle", function(task)
 {
-    task.setBuildIntermediatesPath(FILE.join("Build", "Gisedu.build", configuration));
+    task.setBuildIntermediatesPath(FILE.join("Build", "GeoJingle.build", configuration));
     task.setBuildPath(FILE.join("Build", configuration));
 
-    task.setProductName("Gisedu");
-    task.setIdentifier("gov.ohio.etech.Gisedu");
+    task.setProductName("GeoJingle");
+    task.setIdentifier("com.geojingle.geojingle");
     task.setVersion("1.0");
-    task.setAuthor("eTech Ohio Laboratories");
-    task.setEmail("raymond.chandler @nospam@ etech.ohio.gov");
-    task.setSummary("Gisedu");
+    task.setAuthor("Raymond Chandler III");
+    task.setEmail("rchandler @nospam@ geojingle.com");
+    task.setSummary("GeoJingle");
     task.setSources((new FileList("**/*.j")).exclude(FILE.join("Build", "**")));
     task.setResources(new FileList("Resources/**"));
     task.setIndexFilePath("index.html");
@@ -70,7 +70,7 @@ app ("Gisedu", function(task)
         task.setCompilerFlags("-O");
 });
 
-task ("default", ["Gisedu"], function()
+task ("default", ["GeoJingle"], function()
 {
     printResults(configuration);
 });
@@ -91,36 +91,36 @@ task ("release", function()
 
 task ("run", ["debug"], function()
 {
-    OS.system(["open", FILE.join("Build", "Debug", "Gisedu", "index.html")]);
+    OS.system(["open", FILE.join("Build", "Debug", "GeoJingle", "index.html")]);
 });
 
 task ("run-release", ["release"], function()
 {
-    OS.system(["open", FILE.join("Build", "Release", "Gisedu", "index.html")]);
+    OS.system(["open", FILE.join("Build", "Release", "GeoJingle", "index.html")]);
 });
 
 task ("deploy", ["release"], function()
 {
-    FILE.mkdirs(FILE.join("Build", "Deployment", "Gisedu"));
-    OS.system(["press", "-f", FILE.join("Build", "Release", "Gisedu"), FILE.join("Build", "Deployment", "Gisedu")]);
+    FILE.mkdirs(FILE.join("Build", "Deployment", "GeoJingle"));
+    OS.system(["press", "-f", FILE.join("Build", "Release", "GeoJingle"), FILE.join("Build", "Deployment", "GeoJingle")]);
     printResults("Deployment")
 });
 
 task ("desktop", ["release"], function()
 {
-    FILE.mkdirs(FILE.join("Build", "Desktop", "Gisedu"));
-    require("cappuccino/nativehost").buildNativeHost(FILE.join("Build", "Release", "Gisedu"), FILE.join("Build", "Desktop", "Gisedu", "Gisedu.app"));
+    FILE.mkdirs(FILE.join("Build", "Desktop", "GeoJingle"));
+    require("cappuccino/nativehost").buildNativeHost(FILE.join("Build", "Release", "GeoJingle"), FILE.join("Build", "Desktop", "GeoJingle", "GeoJingle.app"));
     printResults("Desktop")
 });
 
 task ("run-desktop", ["desktop"], function()
 {
-    OS.system([FILE.join("Build", "Desktop", "Gisedu", "Gisedu.app", "Contents", "MacOS", "NativeHost"), "-i"]);
+    OS.system([FILE.join("Build", "Desktop", "GeoJingle", "GeoJingle.app", "Contents", "MacOS", "NativeHost"), "-i"]);
 });
 
 function printResults(configuration)
 {
     print("----------------------------");
-    print(configuration+" app built at path: "+FILE.join("Build", configuration, "Gisedu"));
+    print(configuration+" app built at path: "+FILE.join("Build", configuration, "GeoJingle"));
     print("----------------------------");
 }
