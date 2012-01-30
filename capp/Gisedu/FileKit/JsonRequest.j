@@ -93,7 +93,7 @@
             if(statusCode == 404)
                 requestError = "I could not contact the server. Please check your internet connection and try again."
             else
-                requestError = "The server rejected the request. You do not have permission to do this."
+                requestError = "You must be logged in to do that."
 
             if(m_Delegate && [m_Delegate respondsToSelector:@selector(onJsonRequestFailed:withError:)])
                 [m_Delegate onJsonRequestFailed:self withError:requestError];

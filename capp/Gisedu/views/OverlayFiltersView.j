@@ -37,7 +37,6 @@
 
 @import "StringFilterView.j"
 @import "IntegerFilterView.j"
-@import "StringIdMapFilterView.j"
 @import "IdStringMapFilterView.j"
 @import "BooleanFilterView.j"
 
