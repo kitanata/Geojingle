@@ -538,10 +538,7 @@ var g_FilterManagerInstance = nil;
         var curFilterType = [filtersInProposedItem objectAtIndex:i];
 
         if(exclusionMap[curFilterType] == NO)
-        {
-            console.log("CPDragOperationNone");
             return CPDragOperationNone;
-        }
     }
 
     return CPDragOperationMove;
