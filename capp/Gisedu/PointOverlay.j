@@ -217,6 +217,7 @@ var METERS_TO_DEG = 0.000008999;
 
 - (void)addToMapView
 {
+    console.log("Adding to Map View");
     m_GoogleMarker.setMap([[MKMapView getInstance] gMap]);
 }
 
@@ -228,6 +229,8 @@ var METERS_TO_DEG = 0.000008999;
 
 - (void)_update
 {
+    console.log("Update PointOverlay");
+
     //Merge Default -> Filter -> Solo Options (Order matters)
     var displayOptions = [PointDisplayOptions defaultOptions];
     [displayOptions enchantOptionsFrom:m_FilterDisplayOptions];

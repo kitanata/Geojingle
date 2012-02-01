@@ -15,7 +15,7 @@ class GiseduPolygonItem(models.Model):
     """ The model associated with all polygon items in the postGIS database. """
     filter = models.ForeignKey(GiseduFilters)
     item_name = models.CharField(max_length=254, null=True)
-    item_type = models.CharField(max_length=254, null=True) #for dict fields
+    item_type = models.CharField(max_length=254, null=True, blank=True) #for dict fields
 
     the_geom = models.MultiPolygonField(null=True)
     objects = models.GeoManager()
@@ -25,6 +25,8 @@ class GiseduPolygonItem(models.Model):
             return str(self.item_name) + " " + str(self.item_type)
         else:
             return str(self.item_name)
+    __str__.allow_tags = True
+    __str__.admin_order_field = 'item_name'
 
     class Meta:
         db_table = u'gisedu_polygon_item'

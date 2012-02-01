@@ -133,6 +133,25 @@
     return NO;
 }
 
+/*Returns YES is chain is empty after delete */
+- (BOOL)removeFilter:(GiseduFilter)filter
+{
+    if([self containsFilter:filter])
+    {
+        var lastFilter = [m_Filters lastObject];
+
+        while(lastFilter != filter)
+        {
+            [m_Filters removeLastObject];
+            lastFilter = [m_Filters lastObject];
+        }
+
+        [m_Filters removeLastObject];
+    }
+
+    return ([m_Filters count] <= 0);
+}
+
 - (CPString)buildFilterRequest
 {
     var filterChain = [m_Filters copy];
@@ -246,6 +265,7 @@
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
+    m_OverlayIds = [CPDictionary dictionary];
     for(var i=0; i < [resultSet count]; i++)
     {
         typeIdPair = [resultSet objectAtIndex:i];

@@ -214,12 +214,18 @@ def process_reduce_boolean_filters(fields, objects, options, geom_type="POINT"):
 
     for name, value in options.iteritems():
         print("Name " + str(name) + " Value: " + str(value))
-        filter_fields = fields.filter(attribute_filter__name=name, value=value)
+
+        filter_fields = fields.filter(attribute_filter__name=name, value=True)
 
         if geom_type == "POINT":
-            objects = objects.filter(pk__in=[item.point.pk for item in filter_fields])
+            items = [item.point.pk for item in filter_fields]
         elif geom_type == "POLYGON":
-            objects = objects.filter(pk__in=[item.polygon.pk for item in filter_fields])
+            items = [item.polygon.pk for item in filter_fields]
+
+        if value == True:
+            objects = objects.filter(pk__in=items)
+        elif value == False:
+            objects = objects.exclude(pk__in=items)
 
     return objects
 
