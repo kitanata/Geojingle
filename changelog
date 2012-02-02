@@ -1,6 +1,18 @@
 Gisedu Changelog
 ================
 
+Feburary 1st 2012
+==================
+- Redesigned the popup/search control for filter data. 
+- Replaced with a listbox with search to filter the listbox.
+- Fixed an issue where if a user was not logged in when gisedu loaded it 
+reported an error.
+- Fixed a caching problem with stale filter chains not dirtying overlays. 
+- Fixed a data import issue where attributes not defined aren't added when
+updating datasets.
+- Fixed an issue where the boolean filters were not returning negative 
+datasets for some items if there wasn't a negative attribute associated with 
+it. No Attribute is now equivilent to a Negative attribute on Boolean Filters.
 
 Janurary 23rd 2012
 ==================
