@@ -673,7 +673,11 @@ var g_FilterManagerInstance = nil;
 
         var activeOverlays = [CPDictionary dictionary];
         for(var i=0; i < [m_FilterChains count]; i++)
-            [activeOverlays addEntriesFromDictionary:[[m_FilterChains objectAtIndex:i] overlayIds]];
+        {
+            var curChain = [m_FilterChains objectAtIndex:i];
+            [activeOverlays addEntriesFromDictionary:[curChain pointOverlayIds]];
+            [activeOverlays addEntriesFromDictionary:[curChain polygonOverlayIds]];
+        }
 
         [m_StatusPanel setStatus:"Updating Map View"];
         [m_OverlayManager updateMapView];

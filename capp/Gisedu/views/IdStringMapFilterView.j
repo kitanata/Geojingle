@@ -165,8 +165,10 @@
             [m_Filter setValue:[keyList objectAtIndex:0]];
     }
 
-    if(_action && _target)
-        [self sendAction:_action to:_target];
+    [m_Filter setDirty];
+
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterPropertiesChanged:)])
+        [m_Delegate onFilterPropertiesChanged:self];
 }
 
 @end

@@ -270,8 +270,7 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
                         andFilter:filter andAcceptedValues:[filterDescription options]];
         }
 
-        [m_CurrentFilterView setAction:@selector(onFilterPropertiesChanged:)];
-        [m_CurrentFilterView setTarget:self];
+        [m_CurrentFilterView setDelegate:self];
         [m_PropertiesView addSubview:m_CurrentFilterView];
     }
 }

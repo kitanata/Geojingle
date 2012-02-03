@@ -37,10 +37,11 @@
 
 @import "../OverlayManager.j"
 
-@implementation FilterView : CPControl
+@implementation FilterView : CPView
 {
     OverlayManager m_OverlayManager;
     GiseduFilter m_Filter       @accessors(property=filter);
+    id           m_Delegate     @accessors(property=delegate);
 
     CPTextField m_FilterType;
     CPTextField m_FilterTitle;
