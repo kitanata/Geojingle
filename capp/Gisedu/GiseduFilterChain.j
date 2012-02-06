@@ -138,6 +138,8 @@
         [m_Filters removeLastObject];
     }
 
+    [self dirtyMapOverlays:YES];
+
     return ([m_Filters count] <= 0);
 }
 
@@ -310,6 +312,12 @@
     on the map as dirty and needing redraw */
 - (void)dirtyMapOverlays
 {
+    [self dirtyMapOverlays:NO];
+}
+
+- (void)dirtyMapOverlays:(BOOL)resetOptions
+{
+    console.log("FilterChain::dirtyMapOverlays called");
     var pointOverlayKeys = [m_PointOverlayIds allKeys];
     for(var i=0; i < [pointOverlayKeys count]; i++)
     {
@@ -322,9 +330,17 @@
             var overlay = [[m_OverlayManager getOverlayObject:dataType objId:overlayId] overlay];
 
             if(overlay)
+            {
+                if(resetOptions)
+                    [[overlay displayOptions] resetOptions];
+
                 [overlay setDirty];
+            }
         }
     }
+
+
+    console.log("Polygon Overlay Ids ="); console.log(m_PolygonOverlayIds);
 
     var polygonOverlayKeys = [m_PolygonOverlayIds allKeys];
     for(var i=0; i < [polygonOverlayKeys count]; i++)
@@ -338,7 +354,12 @@
             var overlay = [m_OverlayManager getOverlayObject:dataType objId:overlayId];
 
             if(overlay)
+            {
+                if(resetOptions)
+                    [[overlay displayOptions] resetOptions];
+
                 [overlay setDirty];
+            }
         }
     }
 }
@@ -725,7 +746,6 @@
 {
     if(!m_PostProcessesPending)
     {
-
         var dirtyOverlays = NO;
         for(var i=0; i < [m_Filters count]; i++)
         {

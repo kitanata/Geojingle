@@ -390,25 +390,12 @@ var m_DeleteFilterToolbarId = 'deleteFilter';
             var curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
             curSelItemParent = [curSelItem parentNode];
 
-            if(curSelItemParent == nil)
-            {
-                [m_FilterManager deleteFilter:curSelItem];
-                [m_OutlineView reloadItem:nil reloadChildren:YES];
-            }
-            else
-            {
-                childNodes = [curSelItemParent childNodes];
-                for(var i=0; i < [childNodes count]; i++)
-                {
-                    if([childNodes objectAtIndex:i] == curSelItem)
-                    {
-                        [curSelItemParent removeObjectFromChildNodesAtIndex:i];
-                        break; //it down!
-                    }
-                }
+            [m_FilterManager deleteFilter:curSelItem];
 
+            if(curSelItemParent == nil)
+                [m_OutlineView reloadItem:nil reloadChildren:YES];
+            else
                 [m_OutlineView reloadItem:curSelItemParent reloadChildren:YES];
-            }
 
             if(m_CurrentFilterView)
             {

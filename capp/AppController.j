@@ -790,7 +790,6 @@ g_UrlPrefix = 'http://127.0.0.1';
 
     var filters = jsonData['filters'];
 
-    [m_OverlayManager resetOverlayDisplayOptions];
     [m_FilterManager fromJson:filters];
     [[m_LeftSideTabView filtersView] refreshOutline];
     [self onUpdateMapFilters:self];

@@ -286,31 +286,26 @@ var g_FilterManagerInstance = nil;
     var parent = [filter parentNode];
 
     if(parent)
-    {
         [parent removeObjectFromChildNodesAtIndex:[[parent childNodes] indexOfObject:filter]];
-
-        var emptyChains = [CPArray array];
-
-        for(var i = 0; i < [m_FilterChains count]; i++)
-        {
-            var curChain = [m_FilterChains objectAtIndex:i];
-
-            if([curChain containsFilter:filter])
-            {
-                var empty = [curChain deleteFilter:filter];
-
-                if(empty)
-                    [emptyChains addObject:curChain];
-            }
-        }
-
-        for(var i=0; i < [emptyChains count]; i++)
-            [m_FilterChains removeObject:[emptyChains objectAtIndex:i]];
-    }
     else
-    {
         [m_FilterTree removeObject:filter];
+
+    var emptyChains = [CPArray array];
+    for(var i = 0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+
+        if([curChain containsFilter:filter])
+        {
+            var empty = [curChain removeFilter:filter];
+
+            if(empty)
+                [emptyChains addObject:curChain];
+        }
     }
+
+    for(var i=0; i < [emptyChains count]; i++)
+        [m_FilterChains removeObject:[emptyChains objectAtIndex:i]];
 }
 
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
@@ -584,19 +579,10 @@ var g_FilterManagerInstance = nil;
     return g_FilterManagerInstance;
 }
 
-- (void)triggerFilters
-{
-    console.log("Trigger Filters Called");
-
-    [m_OverlayManager removeMapOverlays];
-    [m_StatusPanel setStatus:"Sending Filters To Server"];
-    [self sendFilterRequests];
-}
-
 - (void)rebuildFilterChains
 {
     for(var i=0; i < [m_FilterChains count]; i++)
-        [[m_FilterChains objectAtIndex:i] dirtyMapOverlays];
+        [[m_FilterChains objectAtIndex:i] dirtyMapOverlays:YES];
 
     [m_FilterChains removeAllObjects];
     [self _rebuildFilterChains:m_FilterTree];
@@ -630,18 +616,29 @@ var g_FilterManagerInstance = nil;
     [filterChain addFilter:filter];
 }
 
-- (void)sendFilterRequests
+- (void)triggerFilters
 {
-    console.log("FilterManager::sendFilterRequests");
+    console.log("Trigger Filters Called");
 
-    [m_StatusPanel setStatus:"Sending Filter Requests"];
+    [m_OverlayManager removeMapOverlays];
 
-    [m_FilterChainsWaitingResponse removeAllObjects];
-    for(var i=0; i < [m_FilterChains count]; i++)
-        [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
+    if([m_FilterChains count] > 0)
+    {
+        [m_StatusPanel setStatus:"Sending Filter Requests"];
 
-    for(var i=0; i < [m_FilterChains count]; i++)
-        [[m_FilterChains objectAtIndex:i] sendFilterRequest];
+        console.log(m_FilterChains);
+
+        [m_FilterChainsWaitingResponse removeAllObjects];
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
+
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [[m_FilterChains objectAtIndex:i] sendFilterRequest];
+    }
+    else
+    {
+        [self _finishProcessing];
+    }
 }
 
 - (void)onFilterRequestReceived:(id)sender
@@ -670,21 +667,25 @@ var g_FilterManagerInstance = nil;
     if([m_FilterChainsWaitingProcess count] == 0)
     {
         [m_StatusPanel setStatus:"Cleaning Up Filters"];
-
-        var activeOverlays = [CPDictionary dictionary];
-        for(var i=0; i < [m_FilterChains count]; i++)
-        {
-            var curChain = [m_FilterChains objectAtIndex:i];
-            [activeOverlays addEntriesFromDictionary:[curChain pointOverlayIds]];
-            [activeOverlays addEntriesFromDictionary:[curChain polygonOverlayIds]];
-        }
-
-        [m_StatusPanel setStatus:"Updating Map View"];
-        [m_OverlayManager updateMapView];
-
-        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
-            [m_Delegate onFilterManagerFinished:activeOverlays];
+        [self _finishProcessing];
     }
+}
+
+- (void)_finishProcessing
+{
+    var activeOverlays = [CPDictionary dictionary];
+    for(var i=0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+        [activeOverlays addEntriesFromDictionary:[curChain pointOverlayIds]];
+        [activeOverlays addEntriesFromDictionary:[curChain polygonOverlayIds]];
+    }
+
+    [m_StatusPanel setStatus:"Updating Map View"];
+    [m_OverlayManager updateMapView];
+
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
+        [m_Delegate onFilterManagerFinished:activeOverlays];
 }
 
 
@@ -729,6 +730,8 @@ var g_FilterManagerInstance = nil;
 
         [self _buildFilterFromJson:curJsonFilter parent:nil];
     }
+
+    [self rebuildFilterChains];
 }
 
 - (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter

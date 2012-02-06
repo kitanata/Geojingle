@@ -70,7 +70,7 @@
 
 - (void)update:(BOOL)dirty
 {
-    m_bDirty = YES;
+    m_bDirty = dirty;
 
     [self update];
 }
