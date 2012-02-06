@@ -44,6 +44,8 @@ urlpatterns = patterns('',
     #Data Import Processors
     url(r'^upload_csv', 'data_import.views.upload_csv'),
     url(r'^import_csv', 'data_import.views.import_csv'),
+
+    (r'^grappelli/', include('grappelli.urls')),
 )
 
 if settings.DEBUG:
