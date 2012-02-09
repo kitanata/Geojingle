@@ -196,11 +196,11 @@
     [m_Filter setReduceFilterId:[m_FilterManager filterIdFromName:[m_ScaleByPopUp titleOfSelectedItem]]];
     [m_Filter setMinimumScale:[m_MinimumValueSlider value]];
     [m_Filter setMaximumScale:[m_MaximumValueSlider value]];
+
+    [m_Filter setDirty];
     
-    if(_action && _target)
-    {
-        [self sendAction:_action to:_target];
-    }
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterPropertiesChanged:)])
+        [m_Delegate onFilterPropertiesChanged:self];
 }
 
 @end

@@ -106,6 +106,8 @@ def import_csv(request):
             objects = { field_lambda_val[join_filter.data_type](item) : field_lambda_obj[join_filter.data_type](item)
                             for item in list(find_by) }
 
+            print("Objects = ", str(objects))
+
 #        'match_sets' : [
 #            {'column_data' : [row_1_for_column, row_2_for_column, ...]
 #             'attribute_filter' : int<filter_id>},
@@ -122,17 +124,27 @@ def import_csv(request):
 
                 join_data = dict(zip(join_columns, column_data))
                 for join_value, column_value in join_data.iteritems():
-                    object = objects[join_value]
-
                     try:
-                        filter_args = {'attribute_filter' : attribute_filter, field_object_name : object}
-                        attributes = field_objects[attribute_filter.data_type].objects.filter(**filter_args)
+                        object = objects[join_value]
+                    except KeyError:
+                        print("Join Value: ", str(join_value), " does not exist.");
+                    else:
+                        try:
+                            filter_args = {'attribute_filter' : attribute_filter, field_object_name : object}
+                            attributes = field_objects[attribute_filter.data_type].objects.filter(**filter_args)
+                        except Exception as e:
+                            print(str(e))
 
-                        [update_lambdas[attribute_filter.data_type](attribute, column_value) for attribute in attributes]
-                        [attribute.save() for attribute in attributes]
-
-                    except Exception as e:
-                        print(str(e))
+                        try:
+                            if attributes:
+                                [update_lambdas[attribute_filter.data_type](attribute, column_value) for attribute in attributes]
+                                [attribute.save() for attribute in attributes]
+                            else: #make one
+                                new_attribute = field_objects[attribute_filter.data_type](**filter_args)
+                                update_lambdas[attribute_filter.data_type](new_attribute, column_value)
+                                new_attribute.save()
+                        except Exception as e:
+                            print(str(e))
 
             return HttpResponse(mimetype = 'application/json')
         elif operation_type == "INSERT":

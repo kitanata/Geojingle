@@ -35,43 +35,127 @@
 * ***** END LICENSE BLOCK ***** */
 @import <Foundation/CPObject.j>
 
-@import "ArrayFilterView.j"
-@import "CPDynamicSearch.j"
+@import "FilterView.j"
 
-@implementation StringFilterView : ArrayFilterView
+@implementation StringFilterView : FilterView
+{
+    CPSearchField m_SelectionControl;
+
+    CPScrollView m_ScrollView;
+    CPOutlineView m_OutlineView;
+
+    CPArray m_AcceptedValues    @accessors(property=acceptedValues);
+    CPArray m_Items;
+}
 
 - (id)initWithFrame:(CGRect)aFrame andFilter:(GiseduFilter)filter andAcceptedValues:(CPArray)acceptedValues
 {
-    [acceptedValues addObject:"All"];
-    self = [super initWithFrame:aFrame andFilter:filter andAcceptedValues:acceptedValues];
+    self = [super initWithFrame:aFrame andFilter:filter];
 
     if(self)
     {
-        if(m_bPopUp)
-        {
-            [m_SelectionControl selectItemWithTitle:[m_Filter value]];
-        }
-        else
-        {
-            [m_SelectionControl setStringValue:[m_Filter value]];
-        }
+        m_AcceptedValues = [acceptedValues sortedArrayUsingSelector:@selector(compare:)];
+        m_Items = [CPArray array];
+        [m_Items addObject:"All"];
+        [m_Items addObjectsFromArray:m_AcceptedValues];
+
+        m_SelectionControl = [[CPSearchField alloc] initWithFrame:CGRectMake(20, 40, 260, 30)];
+        [m_SelectionControl setSendsSearchStringImmediately:YES];
+        [m_SelectionControl setAction:@selector(onSearchTextChanged)];
+        [m_SelectionControl setTarget:self];
+
+        [m_SelectionControl sizeToFit];
+        [m_SelectionControl setDelegate:self];
+
+        m_ScrollView = [[CPScrollView alloc] initWithFrame:CGRectMake(0, 80, 300, CGRectGetHeight([self bounds]) - 20)];
+        [m_ScrollView setAutoresizingMask:CPViewHeightSizable | CPViewMaxXMargin];
+
+        m_OutlineView = [[CPOutlineView alloc] initWithFrame:CGRectMake(0, 0, 280, CGRectGetHeight([m_ScrollView bounds]))];
+        [m_ScrollView setDocumentView:m_OutlineView];
+
+        var layerNameCol = [[CPTableColumn alloc] initWithIdentifier:@"LayerName"];
+        [layerNameCol setWidth:280];
+
+        [m_OutlineView setHeaderView:nil];
+        [m_OutlineView setCornerView:nil];
+        [m_OutlineView addTableColumn:layerNameCol];
+        [m_OutlineView setOutlineTableColumn:layerNameCol];
+        [m_OutlineView setAction:@selector(onOutlineItemSelected:)];
+        [m_OutlineView setTarget:self];
+
+        [m_OutlineView setDataSource:self];
+
+        [self setAutoresizingMask:CPViewHeightSizable];
+        [self addSubview:m_SelectionControl];
+        [self addSubview:m_ScrollView];
+
+        [m_SelectionControl setStringValue:[m_Filter value]];
     }
 
     return self;
 }
 
-- (void)onUpdate:(id)sender
+- (void)onSearchTextChanged
 {
-    if(m_bPopUp)
-        [m_Filter setValue:[m_SelectionControl titleOfSelectedItem]];
-    else
-        [m_Filter setValue:[m_SelectionControl stringValue]];
+    console.log("onSearchTextChanged");
 
+    var searchString = [[m_SelectionControl stringValue] lowercaseString];
+    console.log(searchString);
 
-    if(_action && _target)
+    m_Items = [CPArray array];
+    [m_Items addObject:"All"];
+
+    for(var i=0; i < [m_AcceptedValues count]; i++)
     {
-        [self sendAction:_action to:_target];
+        var curItem = [m_AcceptedValues objectAtIndex:i];
+        var testString = [curItem lowercaseString];
+
+        if(testString.indexOf(searchString) != -1)
+            [m_Items addObject:curItem];
     }
+
+    [m_OutlineView reloadData];
+}
+
+- (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
+{
+    if (item === nil)
+        return [m_Items objectAtIndex:index];
+    else
+        return nil;
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
+{
+    return NO;
+}
+
+- (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
+{
+    if (item === nil)
+        return [m_Items count];
+    else
+        return 0;
+}
+
+- (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
+{
+    return item;
+}
+
+- (void) onOutlineItemSelected:(id)sender
+{
+    var curSelItem = [m_OutlineView itemAtRow:[m_OutlineView selectedRow]];
+
+    if(curSelItem == "All")
+        [m_Filter setValue:"All"];
+    else
+        [m_Filter setValue:curSelItem];
+
+    [m_Filter setDirty];
+
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterPropertiesChanged:)])
+        [m_Delegate onFilterPropertiesChanged:self];
 }
 
 @end

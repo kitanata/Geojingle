@@ -52,7 +52,7 @@ var g_FilterManagerInstance = nil;
     id m_StatusPanel                @accessors(setter=setStatusPanel:);
     OverlayManager m_OverlayManager;
 
-    CPArray m_UserFilters           @accessors(property=userFilters);   //Filters that the user declares
+    CPArray m_FilterTree;                                               //The Filter Tree
     CPArray m_FilterChains;                                             //Cached Filter Chains
 
     CPArray m_FilterChainsWaitingResponse;                              //Chains waiting a response from the server
@@ -71,15 +71,13 @@ var g_FilterManagerInstance = nil;
     if(self)
     {
         m_OverlayManager = [OverlayManager getInstance];
-        m_UserFilters = [CPArray array];
+        m_FilterTree = [CPArray array];
         m_FilterChains = [CPArray array];
 
         m_FilterChainsWaitingResponse = [CPArray array];
         m_FilterChainsWaitingProcess = [CPArray array];
 
         m_FilterDescriptions = [CPDictionary dictionary];
-
-        //[self addFilter:[self createFilter:'county'] parent:nil];
     }
 
     return self;
@@ -173,7 +171,7 @@ var g_FilterManagerInstance = nil;
     if(!filter)
         return NO;
 
-    return [self containsFilter:filter withNodes:m_UserFilters];
+    return [self containsFilter:filter withNodes:m_FilterTree];
 }
 
 - (BOOL)containsFilter:(CPTreeNode)filter withNodes:(CPArray)nodes
@@ -239,33 +237,336 @@ var g_FilterManagerInstance = nil;
 
 - (void)addFilter:(GiseduFilter)filter parent:(GiseduFilter)parent
 {
+    /*
+    if no parent:
+        make new filter chain
+    else if has siblings:
+        make new filter chain
+    else if is leaf:
+        add to existing filter chain
+    */
+
     if(!parent)
     {
-        [m_UserFilters addObject:filter];
+        [m_FilterTree addObject:filter];
+
+        var filterChain = [GiseduFilterChain filterChain];
+        [filterChain addFilter:filter];
+        [filterChain setDelegate:self];
+        [m_FilterChains addObject:filterChain];
     }
-    else if([self containsFilter:parent])
+    else if([parent isLeaf])
     {
         [parent insertObject:filter inChildNodesAtIndex:0];
-
         [filter enchantFromParents];
+
+        for(var i=0; i < [m_FilterChains count]; i++)
+        {
+            var curChain = [m_FilterChains objectAtIndex:i];
+            if([curChain containsFilter:parent])
+            {
+                [curChain addFilter:filter];
+            }
+        }
+    }
+    else
+    {
+        [parent insertObject:filter inChildNodesAtIndex:0];
+        [filter enchantFromParents];
+
+        var filterChain = [GiseduFilterChain filterChain];
+        [self _buildFilterChain:filter withChain:filterChain];
+        [filterChain setDelegate:self];
+        [m_FilterChains addObject:filterChain];
     }
 }
 
 - (void)deleteFilter:(CPTreeNode)filter
 {
-    if([self containsFilter:filter])
-    {
-        var parent = [filter parentNode];
+    var parent = [filter parentNode];
 
-        if(!parent)
+    if(parent)
+        [parent removeObjectFromChildNodesAtIndex:[[parent childNodes] indexOfObject:filter]];
+    else
+        [m_FilterTree removeObject:filter];
+
+    var emptyChains = [CPArray array];
+    for(var i = 0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+
+        if([curChain containsFilter:filter])
         {
-            [m_UserFilters removeObject:filter];
+            var empty = [curChain removeFilter:filter];
+
+            if(empty)
+                [emptyChains addObject:curChain];
+        }
+    }
+
+    for(var i=0; i < [emptyChains count]; i++)
+        [m_FilterChains removeObject:[emptyChains objectAtIndex:i]];
+}
+
+- (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
+{
+    if (item === nil)
+    {
+        //console.log("index = "); console.log(index);
+        //console.log("returning = "); console.log([m_FilterTree objectAtIndex:index]);
+        return [m_FilterTree objectAtIndex:index];
+    }
+    else
+    {
+        //console.log("index = "); console.log(index);
+        //console.log("returning = "); console.log([[item childNodes] objectAtIndex:index]);
+        return [[item childNodes] objectAtIndex:index];
+    }
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
+{
+    //console.log(item);
+    //console.log("Problem expandable");
+    //console.log(([[item childNodes] count] > 0));
+    return ([[item childNodes] count] > 0);
+}
+
+- (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
+{
+    //console.log(item);
+    //console.log("Problem Child Num");
+    if (item === nil)
+    {
+        //console.log([m_FilterTree count]);
+        return [m_FilterTree count];
+    }
+    else
+    {
+        //console.log([[item childNodes] count]);
+        return [[item childNodes] count];
+    }
+}
+
+- (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
+{
+    var filterType = [item type];
+    var filterDescription = [item description];
+
+    var names = nil;
+
+    var filterTypeName = [filterDescription name];
+    var filterLabel = "All " + filterTypeName + " Filter";
+
+    if([filterDescription filterType] == "LIST")
+    {
+        var filterName = [[filterDescription options] objectForKey:[item value]];
+
+        if(!filterName)
+            filterName = "All";
+            
+        filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription filterType] == "DICT")
+    {
+        filterLabel = [item value] + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription dataType] == "POINT")
+    {
+        var filterName = [[m_OverlayManager pointDataTypes:filterType] objectForKey:[item value]];
+
+        if(filterName)
+            filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription filterType] == "CHAR")
+    {
+        var filterName = [[filterDescription options] objectForKey:[item value]];
+
+        if(filterName)
+            filterLabel = filterName + " " + filterTypeName + " Filter";
+    }
+    else if([filterDescription filterType] == "BOOL")
+    {
+        if([item value])
+            filterLabel = "Has " + filterTypeName + " Filter";
+        else
+            filterLabel = "Doesn't have " + filterTypeName + " Filter";
+    }
+    else if([filterDescription filterType] == "INTEGER")
+    {
+        var filterValue = [item value];
+        var requestOption = [item requestOption];
+
+        if(requestOption == "lt")
+            requestOption = "< "
+        else if(requestOption == "gt")
+            requestOption = "> "
+        else if(requestOption == "gte")
+            requestOption = ">= "
+        else if(requestOption == "lte")
+            requestOption = "<= "
+        else
+            requestOption = "== "
+
+            
+        if(filterValue != "All")
+            filterLabel = requestOption + [item value] + " " + filterTypeName + " Filter";
+    }
+
+    return [filterLabel capitalizedString];
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView acceptDrop:(id)info item:(id)item childIndex:(CPInteger)index
+{
+    var pboard = [info draggingPasteboard];
+    var dataNode = [pboard dataForType:"filters"];
+    var retVal = NO;
+
+    if(item == dataNode)
+        return NO;
+
+    var dataNodeParent = [dataNode parentNode];
+
+    if(!dataNodeParent)
+    {
+        [m_FilterTree removeObject:dataNode];
+
+        if(!item)
+        {
+            [m_FilterTree addObject:dataNode];
+            retVal = YES;
+        }
+
+        var itemRootParent = item;
+
+        while([itemRootParent parentNode])
+            itemRootParent = [itemRootParent parentNode];
+
+        if(itemRootParent == dataNode)
+        {
+            [m_FilterTree addObjectsFromArray:[dataNode childNodes]];
+
+            while([[dataNode childNodes] count] > 0)
+                [dataNode removeObjectFromChildNodesAtIndex:0];
+        }
+
+        [item insertObject:dataNode inChildNodesAtIndex:0];
+
+        retVal = YES;
+    }
+    else if(!item)
+    {
+        if(dataNodeParent)
+        {
+            var dataNodeIndex = [[dataNodeParent childNodes] indexOfObject:dataNode];
+            [dataNodeParent removeObjectFromChildNodesAtIndex:dataNodeIndex];
+        }
+
+        [m_FilterTree addObject:dataNode];
+
+        retVal = YES;
+    }
+    else if([item parentNode] != dataNode)
+    {
+        [item insertObject:dataNode inChildNodesAtIndex:0];
+
+        retVal = YES;
+    }
+    else if([item parentNode] == dataNode)
+    {
+        if(dataNodeParent)
+        {
+            var itemIndex = [[dataNode childNodes] indexOfObject:item];
+            [dataNode removeObjectFromChildNodesAtIndex:itemIndex];
+
+            [dataNodeParent removeObjectFromChildNodesAtIndex:dataNodeIndex];
+            var dataNodeIndex = [[dataNodeParent childNodes] indexOfObject:dataNode];
+            [dataNodeParent insertObject:item inChildNodesAtIndex:dataNodeIndex];
+            [item insertObject:dataNode inChildNodesAtIndex:index];
         }
         else
         {
-            [parent removeObjectFromChildNodesAtIndex:[[parent childNodes] indexOfObject:filter]];
+            var itemIndex = [[dataNode childNodes] indexOfObject:item];
+            [dataNode removeObjectFromChildNodesAtIndex:itemIndex];
+            [item insertObject:dataNode inChildNodesAtIndex:index];
         }
+
+        retVal = YES;
     }
+
+    //Rebuild Broken Filter Chains
+    if(retVal)
+        [self rebuildFilterChains];
+
+    return retVal;
+}
+
+- (CPDragOperation)outlineView:(CPOutlineView)outlineView validateDrop:(id)info proposedItem:(id)item proposedChildIndex:(CPInteger)index
+{
+    var movingItem = [[info draggingPasteboard] dataForType:"filters"];
+
+    var filtersInTree = [self allTypesInFilterTree:movingItem];
+
+    var exclusionMap = [self filterFlagMap];
+
+    for(var i=0; i < [filtersInTree count]; i++)
+    {
+        var curFilterType = [filtersInTree objectAtIndex:i];
+        var curFilterDesc = [m_FilterDescriptions objectForKey:curFilterType];
+
+        var curExs = [curFilterDesc excludeFilters];
+
+        for(var j=0; j < [curExs count]; j++)
+            exclusionMap[[curExs objectAtIndex:j]] = NO;
+    }
+
+    var filtersInProposedItem = [CPArray arrayWithObject:[item type]];
+
+    while([item parentNode])
+    {
+        [filtersInProposedItem addObject:[[item parentNode] type]];
+        item = [item parentNode];
+    }
+
+    for(var i=0; i < [filtersInProposedItem count]; i++)
+    {
+        var curFilterType = [filtersInProposedItem objectAtIndex:i];
+
+        if(exclusionMap[curFilterType] == NO)
+            return CPDragOperationNone;
+    }
+
+    return CPDragOperationMove;
+}
+
+- (CPArray)allTypesInFilterTree:(GiseduFilter)filter
+{
+    var typeList = [CPArray array];
+    var filterChildren = [filter childNodes];
+
+    for(var i=0; i < [filterChildren count]; i++)
+    {
+        var curChild = [filterChildren objectAtIndex:i];
+
+        [typeList addObjectsFromArray:[self allTypesInFilterTree:curChild]];
+    }
+
+    [typeList addObject:[filter type]];
+
+    return typeList;
+}
+
+- (BOOL)outlineView:(CPOutlineView)outlineView writeItems:(CPArray)items toPasteboard:(CPPasteboard)pboard
+{
+    if([items count] > 1 || [items count] == 0)
+        return NO;
+
+    var theItem = [items objectAtIndex:0];
+
+    [pboard declareTypes:[CPArray arrayWithObject:"filters"] owner:self];
+    [pboard setData:theItem forType:"filters"];
+
+    return YES;
 }
 
 + (FilterManager)getInstance
@@ -278,19 +579,16 @@ var g_FilterManagerInstance = nil;
     return g_FilterManagerInstance;
 }
 
-- (void)triggerFilters
+- (void)rebuildFilterChains
 {
-    console.log("Trigger Filters Called");
+    for(var i=0; i < [m_FilterChains count]; i++)
+        [[m_FilterChains objectAtIndex:i] dirtyMapOverlays:YES];
 
     [m_FilterChains removeAllObjects];
-    [m_OverlayManager removeMapOverlays];
-
-    [m_StatusPanel setStatus:"Building Filters"];
-    [self _triggerFilters:m_UserFilters];
-    [self sendFilterRequests];
+    [self _rebuildFilterChains:m_FilterTree];
 }
 
-- (void)_triggerFilters:(CPArray)filters
+- (void)_rebuildFilterChains:(CPArray)filters
 {
     for(var i=0; i < [filters count]; i++)
     {
@@ -298,7 +596,7 @@ var g_FilterManagerInstance = nil;
 
         if(![curFilter isLeaf])
         {
-            [self _triggerFilters:[curFilter childNodes]];
+            [self _rebuildFilterChains:[curFilter childNodes]];
         }
         else//leaf and has a parent
         {
@@ -310,18 +608,37 @@ var g_FilterManagerInstance = nil;
     }
 }
 
-- (void)sendFilterRequests
+- (void)_buildFilterChain:(id)filter withChain:(GiseduFilterChain)filterChain
 {
-    console.log("FilterManager::sendFilterRequests");
+    if([filter parentNode])
+        [self _buildFilterChain:[filter parentNode] withChain:filterChain];
 
-    [m_StatusPanel setStatus:"Sending Filter Requests"];
+    [filterChain addFilter:filter];
+}
 
-    [m_FilterChainsWaitingResponse removeAllObjects];
-    for(var i=0; i < [m_FilterChains count]; i++)
-        [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
+- (void)triggerFilters
+{
+    console.log("Trigger Filters Called");
 
-    for(var i=0; i < [m_FilterChains count]; i++)
-        [[m_FilterChains objectAtIndex:i] sendFilterRequest];
+    [m_OverlayManager removeMapOverlays];
+
+    if([m_FilterChains count] > 0)
+    {
+        [m_StatusPanel setStatus:"Sending Filter Requests"];
+
+        console.log(m_FilterChains);
+
+        [m_FilterChainsWaitingResponse removeAllObjects];
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
+
+        for(var i=0; i < [m_FilterChains count]; i++)
+            [[m_FilterChains objectAtIndex:i] sendFilterRequest];
+    }
+    else
+    {
+        [self _finishProcessing];
+    }
 }
 
 - (void)onFilterRequestReceived:(id)sender
@@ -350,34 +667,35 @@ var g_FilterManagerInstance = nil;
     if([m_FilterChainsWaitingProcess count] == 0)
     {
         [m_StatusPanel setStatus:"Cleaning Up Filters"];
-
-        var activeOverlays = [CPDictionary dictionary];
-        for(var i=0; i < [m_FilterChains count]; i++)
-            [activeOverlays addEntriesFromDictionary:[[m_FilterChains objectAtIndex:i] overlayIds]];
-
-        [m_StatusPanel setStatus:"Updating Map View"];
-        [m_OverlayManager updateMapView];
-
-        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
-            [m_Delegate onFilterManagerFinished:activeOverlays];
+        [self _finishProcessing];
     }
 }
 
-- (void)_buildFilterChain:(id)filter withChain:(GiseduFilterChain)filterChain
+- (void)_finishProcessing
 {
-    if([filter parentNode])
-        [self _buildFilterChain:[filter parentNode] withChain:filterChain];
+    var activeOverlays = [CPDictionary dictionary];
+    for(var i=0; i < [m_FilterChains count]; i++)
+    {
+        var curChain = [m_FilterChains objectAtIndex:i];
+        [activeOverlays addEntriesFromDictionary:[curChain pointOverlayIds]];
+        [activeOverlays addEntriesFromDictionary:[curChain polygonOverlayIds]];
+    }
 
-    [filterChain addFilter:filter];
+    [m_StatusPanel setStatus:"Updating Map View"];
+    [m_OverlayManager updateMapView];
+
+    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterManagerFinished:)])
+        [m_Delegate onFilterManagerFinished:activeOverlays];
 }
+
 
 - (id)toJson
 {
     var filterJson = [];
 
-    for(var i=0; i < [m_UserFilters count]; i++)
+    for(var i=0; i < [m_FilterTree count]; i++)
     {
-        var curFilter = [m_UserFilters objectAtIndex:i];
+        var curFilter = [m_FilterTree objectAtIndex:i];
 
         filterJson.push([self _buildFilterJson:curFilter]);
         //[{'type': theType, 'value': theValue, 'request_option': theOption, 'children' : [filter, filter, filter]}]
@@ -404,7 +722,7 @@ var g_FilterManagerInstance = nil;
 
 - (void)fromJson:(id)jsonObject
 {
-    [m_UserFilters removeAllObjects];
+    [m_FilterTree removeAllObjects];
 
     for(var i=0; i < jsonObject.length; i++)
     {
@@ -412,6 +730,8 @@ var g_FilterManagerInstance = nil;
 
         [self _buildFilterFromJson:curJsonFilter parent:nil];
     }
+
+    [self rebuildFilterChains];
 }
 
 - (void)_buildFilterFromJson:(id)jsonFilter parent:(id)parentFilter

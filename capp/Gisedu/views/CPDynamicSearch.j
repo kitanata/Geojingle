@@ -52,10 +52,15 @@
     {
         m_SearchItems = [CPArray array];
         m_DefaultSearch = "Type To Search";
-        m_SearchSensitivity = 4;
-       
-        [self setAction:@selector(onSearchFieldTextChanged:)];
+        m_SearchSensitivity = 3;
+     
+        [self setSendsSearchStringImmediately:YES];
+        [self setAction:@selector(onSearchTextChanged)];
         [self setTarget:self];
+
+        [[CPNotificationCenter defaultCenter] addObserver:self 
+            selector:@selector(_searchFieldTextDidChange:) 
+            name:CPControlTextDidChangeNotification object:self];
     }
 
     return self;
@@ -72,9 +77,34 @@
     [self setStringValue:defaultSearch];
 }
 
-- (void)onSearchFieldTextChanged:(id)sender
+- (void)keyUp:(CPEvent)anEvent
 {
+    console.log("Got Keyup Event");
+
+    var newValue = [self _inputElement].value;
+
+    if (newValue !== [self stringValue])
+    {
+        [self setStringValue:newValue];
+
+        if (!_isEditing)
+        {
+            _isEditing = YES;
+            [self textDidBeginEditing:[CPNotification notificationWithName:CPControlTextDidBeginEditingNotification object:self userInfo:nil]];
+        }
+
+        [[CPNotificationCenter defaultCenter] postNotificationName:CPControlTextDidChangeNotification object:self userInfo:nil];
+    }
+
+    [[[self window] platformWindow] _propagateCurrentDOMEvent:YES];
+}
+
+- (void)onSearchTextChanged
+{
+    console.log("onSearchTextChanged");
+
     var searchString = [[self stringValue] lowercaseString];
+    console.log(searchString);
 
     if([searchString length] >= m_SearchSensitivity)
     {
@@ -103,11 +133,32 @@
         {
             [self setSearchMenuTemplate:m_SearchMenu];
         }
+
+        [self _showMenu];
     }
     else
     {
         [self setSearchMenuTemplate:nil];
     }
+}
+
+- (void)_showMenu
+{
+    if (_searchMenu === nil || [_searchMenu numberOfItems] === 0 || ![self isEnabled])
+        return;
+
+    console.log("Show Menu");
+
+    var aFrame = [[self superview] convertRect:[self frame] toView:nil],
+        location = CPMakePoint(aFrame.origin.x + 10, aFrame.origin.y + aFrame.size.height - 4);
+
+    var anEvent = [CPEvent mouseEventWithType:CPRightMouseDown location:location 
+        modifierFlags:0 timestamp:[[CPApp currentEvent] timestamp] 
+        windowNumber:[[self window] windowNumber] 
+        context:nil eventNumber:1 clickCount:1 pressure:0];
+
+    /*[self selectAll:nil];*/
+    [CPMenu popUpContextMenu:_searchMenu withEvent:anEvent forView:self];
 }
 
 - (void)onSearchMenuItemSelected:(id)sender
@@ -124,7 +175,6 @@
 - (void)cancelOperation:(id)sender
 {
     [self setObjectValue:m_DefaultSearch];
-    [self _sendPartialString];
     [self _updateCancelButtonVisibility];
 }
 

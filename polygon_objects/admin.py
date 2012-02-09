@@ -38,7 +38,7 @@ class GiseduPolygonItemIntegerFieldAdmin(admin.GeoModelAdmin):
     list_display = ('polygon', 'polygon__filter', 'attribute_filter', 'value')
     list_filter = ('polygon__filter__description', 'attribute_filter', 'value')
 
-    search_fields = ['polygon__item_name']
+    search_fields = ['polygon__item_name', 'value']
 
 class GiseduPolygonItemStringFieldsInline(admin.TabularInline):
     model = GiseduPolygonItemStringFields
@@ -50,7 +50,7 @@ class GiseduPolygonItemStringFieldAdmin(admin.GeoModelAdmin):
     search_fields = ['polygon__item_name']
 
 class GiseduPolygonItemAdmin(admin.GeoModelAdmin):
-    list_display = ('item_name', 'filter', 'item_type')
+    list_display = ('item_name',)# 'filter', 'item_type')
     list_filter = ('filter', 'item_type')
 
     search_fields = ['item_name']

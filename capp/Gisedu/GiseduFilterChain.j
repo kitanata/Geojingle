@@ -54,24 +54,17 @@
 @implementation GiseduFilterChain : CPObject
 {
     CPArray             m_Filters              @accessors(property=filters);
-    CPArray             m_DataTypes;           //m_OverlayIds Keys
 
-    //dictionary of list {'org' : [1,2,3,4,], 'school' : [5,6,7,8]};
-    CPDictionary        m_OverlayIds           @accessors(getter=overlayIds);
-
+    CPDictionary m_PointOverlayIds             @accessors(getter=pointOverlayIds);
+    CPDictionary m_PolygonOverlayIds           @accessors(getter=polygonOverlayIds);
     var m_LoadOverlayList;
     JsonRequest m_OverlayListLoader;
 
     PointDisplayOptions m_PointDisplayOptions;
     PolygonDisplayOptions m_PolygonDisplayOptions;
 
-    var m_PointOverlayIds;
-    var m_PolygonOverlayIds;
-
     var m_PostProcessingRequests;       //a JS object mapping requestObject to request type for Post processing requests
     CPInteger m_PostProcessesPending;   //Reference count of how many post processing items are pending
-
-    CPArray m_MapOverlays;        //a current list of overlays currently shown on map view attached to this filter chain
 
     GiseduFilterRequest m_Request;
 
@@ -88,17 +81,13 @@
     if(self)
     {
         m_Filters = [CPArray array];
-        m_OverlayIds = [CPDictionary dictionary];
 
         m_FilterManager = [FilterManager getInstance];
         m_OverlayManager = [OverlayManager getInstance];
 
         m_LoadOverlayList = {}
-
-        m_MapOverlays = [CPArray array];
-
-        m_PointOverlayIds = {};
-        m_PolygonOverlayIds = {};
+        m_PointOverlayIds = [CPDictionary dictionary];
+        m_PolygonOverlayIds = [CPDictionary dictionary];
 
         m_PostProcessingRequests = {};
         m_PostProcessesPending = 0;
@@ -131,6 +120,27 @@
     }
 
     return NO;
+}
+
+/*Returns YES is chain is empty after delete */
+- (BOOL)removeFilter:(GiseduFilter)filter
+{
+    if([self containsFilter:filter])
+    {
+        var lastFilter = [m_Filters lastObject];
+
+        while(lastFilter != filter)
+        {
+            [m_Filters removeLastObject];
+            lastFilter = [m_Filters lastObject];
+        }
+
+        [m_Filters removeLastObject];
+    }
+
+    [self dirtyMapOverlays:YES];
+
+    return ([m_Filters count] <= 0);
 }
 
 - (CPString)buildFilterRequest
@@ -229,6 +239,8 @@
 
 - (void)sendFilterRequest
 {
+    console.log("GiseduFilterChain::sendFilterRequest");
+
     var requestUrl = [self buildFilterRequest];
 
     if(requestUrl)
@@ -241,11 +253,17 @@
 
 - (void)onFilterRequestSuccessful:(id)sender
 {
+    console.log("GiseduFilterChains::onFilterRequestSuccessful");
+
     var filterResult = [CPSet setWithArray:[sender resultSet]]; //to remove duplicates dummy. Array->Set->Array
     var resultSet = [filterResult allObjects];
 
     seps = [CPCharacterSet characterSetWithCharactersInString:":"];
 
+    m_PointOverlayIds = [CPDictionary dictionary];
+    m_PolygonOverlayIds = [CPDictionary dictionary];
+
+    var filterDescriptions = [m_FilterManager filterDescriptions];
     for(var i=0; i < [resultSet count]; i++)
     {
         typeIdPair = [resultSet objectAtIndex:i];
@@ -254,13 +272,13 @@
         itemType = parseInt([items objectAtIndex:0]);
         itemId = [items objectAtIndex:1];
 
-        if(![m_OverlayIds objectForKey:itemType])
-            [m_OverlayIds setObject:[CPArray array] forKey:itemType];
+        var curFilterDescription = [filterDescriptions objectForKey:itemType];
 
-        [[m_OverlayIds objectForKey:itemType] addObject:itemId];
+        if([curFilterDescription dataType] == "POINT")
+            [self _addPointOverlayId:itemId dataType:itemType];
+        else if([curFilterDescription dataType] == "POLYGON")
+            [self _addPolygonOverlayId:itemId dataType:itemType];
     }
-
-    m_DataTypes = [m_OverlayIds allKeys];
 
     if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestReceived:)])
         [m_Delegate onFilterRequestReceived:self];
@@ -268,68 +286,93 @@
 
 - (void)_addPointOverlayId:(int)objId dataType:(CPString)type
 {
-    [self _addPointOverlayId:objId dataType:type andLoad:NO];
+    if(![m_PointOverlayIds containsKey:type])
+        [m_PointOverlayIds setObject:[CPArray array] forKey:type];
+
+    [[m_PointOverlayIds objectForKey:type] addObject:objId];
 }
 
 - (void)_addPolygonOverlayId:(int)objId dataType:(CPString)type
 {
-    [self _addPolygonOverlayId:objId dataType:type andLoad:NO];
+    if(![m_PolygonOverlayIds containsKey:type])
+        [m_PolygonOverlayIds setObject:[CPArray array] forKey:type];
+
+    [[m_PolygonOverlayIds objectForKey:type] addObject:objId];
 }
 
-- (void)_addPointOverlayId:(int)objId dataType:(CPString)type andLoad:(BOOL)load
+- (void)_addOverlayToLoader:(int)objId dataType:(CPString)type
 {
-    if(!m_PointOverlayIds[type])
-        m_PointOverlayIds[type] = new Array();
+    if(!m_LoadOverlayList[type])
+        m_LoadOverlayList[type] = new Array();
 
-    m_PointOverlayIds[type].push(objId);
-
-    if(load)
-    {
-        if(!m_LoadOverlayList[type])
-            m_LoadOverlayList[type] = new Array();
-
-        m_LoadOverlayList[type].push(objId);
-    }
-}
-
-- (void)_addPolygonOverlayId:(int)objId dataType:(CPString)type andLoad:(BOOL)load
-{
-    if(!m_PolygonOverlayIds[type])
-        m_PolygonOverlayIds[type] = new Array();
-
-    m_PolygonOverlayIds[type].push(objId);
-
-    if(load)
-    {
-        if(!m_LoadOverlayList[type])
-            m_LoadOverlayList[type] = new Array();
-
-        m_LoadOverlayList[type].push(objId);
-    }
+    m_LoadOverlayList[type].push(objId);
 }
 
 /* Marks all overlays currently attached to this filter chain displaying
     on the map as dirty and needing redraw */
 - (void)dirtyMapOverlays
 {
-    for(var i=0; i < [m_MapOverlays count]; i++)
-        [[m_MapOverlays objectAtIndex:i] setDirty];
+    [self dirtyMapOverlays:NO];
+}
+
+- (void)dirtyMapOverlays:(BOOL)resetOptions
+{
+    console.log("FilterChain::dirtyMapOverlays called");
+    var pointOverlayKeys = [m_PointOverlayIds allKeys];
+    for(var i=0; i < [pointOverlayKeys count]; i++)
+    {
+        var dataType = [pointOverlayKeys objectAtIndex:i];
+        var idList = [m_PointOverlayIds objectForKey:dataType];
+
+        for(var j=0; j < [idList count]; j++)
+        {
+            var overlayId = [idList objectAtIndex:j];
+            var overlay = [[m_OverlayManager getOverlayObject:dataType objId:overlayId] overlay];
+
+            if(overlay)
+            {
+                if(resetOptions)
+                    [[overlay displayOptions] resetOptions];
+
+                [overlay setDirty];
+            }
+        }
+    }
+
+
+    console.log("Polygon Overlay Ids ="); console.log(m_PolygonOverlayIds);
+
+    var polygonOverlayKeys = [m_PolygonOverlayIds allKeys];
+    for(var i=0; i < [polygonOverlayKeys count]; i++)
+    {
+        var dataType = [polygonOverlayKeys objectAtIndex:i];
+        var idList = [m_PolygonOverlayIds objectForKey:dataType];
+
+        for(var j=0; j < [idList count]; j++)
+        {
+            var overlayId = [idList objectAtIndex:j];
+            var overlay = [m_OverlayManager getOverlayObject:dataType objId:overlayId];
+
+            if(overlay)
+            {
+                if(resetOptions)
+                    [[overlay displayOptions] resetOptions];
+
+                [overlay setDirty];
+            }
+        }
+    }
 }
 
 - (void)updateOverlays
 {
+    console.log("GiseduFilterChain::updateOverlays");
+
     m_PointDisplayOptions = [PointDisplayOptions defaultOptions];
     m_PolygonDisplayOptions = [PolygonDisplayOptions defaultOptions];
 
     m_LoadOverlayList = {}
     
-    m_PointOverlayIds = {};
-    m_PolygonOverlayIds = {};
-
-    [m_MapOverlays removeAllObjects];
-
-    var filterDescriptions = [m_FilterManager filterDescriptions];
-
     //Build the display options for the overlays O(2n)
     for(var i=0; i < [m_Filters count]; i++)
     {
@@ -355,52 +398,48 @@
         }
     }
 
-    for(var i=0; i < [m_DataTypes count]; i++)
+    var pointOverlayKeys = [m_PointOverlayIds allKeys];
+    for(var i=0; i < [pointOverlayKeys count]; i++)
     {
-        var curType = [m_DataTypes objectAtIndex:i];
-        var curIds = [m_OverlayIds objectForKey:curType];
+        var dataType = [pointOverlayKeys objectAtIndex:i];
+        var idList = [m_PointOverlayIds objectForKey:dataType];
 
-        var curFilterDescription = [filterDescriptions objectForKey:curType];
-
-        for(var j=0; j < [curIds count]; j++)
+        for(var j=0; j < [idList count]; j++)
         {
-            var curItemId = [curIds objectAtIndex:j];
-            var dataObj = [m_OverlayManager getOverlayObject:curType objId:curItemId];
+            var overlayId = [idList objectAtIndex:j];
+            var overlay = [[m_OverlayManager getOverlayObject:dataType objId:overlayId] overlay];
 
-            if([curFilterDescription dataType] == "POINT")
+            if(overlay)
             {
-                var overlay = [dataObj overlay];
-
-                if(overlay)
-                {
-                    [overlay setFilterDisplayOptions:m_PointDisplayOptions];
-
-                    [m_OverlayManager addMapOverlay:overlay];
-                    [m_MapOverlays addObject:overlay];
-                    [self _addPointOverlayId:curItemId dataType:curType];
-                }
-                else
-                {
-                    [self _addPointOverlayId:curItemId dataType:curType andLoad:YES];
-                }
+                [overlay setFilterDisplayOptions:m_PointDisplayOptions];
+                [m_OverlayManager addMapOverlay:overlay];
             }
-            else if([curFilterDescription dataType] == "POLYGON")
+            else
             {
-                var overlay = dataObj;
+                [self _addOverlayToLoader:overlayId dataType:dataType];
+            }
+        }
+    }
 
-                if(overlay)
-                {
-                    [overlay setFilterDisplayOptions:m_PolygonDisplayOptions];
+    var polygonOverlayKeys = [m_PolygonOverlayIds allKeys];
+    for(var i=0; i < [polygonOverlayKeys count]; i++)
+    {
+        var dataType = [polygonOverlayKeys objectAtIndex:i];
+        var idList = [m_PolygonOverlayIds objectForKey:dataType];
 
-                    [self _addPolygonOverlayId:curItemId dataType:curType];
+        for(var j=0; j < [idList count]; j++)
+        {
+            var overlayId = [idList objectAtIndex:j];
+            var overlay = [m_OverlayManager getOverlayObject:dataType objId:overlayId];
 
-                    [m_OverlayManager addMapOverlay:overlay];
-                    [m_MapOverlays addObject:overlay];
-                }
-                else
-                {
-                    [self _addPolygonOverlayId:curItemId dataType:curType andLoad:YES];
-                }
+            if(overlay)
+            {
+                [overlay setFilterDisplayOptions:m_PolygonDisplayOptions];
+                [m_OverlayManager addMapOverlay:overlay];
+            }
+            else
+            {
+                [self _addOverlayToLoader:overlayId dataType:dataType];
             }
         }
     }
@@ -412,6 +451,8 @@
 
 - (void)postProcessDisplayOptions
 {
+    console.log("GiseduFilterChain::postProcessDisplayOptions");
+
     m_PostProcessingRequests = {}
     //An important note is that, for now, post processing filters are atomic
     //in that they do not rely on each other and the order in which they
@@ -428,15 +469,22 @@
         {
             if([curFilterDesc filterType] == "SCALE_INTEGER")
             {
-                for(curType in m_PointOverlayIds)
+                var pointOverlayTypes = [m_PointOverlayIds allKeys];
+                for(var j=0; j < [pointOverlayTypes count]; j++)
                 {
-                    var curItemIds = m_PointOverlayIds[curType];
+                    var curType = [pointOverlayTypes objectAtIndex:j];
+                    curItemIds = [m_PointOverlayIds objectForKey:curType];
+
+                    var requestArray = new Array();
+                    for(var k=0; k < [curItemIds count]; k++)
+                        requestArray.push([curItemIds objectAtIndex:k]);
+
                     var requestUrl = g_UrlPrefix + "/point_scale_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_scale' : [curFilter minimumScale],
                         'maximum_scale' : [curFilter maximumScale], 
-                        'object_ids' : curItemIds
+                        'object_ids' : requestArray
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
@@ -462,15 +510,22 @@
                 //extra stuff is serialized it fails because of a cyclical pattern in the object. We remove this stuff
                 //and put things into a plain old JS array so it can easily be serialized to JSON.
 
-                for(curType in m_PointOverlayIds)
+                var pointOverlayTypes = [m_PointOverlayIds allKeys];
+                for(var j=0; j < [pointOverlayTypes count]; j++)
                 {
-                    var curItemIds = m_PointOverlayIds[curType];
+                    var curType = [pointOverlayTypes objectAtIndex:j];
+                    curItemIds = [m_PointOverlayIds objectForKey:curType];
+
+                    var requestArray = new Array();
+                    for(var k=0; k < [curItemIds count]; k++)
+                        requestArray.push([curItemIds objectAtIndex:k]);
+
                     var requestUrl = g_UrlPrefix + "/point_colorize_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_color' : minColor,
                         'maximum_color' : maxColor,
-                        'object_ids' : curItemIds
+                        'object_ids' : requestArray
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
@@ -478,15 +533,22 @@
                     m_PostProcessingRequests[request] = "POINT_COLORIZE_INTEGER";
                 }
 
-                for(curType in m_PolygonOverlayIds)
+                var polygonOverlayTypes = [m_PolygonOverlayIds allKeys];
+                for(var j=0; j < [polygonOverlayTypes count]; j++)
                 {
-                    var curItemIds = m_PolygonOverlayIds[curType];
+                    var curType = [polygonOverlayTypes objectAtIndex:j];
+                    curItemIds = [m_PolygonOverlayIds objectForKey:curType];
+
+                    var requestArray = new Array();
+                    for(var k=0; k < [curItemIds count]; k++)
+                        requestArray.push([curItemIds objectAtIndex:k]);
+
                     var requestUrl = g_UrlPrefix + "/polygon_colorize_integer/";
                     var requestObject = {
                         'reduce_filter' : [curFilter reduceFilterId],
                         'minimum_color' : minColor,
                         'maximum_color' : maxColor,
-                        'object_ids' : curItemIds
+                        'object_ids' : requestArray
                     };
                     var request = [JsonRequest postRequestWithJSObject:requestObject toUrl:requestUrl delegate:self send:YES];
 
@@ -530,7 +592,6 @@
                         var curObject = [m_OverlayManager getOverlayObject:filter_id objId:overlay_id];
                         [curObject setOverlay:pointOverlay];
                         [m_OverlayManager addMapOverlay:pointOverlay];
-                        [m_MapOverlays addObject:pointOverlay];
 
                     }
                 }
@@ -557,7 +618,6 @@
                         [polygonOverlay setName:[idNameMap objectForKey:overlay_id]];
                         [polygonOverlay setDelegate:[m_Delegate delegate]];
                         [m_OverlayManager addMapOverlay:polygonOverlay];
-                        [m_MapOverlays addObject:polygonOverlay];
                     }
 
                     var polygonDataObjects = [m_OverlayManager basicDataOverlayMap:filter_id];
@@ -574,13 +634,14 @@
 
         console.log("POINT_SCALE_INTEGER jsonRequestSuccessful");
 
-        for(curType in m_PointOverlayIds)
+        var pointOverlayTypes = [m_PointOverlayIds allKeys];
+        for(var i=0; i < [pointOverlayTypes count]; i++)
         {
-            var curItemIds = m_PointOverlayIds[curType];
-
-            for(var i=0; i < curItemIds.length; i++)
+            var curType = [pointOverlayTypes objectAtIndex:i];
+            var curItemIds = [m_PointOverlayIds objectForKey:curType];
+            for(var j=0; j < [curItemIds count]; j++)
             {
-                var curOverlayId = curItemIds[i];
+                var curOverlayId = [curItemIds objectAtIndex:j];
                 var newScale = responseData[curOverlayId];
 
                 if(newScale)
@@ -605,13 +666,14 @@
 
         console.log("POINT_COLORIZE_INTEGER jsonRequestSuccessful");
 
-        for(curType in m_PointOverlayIds)
+        var pointOverlayTypes = [m_PointOverlayIds allKeys];
+        for(var i=0; i < [pointOverlayTypes count]; i++)
         {
-            var curItemIds = m_PointOverlayIds[curType];
-
-            for(var i=0; i < curItemIds.length; i++)
+            var curType = [pointOverlayTypes objectAtIndex:i];
+            var curItemIds = [m_PointOverlayIds objectForKey:curType];
+            for(var j=0; j < [curItemIds count]; j++)
             {
-                var curOverlayId = curItemIds[i];
+                var curOverlayId = [curItemIds objectAtIndex:j];
                 var col = responseData[curOverlayId];
 
                 if(col)
@@ -638,13 +700,14 @@
 
         console.log("POLYGON_COLORIZE_INTEGER jsonRequestSuccessful");
 
-        for(curType in m_PolygonOverlayIds)
+        var polygonOverlayTypes = [m_PolygonOverlayIds allKeys];
+        for(var i=0; i < [polygonOverlayTypes count]; i++)
         {
-            var curItemIds = m_PolygonOverlayIds[curType];
-
-            for(var i=0; i < curItemIds.length; i++)
+            var curType = [polygonOverlayTypes objectAtIndex:i];
+            var curItemIds = [m_PolygonOverlayIds objectForKey:curType];
+            for(var j=0; j < [curItemIds count]; j++)
             {
-                var curOverlayId = curItemIds[i];
+                var curOverlayId = [curItemIds objectAtIndex:j];
                 var col = responseData[curOverlayId];
 
                 if(col)
@@ -683,6 +746,21 @@
 {
     if(!m_PostProcessesPending)
     {
+        var dirtyOverlays = NO;
+        for(var i=0; i < [m_Filters count]; i++)
+        {
+            var curFilter = [m_Filters objectAtIndex:i];
+
+            if([curFilter dirty])
+            {
+                [curFilter setDirty:NO];
+                dirtyOverlays = YES;
+            }
+        }
+
+        if(dirtyOverlays)
+            [self dirtyMapOverlays];
+
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterChainProcessed:)])
             [m_Delegate onFilterChainProcessed:self];
     }

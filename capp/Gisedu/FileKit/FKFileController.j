@@ -142,8 +142,6 @@ g_sharedFileController = nil;
     else if(request == m_OpenFileRequest)
         errorAugment = 'Could not open project data! ';
 
-    alert(errorAugment + anError);
-
     if(request == m_SaveFileRequest)
     {
         if(m_Delegate && [m_Delegate respondsToSelector:@selector(onSaveFileRequestFailed:)])

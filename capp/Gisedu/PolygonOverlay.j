@@ -132,20 +132,16 @@
     m_GooglePolygon.setMap(null);
 }
 
-- (void)update
+- (void)_update
 {
     var displayOptions = [PolygonDisplayOptions defaultOptions];
     [displayOptions enchantOptionsFrom:m_FilterDisplayOptions];
     [displayOptions enchantOptionsFrom:m_DisplayOptions];
 
     if(m_GooglePolygon == nil)
-    {
         [self createGooglePolygon:displayOptions];
-    }
     else
-    {
         [self updateGooglePolygon:displayOptions];
-    }
 }
 
 // EVENTS
