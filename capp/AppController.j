@@ -52,6 +52,7 @@
 @import "Gisedu/views/LoadingPanel.j"
 
 @import "Gisedu/Modules/CsvImporter/CsvImporterModule.j"
+@import "Gisedu/Modules/SpeedTester/SpeedTesterModule.j"
 @import "Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j"
 @import "Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j"
 @import "Gisedu/FileKit/FKFileController.j"
@@ -116,6 +117,7 @@ g_UrlPrefix = 'http://127.0.0.1';
 
     //Modules
     CsvImporterModule m_CsvImporter;
+    SpeedTesterModule m_SpeedTester;
     PointDisplayOptionsModule m_PointDisplayOptions @accessors(getter=pointDisplayOptions);
     PolygonDisplayOptionsModule m_PolygonDisplayOptions @accessors(getter=polygonDisplayOptions);
 }
@@ -172,6 +174,7 @@ g_UrlPrefix = 'http://127.0.0.1';
 
     //Load Modules
     m_CsvImporter = [[CsvImporterModule alloc] initFromApp:self];
+    m_SpeedTester = [[SpeedTesterModule alloc] initFromApp:self];
     m_PointDisplayOptions = [[PointDisplayOptionsModule alloc] initFromApp:self];
     m_PolygonDisplayOptions = [[PolygonDisplayOptionsModule alloc] initFromApp:self];
 

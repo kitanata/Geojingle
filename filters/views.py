@@ -2,8 +2,7 @@
 from _collections import defaultdict
 import json
 import string
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
+from django.http import HttpResponse, HttpResponseNotFound
 from django.db.models import Q
 from models import GiseduFilters
 from gisedu.models import GiseduReduceItem, GiseduStringAttributeOption
@@ -28,7 +27,8 @@ def filter_list(request):
                                         "filter_options" : option_data
         }
 
-    return render_to_response('json/base.json', {'json': json.dumps(filter_data)}, context_instance=RequestContext(request))
+    return HttpResponse(json.dumps(filter_data), mimetype = 'application/json')
+
 
 def filter_options(gis_filter):
     """
@@ -142,7 +142,7 @@ def parse_filter(request, filter_chain):
         elif isinstance(result, GiseduPointItem):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
 
-    return render_to_response('json/base.json', {'json' : json.dumps(typeId_results)}, context_instance=RequestContext(request))
+    return HttpResponse(json.dumps(typeId_results), mimetype = 'application/json')
 
 def filter_polygon(poly_filter, options):
     """  Performs the appropriate database queries for "POLYGON"/"LIST" filters. """

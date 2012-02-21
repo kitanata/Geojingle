@@ -66,7 +66,7 @@
     var m_PostProcessingRequests;       //a JS object mapping requestObject to request type for Post processing requests
     CPInteger m_PostProcessesPending;   //Reference count of how many post processing items are pending
 
-    GiseduFilterRequest m_Request;
+    JsonRequest m_Request;
 
     FilterManager m_FilterManager;
     OverlayManager m_OverlayManager;
@@ -245,43 +245,12 @@
 
     if(requestUrl)
     {
-        m_Request = [GiseduFilterRequest requestWithUrl:requestUrl];
-        [m_Request setDelegate:self];
-        [m_Request trigger];
+        m_Request = [JsonRequest getRequestFromUrl:requestUrl delegate:self send:YES];
     }
 }
 
 - (void)onFilterRequestSuccessful:(id)sender
 {
-    console.log("GiseduFilterChains::onFilterRequestSuccessful");
-
-    var filterResult = [CPSet setWithArray:[sender resultSet]]; //to remove duplicates dummy. Array->Set->Array
-    var resultSet = [filterResult allObjects];
-
-    seps = [CPCharacterSet characterSetWithCharactersInString:":"];
-
-    m_PointOverlayIds = [CPDictionary dictionary];
-    m_PolygonOverlayIds = [CPDictionary dictionary];
-
-    var filterDescriptions = [m_FilterManager filterDescriptions];
-    for(var i=0; i < [resultSet count]; i++)
-    {
-        typeIdPair = [resultSet objectAtIndex:i];
-        items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
-
-        itemType = parseInt([items objectAtIndex:0]);
-        itemId = [items objectAtIndex:1];
-
-        var curFilterDescription = [filterDescriptions objectForKey:itemType];
-
-        if([curFilterDescription dataType] == "POINT")
-            [self _addPointOverlayId:itemId dataType:itemType];
-        else if([curFilterDescription dataType] == "POLYGON")
-            [self _addPolygonOverlayId:itemId dataType:itemType];
-    }
-
-    if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestReceived:)])
-        [m_Delegate onFilterRequestReceived:self];
 }
 
 - (void)_addPointOverlayId:(int)objId dataType:(CPString)type
@@ -564,7 +533,40 @@
 
 - (void)onJsonRequestSuccessful:(id)sender withResponse:(id)responseData
 {
-    if(sender == m_OverlayListLoader)
+    if(sender == m_Request)
+    {
+        console.log("GiseduFilterChains::onFilterRequestSuccessful");
+
+        //to remove duplicates dummy. Array->Set->Array
+        var resultSet = [CPArray arrayWithObjects:responseData count:responseData.length];
+        var resultSet = [[CPSet setWithArray:resultSet] allObjects]; 
+
+        seps = [CPCharacterSet characterSetWithCharactersInString:":"];
+
+        m_PointOverlayIds = [CPDictionary dictionary];
+        m_PolygonOverlayIds = [CPDictionary dictionary];
+
+        var filterDescriptions = [m_FilterManager filterDescriptions];
+        for(var i=0; i < [resultSet count]; i++)
+        {
+            typeIdPair = [resultSet objectAtIndex:i];
+            items = [typeIdPair componentsSeparatedByCharactersInSet:seps];
+
+            itemType = parseInt([items objectAtIndex:0]);
+            itemId = [items objectAtIndex:1];
+
+            var curFilterDescription = [filterDescriptions objectForKey:itemType];
+
+            if([curFilterDescription dataType] == "POINT")
+                [self _addPointOverlayId:itemId dataType:itemType];
+            else if([curFilterDescription dataType] == "POLYGON")
+                [self _addPolygonOverlayId:itemId dataType:itemType];
+        }
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterRequestReceived:)])
+            [m_Delegate onFilterRequestReceived:self];
+    }
+    else if(sender == m_OverlayListLoader)
     {
         for(filter_id in responseData)
         {

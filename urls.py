@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^$', 'gisedu.views.index'),
+    url(r'^speed_test$', 'gisedu.views.speed_test'),
     url(r'^map/', 'gisedu.views.google_map'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^session/', 'session.views.session_request'),

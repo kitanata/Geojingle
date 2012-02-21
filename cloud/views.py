@@ -1,19 +1,23 @@
 # Create your views here.
 from datetime import datetime
 import json
-from django.http import HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template.context import RequestContext
-from django.utils import simplejson
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from cloud.models import CloudProjectStorageItem
 
-
 def project_list(request):
-    """ Returns a list of projects stored on the server by the currently connected user """
-    project_items = CloudProjectStorageItem.objects.filter(user=request.user)
-    list_data = dict([(project.name, str(project.last_modified)) for project in project_items])
+    """ Returns a list of projects stored on 
+    the server by the currently connected user """
+    if request.user.is_authenticated:
+        project_items = CloudProjectStorageItem.objects.filter(
+                        user=request.user)
+        list_data = dict([(project.name, str(project.last_modified))
+                            for project in project_items])
 
-    return render_to_response('json/base.json', {'json': json.dumps(list_data)}, context_instance=RequestContext(request))
+        return HttpResponse(json.dumps(list_data), 
+                mimetype='application/json')
+
+    return HttpResponseNotFound()
 
 def project(request, project_name):
     """ An entry point for ReST saving/loading of projects based on request method """
@@ -51,5 +55,5 @@ def open_project(request, project_name):
     print("project_name is " + str(project_name))
 
     project = get_object_or_404(CloudProjectStorageItem, user=request.user, name=project_name)
-    
-    return render_to_response('json/base.json', {'json': project.saved_data}, context_instance=RequestContext(request))
+
+    return HttpResponse(project.saved_data, mimetype='application/json')

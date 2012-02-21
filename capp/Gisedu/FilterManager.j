@@ -42,7 +42,6 @@
 @import "GiseduColorizeFilter.j"
 
 @import "GiseduFilterDescription.j"
-@import "GiseduFilterRequest.j"
 @import "GiseduFilterChain.j"
 
 var g_FilterManagerInstance = nil;
