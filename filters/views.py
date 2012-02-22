@@ -88,7 +88,19 @@ def filter_options(gis_filter):
 
     return list_data
 
+
+def data_size(request, filter_chain):
+    the_data = json.dumps(run_filter(filter_chain))
+    return HttpResponse(json.dumps( {'data_size' : len(the_data)} ),
+                        mimetype = 'application/json')
+
+
 def parse_filter(request, filter_chain):
+    return HttpResponse(json.dumps(run_filter(filter_chain)), 
+            mimetype = 'application/json')
+
+
+def run_filter(filter_chain):
     """ Parses the filter query language for a given filter chain. """
     queries = string.split(filter_chain, '/')
 
@@ -142,7 +154,8 @@ def parse_filter(request, filter_chain):
         elif isinstance(result, GiseduPointItem):
             typeId_results.append(str(result.filter_id) + ":" + str(result.pk))
 
-    return HttpResponse(json.dumps(typeId_results), mimetype = 'application/json')
+    return typeId_results
+
 
 def filter_polygon(poly_filter, options):
     """  Performs the appropriate database queries for "POLYGON"/"LIST" filters. """

@@ -48,8 +48,10 @@ var g_FilterManagerInstance = nil;
 
 @implementation FilterManager : CPObject
 {
-    id m_StatusPanel                @accessors(setter=setStatusPanel:);
     OverlayManager m_OverlayManager;
+
+    id m_StatusPanel                @accessors(setter=setStatusPanel:);
+    CPInteger m_DataSize            @accessors(getter=dataSize);
 
     CPArray m_FilterTree;                                               //The Filter Tree
     CPArray m_FilterChains;                                             //Cached Filter Chains
@@ -70,6 +72,8 @@ var g_FilterManagerInstance = nil;
     if(self)
     {
         m_OverlayManager = [OverlayManager getInstance];
+
+        m_DataSize = 0;
         m_FilterTree = [CPArray array];
         m_FilterChains = [CPArray array];
 
@@ -310,41 +314,22 @@ var g_FilterManagerInstance = nil;
 - (id)outlineView:(CPOutlineView)outlineView child:(int)index ofItem:(id)item
 {
     if (item === nil)
-    {
-        //console.log("index = "); console.log(index);
-        //console.log("returning = "); console.log([m_FilterTree objectAtIndex:index]);
         return [m_FilterTree objectAtIndex:index];
-    }
     else
-    {
-        //console.log("index = "); console.log(index);
-        //console.log("returning = "); console.log([[item childNodes] objectAtIndex:index]);
         return [[item childNodes] objectAtIndex:index];
-    }
 }
 
 - (BOOL)outlineView:(CPOutlineView)outlineView isItemExpandable:(id)item
 {
-    //console.log(item);
-    //console.log("Problem expandable");
-    //console.log(([[item childNodes] count] > 0));
     return ([[item childNodes] count] > 0);
 }
 
 - (int)outlineView:(CPOutlineView)outlineView numberOfChildrenOfItem:(id)item
 {
-    //console.log(item);
-    //console.log("Problem Child Num");
     if (item === nil)
-    {
-        //console.log([m_FilterTree count]);
         return [m_FilterTree count];
-    }
     else
-    {
-        //console.log([[item childNodes] count]);
         return [[item childNodes] count];
-    }
 }
 
 - (id)outlineView:(CPOutlineView)outlineView objectValueForTableColumn:(CPTableColumn)tableColumn byItem:(id)item
@@ -615,6 +600,33 @@ var g_FilterManagerInstance = nil;
     [filterChain addFilter:filter];
 }
 
+- (void)testFilterSpeed
+{
+    m_DataSize = 0;
+
+    [m_FilterChainsWaitingResponse removeAllObjects];
+    for(var i=0; i < [m_FilterChains count]; i++)
+        [m_FilterChainsWaitingResponse addObject:[m_FilterChains objectAtIndex:i]];
+
+    for(var i=0; i < [m_FilterChains count]; i++)
+        [[m_FilterChains objectAtIndex:i] sendDataSizeRequest];
+}
+
+- (void)onFilterDataSizeRequestReceived:(id)sender
+{
+    [m_FilterChainsWaitingResponse removeObject:sender];
+
+    m_DataSize += [sender dataSize] * 250; 
+    //250 is a Magic # - It is an estimated number of bytes associated
+    //with each byte from the id list request.
+
+    if([m_FilterChainsWaitingResponse count] == 0)
+    {
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onMapDataSizeCalculated:)])
+            [m_Delegate onMapDataSizeCalculated:m_DataSize];
+    }
+}
+
 - (void)triggerFilters
 {
     console.log("Trigger Filters Called");
@@ -624,8 +636,6 @@ var g_FilterManagerInstance = nil;
     if([m_FilterChains count] > 0)
     {
         [m_StatusPanel setStatus:"Sending Filter Requests"];
-
-        console.log(m_FilterChains);
 
         [m_FilterChainsWaitingResponse removeAllObjects];
         for(var i=0; i < [m_FilterChains count]; i++)

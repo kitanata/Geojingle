@@ -57,6 +57,8 @@
 
     CPDictionary m_PointOverlayIds             @accessors(getter=pointOverlayIds);
     CPDictionary m_PolygonOverlayIds           @accessors(getter=polygonOverlayIds);
+    CPInteger m_DataSize                       @accessors(getter=dataSize);
+
     var m_LoadOverlayList;
     JsonRequest m_OverlayListLoader;
 
@@ -66,6 +68,7 @@
     var m_PostProcessingRequests;       //a JS object mapping requestObject to request type for Post processing requests
     CPInteger m_PostProcessesPending;   //Reference count of how many post processing items are pending
 
+    JsonRequest m_DataSizeRequest;
     JsonRequest m_Request;
 
     FilterManager m_FilterManager;
@@ -221,7 +224,7 @@
         }
     }
 
-    var requestUrl = g_UrlPrefix + "/filter";
+    var requestUrl = "";
 
     if(keyFilterType in filterRequestStrings)
         requestUrl += filterRequestStrings[keyFilterType]
@@ -237,20 +240,24 @@
     return requestUrl;
 }
 
+- (void)sendDataSizeRequest
+{
+    console.log("GiseduFilterChain:sendDataSizeRequest");
+
+    var requestUrl = g_UrlPrefix + "/data_size/filter" + [self buildFilterRequest];
+
+    if(requestUrl)
+        m_DataSizeRequest = [JsonRequest getRequestFromUrl:requestUrl delegate:self send:YES];
+}
+
 - (void)sendFilterRequest
 {
     console.log("GiseduFilterChain::sendFilterRequest");
 
-    var requestUrl = [self buildFilterRequest];
+    var requestUrl = g_UrlPrefix + "/filter" + [self buildFilterRequest];
 
     if(requestUrl)
-    {
         m_Request = [JsonRequest getRequestFromUrl:requestUrl delegate:self send:YES];
-    }
-}
-
-- (void)onFilterRequestSuccessful:(id)sender
-{
 }
 
 - (void)_addPointOverlayId:(int)objId dataType:(CPString)type
@@ -308,8 +315,6 @@
         }
     }
 
-
-    console.log("Polygon Overlay Ids ="); console.log(m_PolygonOverlayIds);
 
     var polygonOverlayKeys = [m_PolygonOverlayIds allKeys];
     for(var i=0; i < [polygonOverlayKeys count]; i++)
@@ -533,7 +538,16 @@
 
 - (void)onJsonRequestSuccessful:(id)sender withResponse:(id)responseData
 {
-    if(sender == m_Request)
+    if(sender == m_DataSizeRequest)
+    {
+        console.log("GiseduFilterChain::onDataSizeRequestSuccessful");
+
+        m_DataSize = responseData['data_size'];
+
+        if(m_Delegate && [m_Delegate respondsToSelector:@selector(onFilterDataSizeRequestReceived:)])
+            [m_Delegate onFilterDataSizeRequestReceived:self];
+    }
+    else if(sender == m_Request)
     {
         console.log("GiseduFilterChains::onFilterRequestSuccessful");
 

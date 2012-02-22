@@ -40,6 +40,7 @@ urlpatterns = patterns('',
 
     #Filter Data
     url(r'^filter_list', 'filters.views.filter_list'),
+    url(r'^data_size/filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filters.views.data_size'),
     url(r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filters.views.parse_filter'),
 
     #Data Import Processors
