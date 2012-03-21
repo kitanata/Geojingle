@@ -2,9 +2,8 @@
 import json
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-from django.utils import simplejson
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound
 from filters.models import GiseduFilters
 from point_objects.models import GiseduPointItem, GiseduPointItemBooleanFields, GiseduPointItemIntegerFields, GiseduPointItemStringFields
 
@@ -43,7 +42,7 @@ def point_scale_integer(request):
     """
 
     if request.method == "POST":
-        jsonObj = simplejson.loads(request.raw_post_data)
+        jsonObj = json.loads(request.raw_post_data)
         reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
         min_scale = jsonObj['minimum_scale']
         max_scale = jsonObj['maximum_scale']
@@ -69,7 +68,7 @@ def point_scale_integer(request):
                 tf = (value - min_value) / float(value_range)
                 point_fields[key] = scale_range * tf + min_scale
 
-        return render_to_response('json/base.json', {'json': json.dumps(point_fields)})
+        return HttpResponse(json.dumps(point_fields), mimetype = 'application/json')
 
     return HttpResponseNotFound(mimetype = 'application/json')
 
@@ -82,7 +81,7 @@ def colorize_integer(request):
     """
 
     if request.method == "POST":
-        jsonObj = simplejson.loads(request.raw_post_data)
+        jsonObj = json.loads(request.raw_post_data)
         reduce_filter = GiseduFilters.objects.get(pk=jsonObj['reduce_filter'])
         min_color = jsonObj['minimum_color']
         max_color = jsonObj['maximum_color']
@@ -106,7 +105,7 @@ def colorize_integer(request):
                 tf = (value - min_value) / float(value_range)
                 point_fields[key] = [(c1 - c0) * tf + c0 for c1, c0 in zip(max_color, min_color)]
 
-        return render_to_response('json/base.json', {'json': json.dumps(point_fields)})
+        return HttpResponse(json.dumps(point_fields), mimetype = 'application/json')
 
     return HttpResponseNotFound(mimetype = 'application/json')
 

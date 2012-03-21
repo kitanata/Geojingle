@@ -5,7 +5,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.contrib.gis.geos.point import Point
 from django.http import HttpResponse, HttpResponseNotFound
-from django.shortcuts import render_to_response
 from django.views.decorators.csrf import csrf_exempt
 from filters.models import GiseduFilters
 from gisedu.models import GiseduStringAttributeOption
@@ -23,7 +22,7 @@ def upload_csv(request):
             for row in fileReader:
                 [columnDict[col].append(data) for col, data in row.iteritems()]
 
-            return render_to_response('json/base.json', {'json': json.dumps(columnDict)})
+            return HttpResponse(json.dumps(columnDict), mimetype = 'application/json')
     else:
         return HttpResponseNotFound(mimetype = 'application/json')
 

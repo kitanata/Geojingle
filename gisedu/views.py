@@ -2,7 +2,7 @@
 import json
 from django.shortcuts import render_to_response, redirect
 from django.template.context import RequestContext
-from django.http import HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from filters.models import GiseduFilters
 from point_objects.models import GiseduPointItem
@@ -11,6 +11,10 @@ from polygon_objects.models import GiseduPolygonItem
 def browser_test(request):
     return render_to_response(
             'browser_test.html', context_instance=RequestContext(request))
+
+def speed_test(request):
+    return render_to_response(
+            'speed_test.html',  context_instance=RequestContext(request))
 
 def index(request):
     return redirect('/capp/index.html')
@@ -45,7 +49,4 @@ def geom_list(request):
         jsonObj[fltr] = dict(
                 [(x.pk, json.loads(x.the_geom.json)) for x in objects])
 
-    return render_to_response(
-            'json/base.json', 
-            {'json': json.dumps(jsonObj)}, 
-            context_instance=RequestContext(request))
+    return HttpResponse(json.dumps(jsonObj), mimetype = 'application/json')

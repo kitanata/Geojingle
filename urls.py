@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^$', 'gisedu.views.index'),
+    url(r'^speed_test$', 'gisedu.views.speed_test'),
     url(r'^map/', 'gisedu.views.google_map'),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^session/', 'session.views.session_request'),
@@ -39,6 +40,7 @@ urlpatterns = patterns('',
 
     #Filter Data
     url(r'^filter_list', 'filters.views.filter_list'),
+    url(r'^data_size/filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filters.views.data_size'),
     url(r'^filter/(?P<filter_chain>(\w+\s?\W*)*\w+\W*)', 'filters.views.parse_filter'),
 
     #Data Import Processors

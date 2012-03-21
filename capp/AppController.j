@@ -52,6 +52,7 @@
 @import "Gisedu/views/LoadingPanel.j"
 
 @import "Gisedu/Modules/CsvImporter/CsvImporterModule.j"
+@import "Gisedu/Modules/SpeedTester/SpeedTesterModule.j"
 @import "Gisedu/Modules/PointDisplayOptions/PointDisplayOptionsModule.j"
 @import "Gisedu/Modules/PolygonDisplayOptions/PolygonDisplayOptionsModule.j"
 @import "Gisedu/FileKit/FKFileController.j"
@@ -113,9 +114,12 @@ g_UrlPrefix = 'http://127.0.0.1';
     CPMenuItem m_AccountAdminMenuItem;      //takes user to django admin page
 
     CPAlert m_ExitAlert;
+    CPAlert m_NewProjectAlert;
+    CPAlert m_DataSizeAlert;
 
     //Modules
     CsvImporterModule m_CsvImporter;
+    SpeedTesterModule m_SpeedTester;
     PointDisplayOptionsModule m_PointDisplayOptions @accessors(getter=pointDisplayOptions);
     PolygonDisplayOptionsModule m_PolygonDisplayOptions @accessors(getter=polygonDisplayOptions);
 }
@@ -172,6 +176,7 @@ g_UrlPrefix = 'http://127.0.0.1';
 
     //Load Modules
     m_CsvImporter = [[CsvImporterModule alloc] initFromApp:self];
+    m_SpeedTester = [[SpeedTesterModule alloc] initFromApp:self];
     m_PointDisplayOptions = [[PointDisplayOptionsModule alloc] initFromApp:self];
     m_PolygonDisplayOptions = [[PolygonDisplayOptionsModule alloc] initFromApp:self];
 
@@ -208,6 +213,14 @@ g_UrlPrefix = 'http://127.0.0.1';
     [m_NewProjectAlert addButtonWithTitle:"No, not yet."];
     [m_NewProjectAlert addButtonWithTitle:"Yes"];
     [m_NewProjectAlert setDelegate:self];
+
+    m_DataSizeAlert = [[CPAlert alloc] init];
+    [m_DataSizeAlert setTitle:"Warning: Large Data Set!"];
+    [m_DataSizeAlert setAlertStyle:CPInformationalAlertStyle];
+    [m_DataSizeAlert setMessageText:"The data size you are requesting is rather large. We estimate it will take up to 1 minute to load. Continue?"];
+    [m_DataSizeAlert addButtonWithTitle:"Cancel"];
+    [m_DataSizeAlert addButtonWithTitle:"Continue"];
+    [m_DataSizeAlert setDelegate:self];
 }
 
 - (void)mapViewIsReady:(MKMapView)mapView
@@ -550,9 +563,47 @@ g_UrlPrefix = 'http://127.0.0.1';
 
 - (void)onUpdateMapFilters:(id)sender
 {
-    [m_MapLoadingPanel showWithStatus:"Updating Maps"];
-    [[m_LeftSideTabView outlineView] clearItems];
-    [m_FilterManager triggerFilters];
+    [m_FilterManager testFilterSpeed];
+}
+
+- (void)onMapDataSizeCalculated:(id)sender
+{
+    var nDataSizeKB = [m_FilterManager dataSize] / 1000;
+    var nConnectionSpeed = [m_SpeedTester connectionSpeed];
+    var nDeliveryTime = 60;
+    var szDeliveryString = "";
+
+    if(nConnectionSpeed > 0) 
+        var nDeliveryTime = nDataSizeKB / nConnectionSpeed;
+
+    if(nDeliveryTime > 10)
+    {
+        if(nDeliveryTime >= 60)
+        {
+            var nDeliveryTimeInt = Math.floor(nDeliveryTime / 60);
+            szDeliveryString += " " + nDeliveryTimeInt;
+
+            if(nDeliveryTimeInt > 1)
+                szDeliveryString += " minutes";
+            else
+                szDeliveryString += " minute";
+
+            nDeliveryTime = nDeliveryTime % 60
+        }
+
+        if(nDeliveryTime > 0)
+            szDeliveryString += " " + Math.floor(nDeliveryTime) + " seconds";
+
+        var szAlertString = "The data set you are requesting is rather large. Estimated load time is" + szDeliveryString + ". Continue?";
+        [m_DataSizeAlert setMessageText:szAlertString];
+        [m_DataSizeAlert runModal];
+    }
+    else
+    {
+        [m_MapLoadingPanel showWithStatus:"Updating Maps"];
+        [[m_LeftSideTabView outlineView] clearItems];
+        [m_FilterManager triggerFilters];
+    }
 }
 
 - (void)onFilterManagerFinished:(CPDictionary)activeOverlays
@@ -776,6 +827,12 @@ g_UrlPrefix = 'http://127.0.0.1';
     else if(theAlert == m_NewProjectAlert && returnCode == 1)
     {
         location.reload(true);
+    }
+    else if(theAlert == m_DataSizeAlert && returnCode == 1)
+    {
+        [m_MapLoadingPanel showWithStatus:"Updating Maps"];
+        [[m_LeftSideTabView outlineView] clearItems];
+        [m_FilterManager triggerFilters];
     }
 }
 
